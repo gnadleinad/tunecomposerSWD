@@ -39,15 +39,15 @@
    <top>
       <MenuBar>
         <menus>
-          <Menu text="File">
+          <Menu onAction="#handlePlayScaleButtonAction" text="File">
             <items>
               <MenuItem onAction="#handleExitMenuItemAction" text="Exit" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Actions">
               <items>
-                <MenuItem mnemonicParsing="false" text="Play Scale" />
-                  <MenuItem mnemonicParsing="false" text="Stop Playing" />
+                <MenuItem mnemonicParsing="false" onAction="#handlePlayScaleButtonAction" text="Play Scale" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleStopPlayingButtonAction" text="Stop Playing" />
               </items>
             </Menu>
         </menus>
