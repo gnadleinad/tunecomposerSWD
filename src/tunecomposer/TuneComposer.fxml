@@ -1,56 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.Double?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.shape.Polygon?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane id="root-pane" prefHeight="2000.0" prefWidth="1280.0" stylesheets="@tunecomposer.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tunecomposer.TuneComposer">
-   <center>
-      <HBox id="button-box" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1280.0" prefWidth="2000.0">
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <content>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1280.0" prefWidth="2000.0">
          <children>
-            <Button id="start-button" onAction="#handlePlayScaleButtonAction" text="Play scale">
-               <graphic>
-                  <Polygon stroke="BLACK">
-                    <points>
-                      <Double fx:value="0.0" />
-                      <Double fx:value="0.0" />
-                      <Double fx:value="20.0" />
-                      <Double fx:value="10.0" />
-                      <Double fx:value="0.0" />
-                      <Double fx:value="20.0" />
-                    </points>
-                  </Polygon>
-               </graphic>
-            </Button>
-            <Button id="stop-button" onAction="#handleStopPlayingButtonAction" text="Stop playing">
-               <graphic>
-                  <Rectangle height="20" stroke="BLACK" width="20" />
-               </graphic>
-            </Button>
-         </children>
-      </HBox>
-   </center>
-   <top>
-      <MenuBar>
-        <menus>
-          <Menu onAction="#handlePlayScaleButtonAction" text="File">
-            <items>
-              <MenuItem onAction="#handleExitMenuItemAction" text="Exit" />
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Actions">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#handlePlayScaleButtonAction" text="Play Scale" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleStopPlayingButtonAction" text="Stop Playing" />
-              </items>
-            </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-</BorderPane>
+            <MenuBar prefWidth="2000.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Exit" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Actions">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Play Scale" />
+                        <MenuItem mnemonicParsing="false" text="Stop Playing" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+         </children></AnchorPane>
+  </content>
+</ScrollPane>
