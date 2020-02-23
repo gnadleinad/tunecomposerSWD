@@ -13,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.scene.shape.Line;
+import javafx.scene.control.ScrollPane;
 
 /**
  * This JavaFX app lets the user play scales.
@@ -39,6 +41,9 @@ public class TuneComposer extends Application {
      * currently playing.
      */
     private final MidiPlayer player;
+    
+    @FXML
+    private Line one_line;
 
     /**
      * Constructs a new ScalePlayer application.
@@ -107,10 +112,17 @@ public class TuneComposer extends Application {
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest((WindowEvent we) -> {
             System.exit(0);
-        });        
+        });   
         primaryStage.show();
+        
+       
     }
-
+    @FXML
+    public void one_line()  {
+        System.out.println(one_line.startY);
+        
+    }
+    
     /**
      * Launch the application.
      * @param args the command line arguments are ignored
