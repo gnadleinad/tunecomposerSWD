@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
-<ScrollPane fx:controller="tunecomposer.TuneComposer" fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tunecomposer.TuneComposer">
   <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1280.0" prefWidth="2000.0">
+    <AnchorPane fx:id="anchorPane" minHeight="0.0" minWidth="0.0" prefHeight="1310.0" prefWidth="2000.0">
          <children>
             <Line fx:id="one_line" endX="2000.0" endY="10.0" layoutY="30.0" startY="10.0" />
             <MenuBar prefWidth="2000.0">
