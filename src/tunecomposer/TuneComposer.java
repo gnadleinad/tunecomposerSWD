@@ -6,6 +6,7 @@ package tunecomposer;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
 
 /**
  * This JavaFX app lets the user play scales.
@@ -108,6 +110,16 @@ public class TuneComposer extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("TuneComposer.fxml"));
         Scene scene = new Scene(root);
         
+        
+    scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+    @Override
+    public void handle(MouseEvent mouseEvent) {
+        double x  = mouseEvent.getX();
+        double y  = mouseEvent.getY();
+        
+        System.out.println("mouse click detected! " + x + " and " + y );
+    }
+});
         primaryStage.setTitle("Scale Player");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -122,6 +134,9 @@ public class TuneComposer extends Application {
     //public void one_line()  {
         
     //}
+    
+    
+    
     
     /**
      * Launch the application.
