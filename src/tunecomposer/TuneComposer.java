@@ -117,11 +117,11 @@ public class TuneComposer extends Application {
         
        
     }
-    @FXML
-    public void one_line()  {
-        System.out.println(one_line.startY);
+    
+    //@FXML
+    //public void one_line()  {
         
-    }
+    //}
     
     /**
      * Launch the application.
