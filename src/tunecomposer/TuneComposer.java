@@ -94,7 +94,7 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        one_line();
+        one_Line();
     }    
     
     /**
@@ -112,16 +112,20 @@ public class TuneComposer extends Application {
      * @throws java.io.IOException
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {                
-        Parent root = FXMLLoader.load(getClass().getResource("TuneComposer.fxml"));
+    public void start(Stage primaryStage) throws IOException {
+        FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
+        Parent root = loader.load();
         Scene scene = new Scene(root);
+        TuneComposer controller = loader.getController();
+        controller.one_Line();
         
+
         
     scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-    @Override
-    public void handle(MouseEvent mouseEvent) {
-        double x  = mouseEvent.getX();
-        double y  = mouseEvent.getY();
+   
+        public void handle(MouseEvent mouseEvent) {
+        double x  = mouseEvent.getScreenX();
+        double y  = mouseEvent.getScreenY();
         
         System.out.println("mouse click detected! " + x + " and " + y );
     }
@@ -132,11 +136,12 @@ public class TuneComposer extends Application {
             System.exit(0);
         });   
         primaryStage.show();
+
         
     }
     
     @FXML
-    public void one_line()  {
+    public void one_Line()  {
      System.out.print(one_line.getStartY());
      double y = one_line.getStartY()+ 40;
      int count = 1;
