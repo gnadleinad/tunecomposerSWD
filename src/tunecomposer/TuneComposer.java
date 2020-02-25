@@ -121,11 +121,11 @@ public class TuneComposer extends Application {
         
 
         
-    scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+    controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
    
         public void handle(MouseEvent mouseEvent) {
-        double x  = mouseEvent.getScreenX();
-        double y  = mouseEvent.getScreenY();
+        double x  = mouseEvent.getX();
+        double y  = mouseEvent.getY();
         
         System.out.println("mouse click detected! " + x + " and " + y );
     }
