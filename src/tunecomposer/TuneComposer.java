@@ -18,6 +18,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Rectangle;
 
 
 /**
@@ -126,7 +127,7 @@ public class TuneComposer extends Application {
         public void handle(MouseEvent mouseEvent) {
         double x  = mouseEvent.getX();
         double y  = mouseEvent.getY();
-        
+        controller.make_note(x, y);
         System.out.println("mouse click detected! " + x + " and " + y );
     }
 });
@@ -148,13 +149,18 @@ public class TuneComposer extends Application {
      while (y < 1310){
          Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
          anchorPane.getChildren().add(line);
+         //System.out.print(y);
          y = y + 10;
          count += 1;
      }
      System.out.print(count);
     }
     
-    
+    public void make_note(double x,double y){
+     y = Math.floor(y / 10) * 10;
+     Rectangle rectangle = new Rectangle(x, y, 100, 10);
+     anchorPane.getChildren().add(rectangle);
+    }
     
     
     /**
