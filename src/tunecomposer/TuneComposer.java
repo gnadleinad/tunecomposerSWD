@@ -3,6 +3,7 @@
  */
 package tunecomposer;
 
+import java.util.*;
 import java.awt.Color;
 import java.io.IOException;
 import javafx.animation.Interpolator;
@@ -21,7 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.ScrollPane;
+//import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -53,6 +54,13 @@ public class TuneComposer extends Application {
      */
     private final MidiPlayer player;
     
+    /**
+     * Represents the time position of notes along the width as keys
+     * Represents the pitch position of notes along the height as values
+     * player object will play given pitch when time has passed the position.
+     */
+    private Map<Double, Double> notePosition;
+    
     @FXML
     private Line one_line;
     
@@ -66,7 +74,10 @@ public class TuneComposer extends Application {
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,60);
+        this.notePosition = new HashMap<>();
     }
+    
+    
     
     /**
      * Play a new scale, after stopping and clearing any previous scale.
@@ -80,6 +91,15 @@ public class TuneComposer extends Application {
             player.addNote(startingPitch+SCALE[i], VOLUME, 16-i, 1, 0, 0);
         }
         player.play();
+    }
+    
+    /**
+     * Sorts the keys of the notes from notePosition in ascending order.
+     */
+    protected void sortNoteKeys() {
+        Map<Double,Double> treeMap = new TreeMap<>();
+        treeMap.putAll(notePosition);
+        notePosition = treeMap;
     }
     
     /**
@@ -129,28 +149,33 @@ public class TuneComposer extends Application {
         Scene scene = new Scene(root);
         TuneComposer controller = loader.getController();
         controller.one_Line();
-        
 
         
-    controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-   
-        public void handle(MouseEvent mouseEvent) {
-        double x  = mouseEvent.getX();
-        double y  = mouseEvent.getY();
-        controller.make_note(x, y);
-        System.out.println("mouse click detected! " + x + " and " + y );
-    }
-});
-        primaryStage.setTitle("Scale Player");
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest((WindowEvent we) -> {
-            System.exit(0);
-        });   
-        primaryStage.show();
-
+        controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent mouseEvent) {
+                double x  = mouseEvent.getX();
+                double y  = mouseEvent.getY();
+                controller.make_note(x, y);
+                notePosition.put(x,y);
+                sortNoteKeys();
+                System.out.println("mouse click detected! " + x + " and " + y );
+                for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
+                System.out.println("Key = " + entry.getKey() +  
+                             ", Value = " + entry.getValue());         
+                } 
+            }
+        });
+            primaryStage.setTitle("Scale Player");
+            primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest((WindowEvent we) -> {
+                System.exit(0);
+            });   
+            primaryStage.show();
+        }
         
-    }
-    
+    /**
+     * Constructs a line graphic and duplicates until window is filled.
+     */
     @FXML
     public void one_Line()  {
      System.out.print(one_line.getStartY());
@@ -165,7 +190,7 @@ public class TuneComposer extends Application {
         }
      System.out.print(count);
     }
-    
+
     
     public void make_note(double x,double y){
      y = Math.floor(y / 10) * 10;
