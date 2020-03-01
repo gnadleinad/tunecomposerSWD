@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.ScrollPane;
+//import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
@@ -144,7 +144,6 @@ public class TuneComposer extends Application {
 
         
         controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-
             public void handle(MouseEvent mouseEvent) {
                 double x  = mouseEvent.getX();
                 double y  = mouseEvent.getY();
