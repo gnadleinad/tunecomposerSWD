@@ -4,6 +4,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
@@ -12,17 +13,27 @@
     <AnchorPane fx:id="anchorPane" minHeight="0.0" minWidth="0.0" prefHeight="1310.0" prefWidth="2000.0">
          <children>
             <Line fx:id="one_line" endX="2000.0" endY="10.0" layoutY="30.0" startY="10.0" />
-            <MenuBar prefWidth="2000.0">
+            <Line fx:id="red_line" endX="1186.0" endY="640.0" layoutX="-1186.0" layoutY="263.0" startX="1186.0" startY="-234.0" stroke="RED" />
+            <MenuBar fx:id="menuBar" prefWidth="2000.0">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemAction" text="Exit" />
+                    <MenuItem fx:id="exit" mnemonicParsing="false" onAction="#handleExitMenuItemAction" text="Exit">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Actions">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#handlePlayScaleButtonAction" text="Play Scale" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleStopPlayingButtonAction" text="Stop Playing" />
+                    <MenuItem fx:id="playscale" mnemonicParsing="false" onAction="#handlePlayScaleButtonAction" text="Play Scale">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem fx:id="stopplaying" mnemonicParsing="false" onAction="#handleStopPlayingButtonAction" text="Stop Playing">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                   </items>
                 </Menu>
               </menus>

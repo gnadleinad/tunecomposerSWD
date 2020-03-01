@@ -3,7 +3,12 @@
  */
 package tunecomposer;
 
+import java.awt.Color;
 import java.io.IOException;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 
 /**
@@ -49,6 +55,8 @@ public class TuneComposer extends Application {
     
     @FXML
     private Line one_line;
+    
+    @FXML Line red_line;
     
     @FXML
     private AnchorPane anchorPane;
@@ -85,7 +93,9 @@ public class TuneComposer extends Application {
         pitchDialog.setHeaderText("Give me a starting note (0-115):");
             pitchDialog.showAndWait().ifPresent(response -> {
                 playScale(Integer.parseInt(response));
+                move_red();
             });
+        
     }    
     
     /**
@@ -152,16 +162,31 @@ public class TuneComposer extends Application {
          //System.out.print(y);
          y = y + 10;
          count += 1;
-     }
+        }
      System.out.print(count);
     }
     
+    
     public void make_note(double x,double y){
      y = Math.floor(y / 10) * 10;
-     Rectangle rectangle = new Rectangle(x, y, 100, 10);
-     anchorPane.getChildren().add(rectangle);
+     if(y>25) {
+        Rectangle rectangle = new Rectangle(x, y, 100, 10);
+        anchorPane.getChildren().add(rectangle);
+        }
     }
     
+    public void move_red() {
+        final Rectangle line = new Rectangle(0, 30, 1, 1280);
+        anchorPane.getChildren().add(line);
+        final Timeline timeline = new Timeline();
+        timeline.setCycleCount(1);
+        timeline.setAutoReverse(false);
+        final KeyValue kv = new KeyValue(line.xProperty(), 1999,
+            Interpolator.LINEAR);
+        final KeyFrame kf = new KeyFrame(Duration.millis(10000), kv);
+        timeline.getKeyFrames().add(kf);
+        timeline.play();
+        }
     
     /**
      * Launch the application.
