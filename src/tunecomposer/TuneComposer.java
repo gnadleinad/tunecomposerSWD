@@ -50,6 +50,8 @@ public class TuneComposer extends Application {
     @FXML
     private Line one_line;
     
+    @FXML Line red_line;
+    
     @FXML
     private AnchorPane anchorPane;
 
@@ -152,14 +154,17 @@ public class TuneComposer extends Application {
          //System.out.print(y);
          y = y + 10;
          count += 1;
-     }
+        }
      System.out.print(count);
     }
     
+    
     public void make_note(double x,double y){
      y = Math.floor(y / 10) * 10;
-     Rectangle rectangle = new Rectangle(x, y, 100, 10);
-     anchorPane.getChildren().add(rectangle);
+     if(y>25) {
+        Rectangle rectangle = new Rectangle(x, y, 100, 10);
+        anchorPane.getChildren().add(rectangle);
+        }
     }
     
     
