@@ -196,12 +196,15 @@ public class TuneComposer extends Application {
      y = Math.floor(y / 10) * 10;
      if(y>25) {
         Rectangle rectangle = new Rectangle(x, y, 100, 10);
+        rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
+        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         anchorPane.getChildren().add(rectangle);
         }
     }
     
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
+        line.setFill(javafx.scene.paint.Color.RED);
         anchorPane.getChildren().add(line);
         final Timeline timeline = new Timeline();
         timeline.setCycleCount(1);
