@@ -87,7 +87,7 @@ public class TuneComposer extends Application {
      * Play a new scale, after stopping and clearing any previous scale.
      * @param startingPitch an integer between 0 and 115
      */
-    protected void playScale(int startingPitch) {
+    protected void playScale() {
         player.stop();
         player.clear();
         for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
@@ -112,12 +112,8 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        TextInputDialog pitchDialog = new TextInputDialog("60");
-        pitchDialog.setHeaderText("Give me a starting note (0-115):");
-            pitchDialog.showAndWait().ifPresent(response -> {
-                playScale(Integer.parseInt(response));
-                move_red();
-            });
+        move_red();
+        playScale();
         
     }    
     
