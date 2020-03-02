@@ -76,7 +76,7 @@ public class TuneComposer extends Application {
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
-        this.player = new MidiPlayer(1,12000);
+        this.player = new MidiPlayer(1,10000);
         //ticksPerSecond = 1 * (2000/60);
         this.notePosition = new HashMap<>();
     }
