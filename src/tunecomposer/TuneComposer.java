@@ -156,7 +156,7 @@ public class TuneComposer extends Application {
                 double y  = mouseEvent.getY();
                 double midi_val = Math.floor((y - 30) / 10);
                 controller.make_note(x, y);
-                notePosition.put(x,midi_val);
+                if(midi_val >= 0){notePosition.put(x,midi_val);} //ignores menu bar click 
                 sortNoteKeys();
                 System.out.println("mouse click detected! " + x + " and " + midi_val );
                 for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
