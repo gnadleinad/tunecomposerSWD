@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
-//import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -46,6 +45,7 @@ public class TuneComposer extends Application {
     /**
      * Play notes at maximum volume.
      */
+    
     private static final int VOLUME = 127;
     
     /**
@@ -59,21 +59,31 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private Map<Double, Double> notePosition;
-    
+    private static Map<Double, Double> notePosition;
+
     @FXML
     private Line one_line;
-    
-    @FXML Line red_line;
-    
+
+    /**
+     * The primary  container object for the main window
+     * Also handles mouse clicks when creating notes on the screen.
+     */
     @FXML
     private AnchorPane anchorPane;
+
+    /**
+     * Animation object that keeps track of sequences and timing
+     * Used to keep track of keyframes to align timing of note play with the playhead
+     */
+    
+    final Timeline timeline = new Timeline();
 
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
-        this.player = new MidiPlayer(1,60);
+        this.player = new MidiPlayer(1,10000);
+        //ticksPerSecond = 1 * (2000/60);
         this.notePosition = new HashMap<>();
     }
     
@@ -83,13 +93,12 @@ public class TuneComposer extends Application {
      * Play a new scale, after stopping and clearing any previous scale.
      * @param startingPitch an integer between 0 and 115
      */
-    protected void playScale(int startingPitch) {
+    protected void playScale() {
         player.stop();
         player.clear();
-        for (int i=0; i < 8; i++) {
-            player.addNote(startingPitch+SCALE[i], VOLUME, i,    1, 0, 0);
-            player.addNote(startingPitch+SCALE[i], VOLUME, 16-i, 1, 0, 0);
-        }
+        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
+            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()),  1, 0, 0);       
+                } 
         player.play();
     }
     
@@ -109,12 +118,8 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        TextInputDialog pitchDialog = new TextInputDialog("60");
-        pitchDialog.setHeaderText("Give me a starting note (0-115):");
-            pitchDialog.showAndWait().ifPresent(response -> {
-                playScale(Integer.parseInt(response));
-                move_red();
-            });
+        move_red();
+        playScale();
         
     }    
     
@@ -125,7 +130,7 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        one_Line();
+        timeline.jumpTo(Duration.INDEFINITE);
     }    
     
     /**
@@ -155,16 +160,21 @@ public class TuneComposer extends Application {
             public void handle(MouseEvent mouseEvent) {
                 double x  = mouseEvent.getX();
                 double y  = mouseEvent.getY();
+                double midi_val = Math.floor((y - 30) / 10);
                 controller.make_note(x, y);
-                notePosition.put(x,y);
+                if(midi_val >= 0){notePosition.put(x,midi_val);} //ignores menu bar click 
                 sortNoteKeys();
-                System.out.println("mouse click detected! " + x + " and " + y );
+                System.out.println("mouse click detected! " + x + " and " + midi_val );
                 for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-                System.out.println("Key = " + entry.getKey() +  
-                             ", Value = " + entry.getValue());         
+		    System.out.println("Key = " + entry.getKey() +  
+				       ", Value = " + entry.getValue());         
                 } 
             }
+ 
         });
+        System.out.println(notePosition); 
+        
+        
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -184,31 +194,38 @@ public class TuneComposer extends Application {
      while (y < 1310){
          Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
          anchorPane.getChildren().add(line);
-         //System.out.print(y);
          y = y + 10;
          count += 1;
         }
      System.out.print(count);
     }
 
-    
+    /**
+     * Draws a rectangle indicating the selected note region.
+     * @param x value of x-coordinate where the mouse clicked
+     * @param y value of y-coordinate where the mouse clicked
+     */
     public void make_note(double x,double y){
      y = Math.floor(y / 10) * 10;
      if(y>25) {
         Rectangle rectangle = new Rectangle(x, y, 100, 10);
+        rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
+        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         anchorPane.getChildren().add(rectangle);
         }
     }
-    
+    /**
+     * Animates the movement of the red playhead from the left side of the window to the right.
+     */
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
+        line.setFill(javafx.scene.paint.Color.RED);
         anchorPane.getChildren().add(line);
-        final Timeline timeline = new Timeline();
         timeline.setCycleCount(1);
         timeline.setAutoReverse(false);
         final KeyValue kv = new KeyValue(line.xProperty(), 1999,
             Interpolator.LINEAR);
-        final KeyFrame kf = new KeyFrame(Duration.millis(10000), kv);
+        final KeyFrame kf = new KeyFrame(Duration.millis(12000), kv);
         timeline.getKeyFrames().add(kf);
         timeline.play();
         }
