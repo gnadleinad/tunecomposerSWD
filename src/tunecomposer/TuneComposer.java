@@ -4,7 +4,6 @@
 package tunecomposer;
 
 import java.util.*;
-import java.awt.Color;
 import java.io.IOException;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -17,12 +16,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
-//import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -31,8 +28,8 @@ import javafx.util.Duration;
 /**
  * This JavaFX app lets the user play scales.
  * @author Janet Davis 
- * @author SOLUTION - PROJECT 1
- * @since January 26, 2017
+ * @author Project 3 - Team 4
+ * @since March 3, 2020
  */
 public class TuneComposer extends Application {
     
@@ -77,7 +74,6 @@ public class TuneComposer extends Application {
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
-        //ticksPerSecond = 1 * (2000/60);
         this.notePosition = new HashMap<>();
     }
     
@@ -154,19 +150,13 @@ public class TuneComposer extends Application {
             public void handle(MouseEvent mouseEvent) {
                 double x  = mouseEvent.getX();
                 double y  = mouseEvent.getY();
-                double midi_val = Math.floor((y - 30) / 10);
+                double midi_val = Math.floor(127-((y - 30) / 10));
                 controller.make_note(x, y);
-                if(midi_val >= 0){notePosition.put(x,midi_val);} //ignores menu bar click 
+                if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click 
                 sortNoteKeys();
-                System.out.println("mouse click detected! " + x + " and " + midi_val );
-                for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-                System.out.println("Key = " + entry.getKey() +  
-                             ", Value = " + entry.getValue());         
-                } 
             }
  
         });
-        System.out.println(notePosition); 
         
         
             primaryStage.setTitle("Scale Player");
@@ -182,20 +172,21 @@ public class TuneComposer extends Application {
      */
     @FXML
     public void one_Line()  {
-     System.out.print(one_line.getStartY());
      double y = one_line.getStartY()+ 40;
      int count = 1;
      while (y < 1310){
          Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
          anchorPane.getChildren().add(line);
-         //System.out.print(y);
          y = y + 10;
          count += 1;
         }
-     System.out.print(count);
     }
 
-    
+    /**
+     * makes the rectangle on screen symbolizing a note
+     * @param x the x coordinate of the note
+     * @param y the y coordinate of the note
+     */
     public void make_note(double x,double y){
      y = Math.floor(y / 10) * 10;
      if(y>25) {
@@ -206,6 +197,9 @@ public class TuneComposer extends Application {
         }
     }
     
+    /**
+     * Creates and moves a red line across the screen to show the duration of time.
+     */
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
         line.setFill(javafx.scene.paint.Color.RED);
