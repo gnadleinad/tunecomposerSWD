@@ -2,17 +2,11 @@
 project-3-team4 created by GitHub Classroom
 
 # Design Overview
-Give a concise overview of your design. How did you divide the code into classes and methods? 
-How does your design for Project 3 differ from your design(s) for Project 2? 
-What do you think is particularly elegant about the choices you made?
+Our file design is mostly the same from project 2 in that it still uses 1 file for the methods and implementation while the css and the fxml files make up the style and the UI respectively. We have a single class, TuneComposer, that separates all of the distinct features of the program into methods. In this respect we tried to minimize the main and start function as much as we could by dividing the code into as many methods as we could. We find this to be a particular point of elegance with our design.
+
 
 # Limitations
-Explain what, if anything, in your solution is inelegant and why you didn't make it elegant 
-(for example, maybe you didn't have time or the knowledge to fix it).
+We still put all of our methods and our singular class into one file. If given the time, the methods that pertain to the notes, the methods that activate the playhead, and the button event handling are some examples of implementations that could be separated into different files. 
 
 # Collaboration
-Finally, describe how your team collaborated on the project. What did you do together? 
-What did you do separately? What did each team member contribute? 
-Optionally, include a brief team retrospective: 
-What is one thing you did well as a team? 
-What is one thing you could have improved?
+Each member of our group focused on different aspects of the Tune Composer class at a time. One person worked specifically on creating the lines dividing the notes. Another person worked on the User Interface through Scene Builder. In general, we had group collaboration on the overall direction of the project. We offered ideas to each other about how to implement certain ideas (Ex. could the notes be separated somehow? Are there built-in methods to duplicate the line object? etc.)
