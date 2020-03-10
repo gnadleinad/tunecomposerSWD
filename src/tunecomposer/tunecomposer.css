@@ -7,36 +7,36 @@
     
 }
 
-.piano{
+.Piano{
    -fx-fill: cyan; 
 }
 
-.harpsicord{
+.Harpsicord{
     -fx-fill: blueviolet;
     
 }
 
-.marimba{
+.Marimba{
     -fx-fill: blueviolet;
 }
 
-.church-organ{
+.Church-organ{
     -fx-fill: coral;
 }
 
-.accordion{
+.Accordion{
     -fx-fill: darkseagreen
 }
 
-.guitar{
+.Guitar{
     -fx-fill: fuchsia;
 }
 
-.violin{
+.Violin{
     -fx-fill: lightpink;
 }
 
-.french-horn{
+.French-horn{
     -fx-fill: goldenrod;
 }
 
