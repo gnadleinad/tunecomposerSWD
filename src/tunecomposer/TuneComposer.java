@@ -16,6 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
@@ -62,10 +64,16 @@ public class TuneComposer extends Application {
     @FXML
     private Line one_line;
     
+    @FXML
+    private ToggleGroup instrument;
+    
+    
     @FXML Line red_line;
     
     @FXML
     public AnchorPane music_staff;
+    
+    public static String current_instrument;
     
     final Timeline timeline = new Timeline();
 
@@ -111,7 +119,8 @@ public class TuneComposer extends Application {
         move_red();
         playScale();
         
-    }    
+    } 
+    
     
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
@@ -131,6 +140,7 @@ public class TuneComposer extends Application {
     protected void handleExitMenuItemAction(ActionEvent event) {
         System.exit(0);
     }
+   
     
     /**
      * Construct the scene and start the application.
@@ -139,26 +149,29 @@ public class TuneComposer extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        //TuneComposer controller = loader.getController();
-        //controller.one_Line();
+        TuneComposer controller = loader.getController();
+        controller.one_Line();
+        controller.change_instrument();
 
-        /*
+        
         controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            controller.change_instrument();
             double x  = mouseEvent.getX();
             double y  = mouseEvent.getY();
             double midi_val = Math.floor(127-((y - 30) / 10));
             Note n = new Note();
-            Rectangle r = n.draw_note(x, y);
-            Rectangle tangle = new Rectangle(x, y, 100, 10);
+           // System.out.println(current_instrument);
+            Rectangle r = n.draw_note(x, y,current_instrument);
             controller.music_staff.getChildren().add(r);
             if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
             sortNoteKeys();
         });
         
-        */
+        
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -172,12 +185,23 @@ public class TuneComposer extends Application {
      */
     @FXML
     public void one_Line()  {
-     double y = 40;
-     while (y < 1310){
+     double y = 0;
+     while (y < 1280){
          Line line = new Line(0,y,2000, y);
          music_staff.getChildren().add(line);
          y = y + 10;
         }
+    }
+    
+    
+    public void change_instrument(){
+        RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
+        String toggleGroupValue = selectedRadioButton.getText();
+        current_instrument = toggleGroupValue;
+        //System.out.println(current_instrument);
+        
+        
+        
     }
 
     /**
