@@ -92,8 +92,7 @@
                         <Font size="14.0" />
                      </font>
                   </RadioButton>
-                  <RadioButton fx:id="frenchhornButton" layoutX="19.0" layoutY="300.0" mnemonicParsing="false" text="French Horn" toggleGroup="$instrument">
-
+                  <RadioButton fx:id="frenchhornButton" layoutX="19.0" layoutY="300.0" mnemonicParsing="false" text="French-horn" toggleGroup="$instrument">
                      <font>
                         <Font size="14.0" />
                      </font>
