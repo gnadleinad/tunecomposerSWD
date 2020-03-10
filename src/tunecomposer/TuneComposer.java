@@ -65,7 +65,7 @@ public class TuneComposer extends Application {
     @FXML Line red_line;
     
     @FXML
-    private AnchorPane anchorPane;
+    public AnchorPane music_staff;
     
     final Timeline timeline = new Timeline();
 
@@ -142,23 +142,23 @@ public class TuneComposer extends Application {
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        TuneComposer controller = loader.getController();
-        controller.one_Line();
+        //TuneComposer controller = loader.getController();
+        //controller.one_Line();
 
-        
-        controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent mouseEvent) {
-                double x  = mouseEvent.getX();
-                double y  = mouseEvent.getY();
-                double midi_val = Math.floor(127-((y - 30) / 10));
-                controller.make_note(x, y);
-                if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click 
-                sortNoteKeys();
-            }
- 
+        /*
+        controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            double x  = mouseEvent.getX();
+            double y  = mouseEvent.getY();
+            double midi_val = Math.floor(127-((y - 30) / 10));
+            Note n = new Note();
+            Rectangle r = n.draw_note(x, y);
+            Rectangle tangle = new Rectangle(x, y, 100, 10);
+            controller.music_staff.getChildren().add(r);
+            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
+            sortNoteKeys();
         });
         
-        
+        */
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -172,38 +172,21 @@ public class TuneComposer extends Application {
      */
     @FXML
     public void one_Line()  {
-     double y = one_line.getStartY()+ 40;
-     int count = 1;
+     double y = 40;
      while (y < 1310){
-         Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
-         anchorPane.getChildren().add(line);
+         Line line = new Line(0,y,2000, y);
+         music_staff.getChildren().add(line);
          y = y + 10;
-         count += 1;
         }
     }
 
-    /**
-     * makes the rectangle on screen symbolizing a note
-     * @param x the x coordinate of the note
-     * @param y the y coordinate of the note
-     */
-    public void make_note(double x,double y){
-     y = Math.floor(y / 10) * 10;
-     if(y>25) {
-        Rectangle rectangle = new Rectangle(x, y, 100, 10);
-        rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
-        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
-        anchorPane.getChildren().add(rectangle);
-        }
-    }
-    
     /**
      * Creates and moves a red line across the screen to show the duration of time.
      */
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
         line.setFill(javafx.scene.paint.Color.RED);
-        anchorPane.getChildren().add(line);
+        music_staff.getChildren().add(line);
         timeline.setCycleCount(1);
         timeline.setAutoReverse(false);
         final KeyValue kv = new KeyValue(line.xProperty(), 1999,
