@@ -202,7 +202,7 @@ public class TuneComposer extends Application {
      */
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
-        line.setFill(javafx.scene.paint.Color.RED);
+        line.getStyleClass().add("playbar");
         anchorPane.getChildren().add(line);
         timeline.setCycleCount(1);
         timeline.setAutoReverse(false);
