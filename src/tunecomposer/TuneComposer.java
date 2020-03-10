@@ -16,6 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
@@ -62,10 +64,16 @@ public class TuneComposer extends Application {
     @FXML
     private Line one_line;
     
+    @FXML
+    private ToggleGroup instrument;
+    
+    
     @FXML Line red_line;
     
     @FXML
-    private AnchorPane anchorPane;
+    public AnchorPane music_staff;
+    
+    public static String current_instrument;
     
     final Timeline timeline = new Timeline();
 
@@ -111,7 +119,8 @@ public class TuneComposer extends Application {
         move_red();
         playScale();
         
-    }    
+    } 
+    
     
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
@@ -131,6 +140,7 @@ public class TuneComposer extends Application {
     protected void handleExitMenuItemAction(ActionEvent event) {
         System.exit(0);
     }
+   
     
     /**
      * Construct the scene and start the application.
@@ -139,23 +149,26 @@ public class TuneComposer extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         TuneComposer controller = loader.getController();
         controller.one_Line();
+        controller.change_instrument();
 
         
-        controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent mouseEvent) {
-                double x  = mouseEvent.getX();
-                double y  = mouseEvent.getY();
-                double midi_val = Math.floor(127-((y - 30) / 10));
-                controller.make_note(x, y);
-                if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click 
-                sortNoteKeys();
-            }
- 
+        controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            controller.change_instrument();
+            double x  = mouseEvent.getX();
+            double y  = mouseEvent.getY();
+            double midi_val = Math.floor(127-((y - 30) / 10));
+            Note n = new Note();
+           // System.out.println(current_instrument);
+            Rectangle r = n.draw_note(x, y,current_instrument);
+            controller.music_staff.getChildren().add(r);
+            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
+            sortNoteKeys();
         });
         
         
@@ -172,38 +185,33 @@ public class TuneComposer extends Application {
      */
     @FXML
     public void one_Line()  {
-     double y = one_line.getStartY()+ 40;
-     int count = 1;
-     while (y < 1310){
-         Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
-         anchorPane.getChildren().add(line);
+     double y = 0;
+     while (y < 1280){
+         Line line = new Line(0,y,2000, y);
+         music_staff.getChildren().add(line);
          y = y + 10;
-         count += 1;
-        }
-    }
-
-    /**
-     * makes the rectangle on screen symbolizing a note
-     * @param x the x coordinate of the note
-     * @param y the y coordinate of the note
-     */
-    public void make_note(double x,double y){
-     y = Math.floor(y / 10) * 10;
-     if(y>25) {
-        Rectangle rectangle = new Rectangle(x, y, 100, 10);
-        rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
-        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
-        anchorPane.getChildren().add(rectangle);
         }
     }
     
+    
+    public void change_instrument(){
+        RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
+        String toggleGroupValue = selectedRadioButton.getText();
+        current_instrument = toggleGroupValue;
+        //System.out.println(current_instrument);
+        
+        
+        
+    }
+
     /**
      * Creates and moves a red line across the screen to show the duration of time.
      */
     public void move_red() {
         final Rectangle line = new Rectangle(0, 30, 1, 1280);
         line.getStyleClass().add("playbar");
-        anchorPane.getChildren().add(line);
+        
+        music_staff.getChildren().add(line);
         timeline.setCycleCount(1);
         timeline.setAutoReverse(false);
         final KeyValue kv = new KeyValue(line.xProperty(), 1999,

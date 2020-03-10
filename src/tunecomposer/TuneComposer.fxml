@@ -37,12 +37,16 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Action">
             <items>
-              <MenuItem mnemonicParsing="false" text="Start Playing">
+
+              <MenuItem mnemonicParsing="false" onAction="#handlePlayScaleButtonAction" text="Start Playing">
+
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Stop Playing">
+
+                  <MenuItem mnemonicParsing="false" onAction="#handleStopPlayingButtonAction" text="Stop Playing">
+
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -55,7 +59,9 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
                <children>
-                  <RadioButton fx:id="pianoButton" layoutX="19.0" layoutY="20.0" mnemonicParsing="false" text="Piano">
+
+                  <RadioButton fx:id="pianoButton" layoutX="19.0" layoutY="20.0" mnemonicParsing="false" selected="true" text="Piano">
+
                      <toggleGroup>
                         <ToggleGroup fx:id="instrument" />
                      </toggleGroup>
@@ -71,7 +77,7 @@
                      <font>
                         <Font size="14.0" />
                      </font></RadioButton>
-                  <RadioButton fx:id="organButton" layoutX="19.0" layoutY="140.0" mnemonicParsing="false" text="Organ" toggleGroup="$instrument">
+                  <RadioButton fx:id="organButton" layoutX="19.0" layoutY="140.0" mnemonicParsing="false" text="Church-organ" toggleGroup="$instrument">
                      <font>
                         <Font size="14.0" />
                      </font></RadioButton>
@@ -93,6 +99,7 @@
                      </font>
                   </RadioButton>
                   <RadioButton fx:id="frenchhornButton" layoutX="19.0" layoutY="300.0" mnemonicParsing="false" text="French-horn" toggleGroup="$instrument">
+
                      <font>
                         <Font size="14.0" />
                      </font>

@@ -11,10 +11,11 @@
    -fx-fill: cyan; 
 }
 
-.Harpsicord{
-    -fx-fill: blueviolet;
+.Harpsichord{
+    -fx-fill: green;
     
 }
+
 
 .Marimba{
     -fx-fill: blueviolet;
@@ -43,3 +44,4 @@
 .playbar{
     -fx-fill: red;
 }
+
