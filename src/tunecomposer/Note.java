@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class Note {
 
-    boolean isSelected;
+    boolean isSelected = false;
 
     /**
      * makes the rectangle on screen symbolizing a note
@@ -24,15 +24,18 @@ public class Note {
     public Rectangle draw_note(double x, double y) {
          y = Math.floor(y / 10) * 10;
          Rectangle rectangle;
-     if(y>25) {
         rectangle = new Rectangle(x, y, 100, 10);
+        System.out.println(x);
+        System.out.println(y);
         rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
         rectangle.setStroke(javafx.scene.paint.Color.BLACK);
-        }
-     else{
-         rectangle = null;
-     }
+        select(rectangle);
      return rectangle;
+    }
+    
+    public void select(Rectangle r){
+        r.setStroke(javafx.scene.paint.Color.RED);
+        isSelected = true;
     }
     
     
