@@ -14,7 +14,7 @@ import javafx.scene.shape.Rectangle;
 public class Note {
 
     boolean isSelected = false;
-    //String instrument; 
+    private String instrument; 
 
     /**
      * makes the rectangle on screen symbolizing a note
@@ -23,17 +23,17 @@ public class Note {
      * @param instrument
      * @return 
      */
-    public Rectangle draw_note(double x, double y, String instrument) {
+    public Rectangle draw_note(double x, double y, String temp_instrument) {
+        instrument = temp_instrument;
          y = Math.floor(y / 10) * 10;
          Rectangle rectangle;
         rectangle = new Rectangle(x, y, 100, 10);
         System.out.println(x);
         System.out.println(y);
         rectangle.getStyleClass().add("note");
-         System.out.println(instrument);
+        System.out.println(temp_instrument);
+        Convert_Instrument();
         rectangle.getStyleClass().add(instrument);
-       // rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
-        //rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         select(rectangle);
      return rectangle;
     }
@@ -41,6 +41,14 @@ public class Note {
     public void select(Rectangle r){
         r.setStroke(javafx.scene.paint.Color.RED);
         isSelected = true;
+    }
+    
+    private void Convert_Instrument(){
+        System.out.println("Old Instrument: "+ instrument);
+        if(instrument.contains(" ")){
+            instrument = instrument.replace(' ', '-');
+        }
+        System.out.println("New Instrument: "+ instrument);
     }
     
     
