@@ -7,39 +7,54 @@
     
 }
 
+.selected{
+    -fx-stroke: red;
+}
+
 .Piano{
    -fx-fill: cyan; 
+   -fx-text-fill: cyan;
 }
 
 .Harpsichord{
     -fx-fill: green;
+    -fx-text-fill: green;
     
 }
 
+
 .Marimba{
     -fx-fill: blueviolet;
+    -fx-text-fill: blueviolet;
 }
 
-.Organ{
+.Church-Organ{
     -fx-fill: coral;
+    -fx-text-fill: coral;
 }
 
 .Accordion{
-    -fx-fill: darkseagreen
+    -fx-fill: darkseagreen;
+    -fx-text-fill: darkseagreen;
 }
 
 .Guitar{
     -fx-fill: fuchsia;
+    -fx-text-fill: fuchsia;
 }
 
 .Violin{
     -fx-fill: lightpink;
+    -fx-text-fill: lightpink;
 }
 
-.French{
+.French-Horn{
     -fx-fill: goldenrod;
+    -fx-text-fill: goldenrod;
 }
 
 .playbar{
     -fx-fill: red;
+    -fx-text-fill: red;
 }
+
