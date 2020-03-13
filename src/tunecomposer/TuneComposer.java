@@ -163,9 +163,9 @@ public class TuneComposer extends Application {
             double x  = mouseEvent.getX();
             double y  = mouseEvent.getY();
             double midi_val = Math.floor(127-((y - 30) / 10));
-            Note n = new Note();
+            Note n = new Note(current_instrument);
            // System.out.println(current_instrument);
-            Rectangle r = n.draw_note(x, y,current_instrument);
+            Rectangle r = n.draw_note(x, y);
             controller.music_staff.getChildren().add(r);
             if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
             sortNoteKeys();
