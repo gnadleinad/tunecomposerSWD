@@ -7,6 +7,10 @@
     
 }
 
+.selected{
+    -fx-stroke: red;
+}
+
 .Piano{
    -fx-fill: cyan; 
    -fx-text-fill: cyan;
