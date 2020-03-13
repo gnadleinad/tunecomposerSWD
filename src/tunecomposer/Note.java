@@ -14,41 +14,42 @@ import javafx.scene.shape.Rectangle;
 public class Note {
 
     boolean isSelected = false;
-    private String instrument; 
-
+    private String instrument;
+    private Rectangle display_note;
+    
+    /**
+     * Constructs a note. 
+     * @param temp_instrument 
+     */
+    public Note(String temp_instrument){
+        instrument = temp_instrument;
+        
+    }
     /**
      * makes the rectangle on screen symbolizing a note
      * @param x the x coordinate of the note
      * @param y the y coordinate of the note
-     * @param instrument
-     * @return 
+     * @return disp
      */
-    public Rectangle draw_note(double x, double y, String temp_instrument) {
-        instrument = temp_instrument;
-         y = Math.floor(y / 10) * 10;
-         Rectangle rectangle;
-        rectangle = new Rectangle(x, y, 100, 10);
-        System.out.println(x);
-        System.out.println(y);
-        rectangle.getStyleClass().add("note");
-        System.out.println(temp_instrument);
+    public Rectangle draw_note(double x, double y) {
+        y = Math.floor(y / 10) * 10;
+        display_note = new Rectangle(x, y, 100, 10);
+        display_note.getStyleClass().add("note");
         Convert_Instrument();
-        rectangle.getStyleClass().add(instrument);
-        select(rectangle);
-     return rectangle;
+        display_note.getStyleClass().add(instrument);
+        //display_select();
+     return display_note;
     }
     
-    public void select(Rectangle r){
-        r.setStroke(javafx.scene.paint.Color.RED);
+    public void display_select(){
+        display_note.getStyleClass().add("selected");
         isSelected = true;
     }
     
     private void Convert_Instrument(){
-        System.out.println("Old Instrument: "+ instrument);
         if(instrument.contains(" ")){
             instrument = instrument.replace(' ', '-');
         }
-        System.out.println("New Instrument: "+ instrument);
     }
     
     
