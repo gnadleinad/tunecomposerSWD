@@ -4,20 +4,19 @@
 package tunecomposer;
 
 import java.util.*;
-import java.awt.Color;
 import java.io.IOException;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
@@ -30,8 +29,8 @@ import javafx.util.Duration;
 /**
  * This JavaFX app lets the user play scales.
  * @author Janet Davis 
- * @author SOLUTION - PROJECT 1
- * @since January 26, 2017
+ * @author Project 3 - Team 4
+ * @since March 3, 2020
  */
 public class TuneComposer extends Application {
     
@@ -59,32 +58,34 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private static Map<Double, Double> notePosition;
-
+    private static TreeMap<Double, Double> notePosition;
+    
     @FXML
     private Line one_line;
-
-    /**
-     * The primary  container object for the main window
-     * Also handles mouse clicks when creating notes on the screen.
-     */
-    @FXML
-    private AnchorPane anchorPane;
-
-    /**
-     * Animation object that keeps track of sequences and timing
-     * Used to keep track of keyframes to align timing of note play with the playhead
-     */
     
-    final Timeline timeline = new Timeline();
+    @FXML
+    private ToggleGroup instrument;
+    
+    
+    @FXML Line red_line;
+    
+    @FXML
+    public AnchorPane music_staff;
+    
+    public static String current_instrument;
+    
+    
+    public TranslateTransition transition;
+    
+    
 
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
-        //ticksPerSecond = 1 * (2000/60);
-        this.notePosition = new HashMap<>();
+        this.notePosition = new TreeMap<>();
+        this.transition = new TranslateTransition();
     }
     
     
@@ -103,25 +104,19 @@ public class TuneComposer extends Application {
     }
     
     /**
-     * Sorts the keys of the notes from notePosition in ascending order.
-     */
-    protected void sortNoteKeys() {
-        Map<Double,Double> treeMap = new TreeMap<>();
-        treeMap.putAll(notePosition);
-        notePosition = treeMap;
-    }
-    
-    /**
      * When the user clicks the "Play scale" button, show a dialog to get the 
      * starting note and then play the scale.
      * @param event the button click event
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        move_red();
+        double finalNote = notePosition.lastEntry().getKey();
+        transition.stop();
+        move_red(finalNote);
         playScale();
         
-    }    
+    } 
+    
     
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
@@ -130,7 +125,7 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        timeline.jumpTo(Duration.INDEFINITE);
+        transition.stop();
     }    
     
     /**
@@ -141,6 +136,7 @@ public class TuneComposer extends Application {
     protected void handleExitMenuItemAction(ActionEvent event) {
         System.exit(0);
     }
+   
     
     /**
      * Construct the scene and start the application.
@@ -149,30 +145,27 @@ public class TuneComposer extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         TuneComposer controller = loader.getController();
         controller.one_Line();
+        controller.change_instrument();
+ 
 
         
-        controller.anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent mouseEvent) {
-                double x  = mouseEvent.getX();
-                double y  = mouseEvent.getY();
-                double midi_val = Math.floor((y - 30) / 10);
-                controller.make_note(x, y);
-                if(midi_val >= 0){notePosition.put(x,midi_val);} //ignores menu bar click 
-                sortNoteKeys();
-                System.out.println("mouse click detected! " + x + " and " + midi_val );
-                for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-		    System.out.println("Key = " + entry.getKey() +  
-				       ", Value = " + entry.getValue());         
-                } 
-            }
- 
+        controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            controller.change_instrument();
+            double x  = mouseEvent.getX();
+            double y  = mouseEvent.getY();
+            double midi_val = Math.floor(127-((y - 30) / 10));
+            Note n = new Note(current_instrument);
+           // System.out.println(current_instrument);
+            Rectangle r = n.draw_note(x, y);
+            controller.music_staff.getChildren().add(r);
+            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
         });
-        System.out.println(notePosition); 
         
         
             primaryStage.setTitle("Scale Player");
@@ -188,46 +181,38 @@ public class TuneComposer extends Application {
      */
     @FXML
     public void one_Line()  {
-     System.out.print(one_line.getStartY());
-     double y = one_line.getStartY()+ 40;
-     int count = 1;
-     while (y < 1310){
-         Line line = new Line(one_line.getStartX(),y, one_line.getEndX(), y);
-         anchorPane.getChildren().add(line);
+     double y = 0;
+     while (y < 1280){
+         Line line = new Line(0,y,2000, y);
+         music_staff.getChildren().add(line);
          y = y + 10;
-         count += 1;
         }
-     System.out.print(count);
+    }
+    
+    
+    public void change_instrument(){
+        RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
+        String toggleGroupValue = selectedRadioButton.getText();
+        current_instrument = toggleGroupValue;
+        //System.out.println(current_instrument);
+        
+        
+        
     }
 
     /**
-     * Draws a rectangle indicating the selected note region.
-     * @param x value of x-coordinate where the mouse clicked
-     * @param y value of y-coordinate where the mouse clicked
+     * Creates and moves a red line across the screen to show the duration of time.
+     * @param finalNote the x time position of the last note
      */
-    public void make_note(double x,double y){
-     y = Math.floor(y / 10) * 10;
-     if(y>25) {
-        Rectangle rectangle = new Rectangle(x, y, 100, 10);
-        rectangle.setFill(javafx.scene.paint.Color.DODGERBLUE);
-        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
-        anchorPane.getChildren().add(rectangle);
-        }
-    }
-    /**
-     * Animates the movement of the red playhead from the left side of the window to the right.
-     */
-    public void move_red() {
-        final Rectangle line = new Rectangle(0, 30, 1, 1280);
-        line.setFill(javafx.scene.paint.Color.RED);
-        anchorPane.getChildren().add(line);
-        timeline.setCycleCount(1);
-        timeline.setAutoReverse(false);
-        final KeyValue kv = new KeyValue(line.xProperty(), 1999,
-            Interpolator.LINEAR);
-        final KeyFrame kf = new KeyFrame(Duration.millis(12000), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
+    public void move_red(double finalNote) {
+        double duration = finalNote * 6 + 600;
+        transition.setDuration(Duration.millis(duration));
+        transition.setNode(red_line);
+        transition.setFromX(red_line.getStartX() + 22);
+        transition.setToX(finalNote + 100);
+        transition.setInterpolator(Interpolator.LINEAR);
+        red_line.setOpacity(1);
+        transition.play();
         }
     
     /**
