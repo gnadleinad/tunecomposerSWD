@@ -77,7 +77,6 @@ public class TuneComposer extends Application {
     
     public TranslateTransition transition;
     
-    
 
     /**
      * Constructs a new ScalePlayer application.
@@ -86,6 +85,7 @@ public class TuneComposer extends Application {
         this.player = new MidiPlayer(1,10000);
         this.notePosition = new TreeMap<>();
         this.transition = new TranslateTransition();
+
     }
     
     
@@ -152,7 +152,6 @@ public class TuneComposer extends Application {
         TuneComposer controller = loader.getController();
         controller.one_Line();
         controller.change_instrument();
- 
 
         
         controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {

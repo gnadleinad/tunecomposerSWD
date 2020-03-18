@@ -2,24 +2,59 @@
  * ScalePlayer Stylesheet file.
  */
 
-#root-pane {
-    -fx-pref-width: 400;
-    -fx-pref-height: 300;
+.note{
+    -fx-stroke: black;
+    
 }
 
-#button-box {
-    -fx-alignment: CENTER;
-    -fx-spacing: 10;
+.selected{
+    -fx-stroke: red;
 }
 
-.button {
-    -fx-padding: 10;
+.Piano{
+   -fx-fill: cyan; 
+   -fx-text-fill: cyan;
 }
 
-#start-button {
-    -fx-background-color: lightgreen;
+.Harpsichord{
+    -fx-fill: green;
+    -fx-text-fill: green;
+    
 }
 
-#stop-button {
-    -fx-background-color: pink;
+
+.Marimba{
+    -fx-fill: blueviolet;
+    -fx-text-fill: blueviolet;
 }
+
+.Church-Organ{
+    -fx-fill: coral;
+    -fx-text-fill: coral;
+}
+
+.Accordion{
+    -fx-fill: darkseagreen;
+    -fx-text-fill: darkseagreen;
+}
+
+.Guitar{
+    -fx-fill: fuchsia;
+    -fx-text-fill: fuchsia;
+}
+
+.Violin{
+    -fx-fill: lightpink;
+    -fx-text-fill: lightpink;
+}
+
+.French-Horn{
+    -fx-fill: goldenrod;
+    -fx-text-fill: goldenrod;
+}
+
+.playbar{
+    -fx-fill: red;
+    -fx-text-fill: red;
+}
+
