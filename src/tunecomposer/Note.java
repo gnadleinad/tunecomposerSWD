@@ -29,7 +29,7 @@ public class Note {
      * makes the rectangle on screen symbolizing a note
      * @param x the x coordinate of the note
      * @param y the y coordinate of the note
-     * @return disp
+     * @return display_note
      */
     public Rectangle draw_note(double x, double y) {
         y = Math.floor(y / 10) * 10;
@@ -37,8 +37,11 @@ public class Note {
         display_note.getStyleClass().add("note");
         Convert_Instrument();
         display_note.getStyleClass().add(instrument);
-        //display_select();
      return display_note;
+    }
+    
+    public void display_delete(){
+        display_note.setVisible(false);
     }
     
     public void display_select(){
