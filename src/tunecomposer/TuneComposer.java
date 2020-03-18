@@ -67,6 +67,9 @@ public class TuneComposer extends Application {
     @FXML
     private ToggleGroup instrument;
     
+    //All notes
+    public static ArrayList<Note> display_composition;
+    
     
     @FXML Line red_line;
     
@@ -74,6 +77,7 @@ public class TuneComposer extends Application {
     public AnchorPane music_staff;
     
     public static String current_instrument;
+    
     
     final Timeline timeline = new Timeline();
 
@@ -83,6 +87,7 @@ public class TuneComposer extends Application {
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
         this.notePosition = new HashMap<>();
+        this.display_composition = new ArrayList<>();
     }
     
     
@@ -94,6 +99,7 @@ public class TuneComposer extends Application {
     protected void playScale() {
         player.stop();
         player.clear();
+        //edit this.. we shouldn't need a map in order get x and y values of a note. 
         for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
             player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()),  1, 0, 0);       
                 } 
@@ -119,9 +125,9 @@ public class TuneComposer extends Application {
         move_red();
         playScale();
         
-    } 
+    }
     
-    
+  
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
      * @param event the button click event
@@ -130,7 +136,24 @@ public class TuneComposer extends Application {
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
         timeline.jumpTo(Duration.INDEFINITE);
-    }    
+    }  
+    
+    @FXML
+    protected void handleDeleteAllButtonAction(ActionEvent event){
+        for(Note n: display_composition){
+            n.display_delete();
+        }
+        display_composition.clear();
+        notePosition.clear(); //deletes note positions that are used to create player composition.
+    }
+    
+    @FXML
+    protected void handleSelectAllButtonAction(ActionEvent event){
+        System.out.println("Select All");
+        for(Note n: display_composition){
+            n.display_select();
+        }
+    }
     
     /**
      * When the user clicks the "Exit" menu item, exit the program.
@@ -167,6 +190,11 @@ public class TuneComposer extends Application {
            // System.out.println(current_instrument);
             Rectangle r = n.draw_note(x, y);
             controller.music_staff.getChildren().add(r);
+            System.out.println("note drawn");
+            display_composition.add(n);
+            
+            //n.display_delete();
+            
             if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
             sortNoteKeys();
         });
