@@ -6,10 +6,9 @@ package tunecomposer;
 import java.util.*;
 import java.io.IOException;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -60,7 +59,7 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private static Map<Double, Double> notePosition;
+    private static TreeMap<Double, Double> notePosition;
     
     @FXML
     private Line one_line;
@@ -75,8 +74,10 @@ public class TuneComposer extends Application {
     public AnchorPane music_staff;
     
     public static String current_instrument;
+  
+    public TranslateTransition transition;
     
-    final Timeline timeline = new Timeline();
+
     
     Rectangle select_rect = null ;
     boolean new_rectangle_is_being_drawn = false ;
@@ -84,12 +85,18 @@ public class TuneComposer extends Application {
      double starting_point_x;
      double starting_point_y;
 
+    
+   
+    
+
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
-        this.notePosition = new HashMap<>();
+        this.notePosition = new TreeMap<>();
+        this.transition = new TranslateTransition();
+
     }
     
     
@@ -108,22 +115,15 @@ public class TuneComposer extends Application {
     }
     
     /**
-     * Sorts the keys of the notes from notePosition in ascending order.
-     */
-    protected void sortNoteKeys() {
-        Map<Double,Double> treeMap = new TreeMap<>();
-        treeMap.putAll(notePosition);
-        notePosition = treeMap;
-    }
-    
-    /**
      * When the user clicks the "Play scale" button, show a dialog to get the 
      * starting note and then play the scale.
      * @param event the button click event
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        move_red();
+        double finalNote = notePosition.lastEntry().getKey();
+        transition.stop();
+        move_red(finalNote);
         playScale();
         
     } 
@@ -136,7 +136,7 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        timeline.jumpTo(Duration.INDEFINITE);
+        transition.stop();
     }    
     
     /**
@@ -199,8 +199,10 @@ public class TuneComposer extends Application {
             Note n = new Note(current_instrument);
             Rectangle r = n.draw_note(x, y);
             controller.music_staff.getChildren().add(r);
-             if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);}    
-            });
+
+            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
+        });
+        
         
       
             controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
@@ -281,19 +283,17 @@ public class TuneComposer extends Application {
 
     /**
      * Creates and moves a red line across the screen to show the duration of time.
+     * @param finalNote the x time position of the last note
      */
-    public void move_red() {
-        final Rectangle line = new Rectangle(0, 30, 1, 1280);
-        line.getStyleClass().add("playbar");
-        
-        music_staff.getChildren().add(line);
-        timeline.setCycleCount(1);
-        timeline.setAutoReverse(false);
-        final KeyValue kv = new KeyValue(line.xProperty(), 1999,
-            Interpolator.LINEAR);
-        final KeyFrame kf = new KeyFrame(Duration.millis(12000), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
+    public void move_red(double finalNote) {
+        double duration = finalNote * 6 + 600;
+        transition.setDuration(Duration.millis(duration));
+        transition.setNode(red_line);
+        transition.setFromX(red_line.getStartX() + 22);
+        transition.setToX(finalNote + 100);
+        transition.setInterpolator(Interpolator.LINEAR);
+        red_line.setOpacity(1);
+        transition.play();
         }
     
     /**
