@@ -22,6 +22,7 @@ import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseEvent;
+import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -73,9 +74,19 @@ public class TuneComposer extends Application {
     public AnchorPane music_staff;
     
     public static String current_instrument;
-    
-    
+  
     public TranslateTransition transition;
+    
+
+    
+    Rectangle select_rect = null ;
+    boolean new_rectangle_is_being_drawn = false ;
+    boolean drag = false;
+     double starting_point_x;
+     double starting_point_y;
+
+    
+   
     
 
     /**
@@ -143,6 +154,32 @@ public class TuneComposer extends Application {
      * @param primaryStage the stage for the main window
      * @throws java.io.IOException
      */
+    
+       void adjust_rectangle_properties( double starting_point_x,
+                                     double starting_point_y,
+                                     double ending_point_x,
+                                     double ending_point_y,
+                                     Rectangle given_rectangle )
+   {
+      given_rectangle.setX( starting_point_x ) ;
+      given_rectangle.setY( starting_point_y ) ;
+      given_rectangle.setWidth( ending_point_x - starting_point_x ) ;
+      given_rectangle.setHeight( ending_point_y - starting_point_y ) ;
+
+      if ( given_rectangle.getWidth() < 0 )
+      {
+         given_rectangle.setWidth( - given_rectangle.getWidth() ) ;
+         given_rectangle.setX( given_rectangle.getX() - given_rectangle.getWidth() ) ;
+      }
+
+      if ( given_rectangle.getHeight() < 0 )
+      {
+         given_rectangle.setHeight( - given_rectangle.getHeight() ) ;
+         given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
+      }
+   }
+    
+    
     @Override
     public void start(Stage primaryStage) throws IOException {
         System.out.println(current_instrument);
@@ -153,20 +190,65 @@ public class TuneComposer extends Application {
         controller.one_Line();
         controller.change_instrument();
 
-        
-        controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+
+            controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+            double x  = event.getX();
+            double y  = event.getY();
             controller.change_instrument();
-            double x  = mouseEvent.getX();
-            double y  = mouseEvent.getY();
             double midi_val = Math.floor(127-((y - 30) / 10));
             Note n = new Note(current_instrument);
-           // System.out.println(current_instrument);
             Rectangle r = n.draw_note(x, y);
             controller.music_staff.getChildren().add(r);
+
             if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
         });
         
         
+      
+            controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
+      {            
+         if ( new_rectangle_is_being_drawn == false )
+         {
+            starting_point_x = event.getX() ;
+            starting_point_y = event.getY() ;
+
+            select_rect = new Rectangle() ;
+
+            // A non-finished rectangle has always the same color.
+            select_rect.setFill( TRANSPARENT ) ; // almost white color
+            select_rect.setStroke( BLACK ) ;
+
+            controller.music_staff.getChildren().add( select_rect ) ;
+   
+            new_rectangle_is_being_drawn = true ;
+         }
+      } ) ;
+
+      controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
+      {
+         if ( new_rectangle_is_being_drawn == true )
+         {
+            double current_ending_point_x = event.getX() ;
+            double current_ending_point_y = event.getY() ;
+
+            adjust_rectangle_properties( starting_point_x,
+                                         starting_point_y,
+                                         current_ending_point_x,
+                                         current_ending_point_y,
+                                         select_rect) ;
+         }
+      } ) ;
+
+      controller.music_staff.setOnMouseReleased( ( MouseEvent event ) ->
+      {
+            if ( new_rectangle_is_being_drawn == true )
+         {
+            //select_rect = null ;
+             controller.music_staff.getChildren().remove( select_rect ) ;
+            new_rectangle_is_being_drawn = false ;
+         }
+      } ) ;
+       
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
