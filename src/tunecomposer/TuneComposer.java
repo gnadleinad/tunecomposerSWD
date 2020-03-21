@@ -86,7 +86,7 @@ public class TuneComposer extends Application {
     double starting_point_x;
     double starting_point_y;
     
-    final Timeline timeline = new Timeline(); //Necessary?
+    double finalNote;
 
     /**
      * Constructs a new ScalePlayer application.
@@ -120,9 +120,9 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
+        //double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
-        move_red(finalNote);
+        move_red();
         playScale();
         
     } 
@@ -134,7 +134,6 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
         transition.stop();
     }  
     
@@ -210,14 +209,18 @@ public class TuneComposer extends Application {
             double y  = event.getY();
             controller.change_instrument();
 
-            double x  = mouseEvent.getX();
-            double y  = mouseEvent.getY();
             Pair cordinates = new Pair(x,y);
             Note n = new Note(x,y,current_instrument);
             controller.music_staff.getChildren().add(n.display_note);
 
-            if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
-            //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
+            if(n.midi_y >= 0 && n.midi_y < 128){
+                notePosition.put(cordinates,n);
+                System.out.println("X: "+x+" finalNote: "+finalNote);
+                if(x > finalNote){
+                    finalNote=x;
+                }
+                System.out.println("New-X: "+x+" New-finalNote: "+finalNote);
+            } 
 
         });   
       
@@ -296,7 +299,7 @@ public class TuneComposer extends Application {
      * Creates and moves a red line across the screen to show the duration of time.
      * @param finalNote the x time position of the last note
      */
-    public void move_red(double finalNote) {
+    public void move_red() {
         double duration = finalNote * 6 + 600;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
