@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 
 /**
@@ -59,14 +60,16 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private static TreeMap<Double, Double> notePosition;
+
+    private static Map<Pair, Note> notePosition;
+    
+    private ArrayList<Pair> selected;
     
     @FXML
     private Line one_line;
     
     @FXML
     private ToggleGroup instrument;
-    
     
     @FXML Line red_line;
     
@@ -76,27 +79,23 @@ public class TuneComposer extends Application {
     public static String current_instrument;
   
     public TranslateTransition transition;
-    
 
-    
-    Rectangle select_rect = null ;
-    boolean new_rectangle_is_being_drawn = false ;
+    Rectangle select_rect = null;
+    boolean new_rectangle_is_being_drawn = false;
     boolean drag = false;
-     double starting_point_x;
-     double starting_point_y;
-
+    double starting_point_x;
+    double starting_point_y;
     
-   
-    
+    final Timeline timeline = new Timeline(); //Necessary?
 
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
-        this.notePosition = new TreeMap<>();
+        this.notePosition = new HashMap<>();
+        this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
-
     }
     
     
@@ -108,9 +107,9 @@ public class TuneComposer extends Application {
     protected void playScale() {
         player.stop();
         player.clear();
-        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()),  1, 0, 0);       
-                } 
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x),  1, 0, 0);       
+        } 
         player.play();
     }
     
@@ -121,13 +120,12 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        double finalNote = notePosition.lastEntry().getKey();
+        double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
         move_red(finalNote);
         playScale();
         
     } 
-    
     
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
@@ -136,8 +134,25 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
+        timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
         transition.stop();
-    }    
+    }  
+    
+    @FXML
+    protected void handleDeleteAllButtonAction(ActionEvent event){
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_delete();
+        } 
+        notePosition.clear(); //deletes note positions that are used to create player composition.
+    }
+    
+    @FXML
+    protected void handleSelectAllButtonAction(ActionEvent event){
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_select();
+            selected.add(entry.getKey());
+        } 
+    }
     
     /**
      * When the user clicks the "Exit" menu item, exit the program.
@@ -182,7 +197,6 @@ public class TuneComposer extends Application {
     
     @Override
     public void start(Stage primaryStage) throws IOException {
-        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -195,17 +209,19 @@ public class TuneComposer extends Application {
             double x  = event.getX();
             double y  = event.getY();
             controller.change_instrument();
-            double midi_val = Math.floor(127-((y - 30) / 10));
-            Note n = new Note(current_instrument);
-            Rectangle r = n.draw_note(x, y);
-            controller.music_staff.getChildren().add(r);
 
-            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
-        });
-        
-        
+            double x  = mouseEvent.getX();
+            double y  = mouseEvent.getY();
+            Pair cordinates = new Pair(x,y);
+            Note n = new Note(x,y,current_instrument);
+            controller.music_staff.getChildren().add(n.display_note);
+
+            if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
+            //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
+
+        });   
       
-            controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
+      controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
       {            
          if ( new_rectangle_is_being_drawn == false )
          {
@@ -244,7 +260,7 @@ public class TuneComposer extends Application {
             if ( new_rectangle_is_being_drawn == true )
          {
             //select_rect = null ;
-             controller.music_staff.getChildren().remove( select_rect ) ;
+            controller.music_staff.getChildren().remove( select_rect ) ;
             new_rectangle_is_being_drawn = false ;
          }
       } ) ;
@@ -270,15 +286,10 @@ public class TuneComposer extends Application {
         }
     }
     
-    
     public void change_instrument(){
         RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
         String toggleGroupValue = selectedRadioButton.getText();
-        current_instrument = toggleGroupValue;
-        //System.out.println(current_instrument);
-        
-        
-        
+        current_instrument = toggleGroupValue;    
     }
 
     /**
