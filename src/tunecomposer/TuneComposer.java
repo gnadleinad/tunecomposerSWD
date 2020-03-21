@@ -25,6 +25,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 
 /**
@@ -59,17 +60,15 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private static Map<Double, Double> notePosition;
+    private static Map<Pair, Note> notePosition;
+    
+    private ArrayList<Pair> selected;
     
     @FXML
     private Line one_line;
     
     @FXML
     private ToggleGroup instrument;
-    
-    //All notes
-    public static ArrayList<Note> display_composition;
-    
     
     @FXML Line red_line;
     
@@ -87,7 +86,7 @@ public class TuneComposer extends Application {
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
         this.notePosition = new HashMap<>();
-        this.display_composition = new ArrayList<>();
+        this.selected = new ArrayList<>();
     }
     
     
@@ -99,18 +98,20 @@ public class TuneComposer extends Application {
     protected void playScale() {
         player.stop();
         player.clear();
-        //edit this.. we shouldn't need a map in order get x and y values of a note. 
-        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()),  1, 0, 0);       
-                } 
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x),  1, 0, 0);       
+        } 
         player.play();
     }
     
     /**
      * Sorts the keys of the notes from notePosition in ascending order.
+     * don't think that this method is necessary....
+     * CURRENTLY UNUSED
      */
     protected void sortNoteKeys() {
-        Map<Double,Double> treeMap = new TreeMap<>();
+        Map<Pair,Note> treeMap = new TreeMap<>();
+        //Issue with pair not comparable exists on line below if function run.
         treeMap.putAll(notePosition);
         notePosition = treeMap;
     }
@@ -123,8 +124,7 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
         move_red();
-        playScale();
-        
+        playScale();  
     }
     
   
@@ -140,19 +140,18 @@ public class TuneComposer extends Application {
     
     @FXML
     protected void handleDeleteAllButtonAction(ActionEvent event){
-        for(Note n: display_composition){
-            n.display_delete();
-        }
-        display_composition.clear();
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_delete();
+        } 
         notePosition.clear(); //deletes note positions that are used to create player composition.
     }
     
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
-        System.out.println("Select All");
-        for(Note n: display_composition){
-            n.display_select();
-        }
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_select();
+            selected.add(entry.getKey());
+        } 
     }
     
     /**
@@ -172,7 +171,6 @@ public class TuneComposer extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
-        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -185,21 +183,15 @@ public class TuneComposer extends Application {
             controller.change_instrument();
             double x  = mouseEvent.getX();
             double y  = mouseEvent.getY();
-            double midi_val = Math.floor(127-((y - 30) / 10));
-            Note n = new Note(current_instrument);
-           // System.out.println(current_instrument);
-            Rectangle r = n.draw_note(x, y);
-            controller.music_staff.getChildren().add(r);
-            System.out.println("note drawn");
-            display_composition.add(n);
-            
-            //n.display_delete();
-            
-            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
-            sortNoteKeys();
+            Pair cordinates = new Pair(x,y);
+            Note n = new Note(x,y,current_instrument);
+            controller.music_staff.getChildren().add(n.display_note);
+
+            if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
+            //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
+
         });
-        
-        
+   
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -221,15 +213,10 @@ public class TuneComposer extends Application {
         }
     }
     
-    
     public void change_instrument(){
         RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
         String toggleGroupValue = selectedRadioButton.getText();
-        current_instrument = toggleGroupValue;
-        //System.out.println(current_instrument);
-        
-        
-        
+        current_instrument = toggleGroupValue;    
     }
 
     /**
