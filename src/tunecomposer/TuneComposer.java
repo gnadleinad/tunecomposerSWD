@@ -6,10 +6,9 @@ package tunecomposer;
 import java.util.*;
 import java.io.IOException;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -23,6 +22,7 @@ import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseEvent;
+import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -60,6 +60,7 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
+
     private static Map<Pair, Note> notePosition;
     
     private ArrayList<Pair> selected;
@@ -76,9 +77,16 @@ public class TuneComposer extends Application {
     public AnchorPane music_staff;
     
     public static String current_instrument;
+  
+    public TranslateTransition transition;
+
+    Rectangle select_rect = null;
+    boolean new_rectangle_is_being_drawn = false;
+    boolean drag = false;
+    double starting_point_x;
+    double starting_point_y;
     
-    
-    final Timeline timeline = new Timeline();
+    final Timeline timeline = new Timeline(); //Necessary?
 
     /**
      * Constructs a new ScalePlayer application.
@@ -87,6 +95,7 @@ public class TuneComposer extends Application {
         this.player = new MidiPlayer(1,10000);
         this.notePosition = new HashMap<>();
         this.selected = new ArrayList<>();
+        this.transition = new TranslateTransition();
     }
     
     
@@ -105,29 +114,19 @@ public class TuneComposer extends Application {
     }
     
     /**
-     * Sorts the keys of the notes from notePosition in ascending order.
-     * don't think that this method is necessary....
-     * CURRENTLY UNUSED
-     */
-    protected void sortNoteKeys() {
-        Map<Pair,Note> treeMap = new TreeMap<>();
-        //Issue with pair not comparable exists on line below if function run.
-        treeMap.putAll(notePosition);
-        notePosition = treeMap;
-    }
-    
-    /**
      * When the user clicks the "Play scale" button, show a dialog to get the 
      * starting note and then play the scale.
      * @param event the button click event
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        move_red();
-        playScale();  
-    }
+        double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
+        transition.stop();
+        move_red(finalNote);
+        playScale();
+        
+    } 
     
-  
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
      * @param event the button click event
@@ -135,7 +134,8 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        timeline.jumpTo(Duration.INDEFINITE);
+        timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
+        transition.stop();
     }  
     
     @FXML
@@ -169,6 +169,32 @@ public class TuneComposer extends Application {
      * @param primaryStage the stage for the main window
      * @throws java.io.IOException
      */
+    
+       void adjust_rectangle_properties( double starting_point_x,
+                                     double starting_point_y,
+                                     double ending_point_x,
+                                     double ending_point_y,
+                                     Rectangle given_rectangle )
+   {
+      given_rectangle.setX( starting_point_x ) ;
+      given_rectangle.setY( starting_point_y ) ;
+      given_rectangle.setWidth( ending_point_x - starting_point_x ) ;
+      given_rectangle.setHeight( ending_point_y - starting_point_y ) ;
+
+      if ( given_rectangle.getWidth() < 0 )
+      {
+         given_rectangle.setWidth( - given_rectangle.getWidth() ) ;
+         given_rectangle.setX( given_rectangle.getX() - given_rectangle.getWidth() ) ;
+      }
+
+      if ( given_rectangle.getHeight() < 0 )
+      {
+         given_rectangle.setHeight( - given_rectangle.getHeight() ) ;
+         given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
+      }
+   }
+    
+    
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
@@ -178,9 +204,12 @@ public class TuneComposer extends Application {
         controller.one_Line();
         controller.change_instrument();
 
-        
-        controller.music_staff.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+
+            controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+            double x  = event.getX();
+            double y  = event.getY();
             controller.change_instrument();
+
             double x  = mouseEvent.getX();
             double y  = mouseEvent.getY();
             Pair cordinates = new Pair(x,y);
@@ -190,8 +219,52 @@ public class TuneComposer extends Application {
             if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
             //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
 
-        });
+        });   
+      
+      controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
+      {            
+         if ( new_rectangle_is_being_drawn == false )
+         {
+            starting_point_x = event.getX() ;
+            starting_point_y = event.getY() ;
+
+            select_rect = new Rectangle() ;
+
+            // A non-finished rectangle has always the same color.
+            select_rect.setFill( TRANSPARENT ) ; // almost white color
+            select_rect.setStroke( BLACK ) ;
+
+            controller.music_staff.getChildren().add( select_rect ) ;
    
+            new_rectangle_is_being_drawn = true ;
+         }
+      } ) ;
+
+      controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
+      {
+         if ( new_rectangle_is_being_drawn == true )
+         {
+            double current_ending_point_x = event.getX() ;
+            double current_ending_point_y = event.getY() ;
+
+            adjust_rectangle_properties( starting_point_x,
+                                         starting_point_y,
+                                         current_ending_point_x,
+                                         current_ending_point_y,
+                                         select_rect) ;
+         }
+      } ) ;
+
+      controller.music_staff.setOnMouseReleased( ( MouseEvent event ) ->
+      {
+            if ( new_rectangle_is_being_drawn == true )
+         {
+            //select_rect = null ;
+            controller.music_staff.getChildren().remove( select_rect ) ;
+            new_rectangle_is_being_drawn = false ;
+         }
+      } ) ;
+       
             primaryStage.setTitle("Scale Player");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest((WindowEvent we) -> {
@@ -221,19 +294,17 @@ public class TuneComposer extends Application {
 
     /**
      * Creates and moves a red line across the screen to show the duration of time.
+     * @param finalNote the x time position of the last note
      */
-    public void move_red() {
-        final Rectangle line = new Rectangle(0, 30, 1, 1280);
-        line.getStyleClass().add("playbar");
-        
-        music_staff.getChildren().add(line);
-        timeline.setCycleCount(1);
-        timeline.setAutoReverse(false);
-        final KeyValue kv = new KeyValue(line.xProperty(), 1999,
-            Interpolator.LINEAR);
-        final KeyFrame kf = new KeyFrame(Duration.millis(12000), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
+    public void move_red(double finalNote) {
+        double duration = finalNote * 6 + 600;
+        transition.setDuration(Duration.millis(duration));
+        transition.setNode(red_line);
+        transition.setFromX(red_line.getStartX() + 22);
+        transition.setToX(finalNote + 100);
+        transition.setInterpolator(Interpolator.LINEAR);
+        red_line.setOpacity(1);
+        transition.play();
         }
     
     /**
