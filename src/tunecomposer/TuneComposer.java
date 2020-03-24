@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javax.sound.midi.ShortMessage;
 
 
 /**
@@ -61,6 +62,12 @@ public class TuneComposer extends Application {
      */
     private static TreeMap<Double, Double> notePosition;
     
+    /**
+     * ArrayList of integer lists that stores the MIDI event parameters
+     * for the addMidiEvent method
+     */
+    private static ArrayList<int[]> MIDI_events;
+    
     @FXML
     private Line one_line;
     
@@ -95,21 +102,50 @@ public class TuneComposer extends Application {
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
         this.notePosition = new TreeMap<>();
+        this.MIDI_events = new ArrayList<>();
         this.transition = new TranslateTransition();
 
     }
     
+     /**
+     * Sorts an ArrayList of list of integers given an element to compare.
+     * @param unsorted the ArrayList with which to sort
+     * @param element the element within all integer lists that will be compared
+     */
     
+    public void sortArrayList(ArrayList<int[]> unsorted, int element) {
+        Collections.sort(unsorted, new Comparator<int[]>() {
+            public int compare(int[] current_int, int[] other_int) {
+                return Integer.compare(current_int[element],other_int[element]);
+            }
+        });
+    }
+    
+    /**
+     * Adds all of the MIDI_events to the current composition.
+     */
+    protected void addAllEvents() {
+        for  (int[] event : MIDI_events) {
+            //System.out.println(Arrays.toString(event));
+            player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
+        }
+    }
     
     /**
      * Play a new scale, after stopping and clearing any previous scale.
-     * @param startingPitch an integer between 0 and 115
      */
     protected void playScale() {
+        int channel_accum;
+        int duration;
         player.stop();
         player.clear();
-        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){  
-            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()),  1, 0, 0);       
+        sortArrayList(MIDI_events, 3);
+        addAllEvents();
+        channel_accum = 0;
+        duration = 4;
+        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){
+            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);    
+            channel_accum += 1;
                 } 
         player.play();
     }
@@ -197,10 +233,14 @@ public class TuneComposer extends Application {
             controller.change_instrument();
             double midi_val = Math.floor(127-((y - 30) / 10));
             Note n = new Note(current_instrument);
+            MIDI_events.add(n.get_MIDI(x));
             Rectangle r = n.draw_note(x, y);
+            
             controller.music_staff.getChildren().add(r);
 
-            if(midi_val >= 0 && midi_val < 128){notePosition.put(x,midi_val);} //ignores menu bar click
+            if(midi_val >= 0 && midi_val < 128){ //ignores menu bar click
+            notePosition.put(x,midi_val);
+            } 
         });
         
         
