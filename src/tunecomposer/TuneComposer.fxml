@@ -28,12 +28,12 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem mnemonicParsing="false" text="Select All">
+              <MenuItem mnemonicParsing="false" onAction="#handleSelectAllButtonAction" text="Select All">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Delete All" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleDeleteAllButtonAction" text="Delete All" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Action">

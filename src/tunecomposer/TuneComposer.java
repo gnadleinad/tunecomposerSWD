@@ -149,6 +149,7 @@ public class TuneComposer extends Application {
     
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
+        selected.clear();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_select();
             selected.add(entry.getValue());
@@ -213,6 +214,8 @@ public class TuneComposer extends Application {
             boolean made_select = false;
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                 if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + 100  >  x )){  
+                    selected.clear();
+                    selected.add(entry.getValue());
                     entry.getValue().display_select();
                     made_select = true;
                     break;
@@ -225,14 +228,11 @@ public class TuneComposer extends Application {
                 controller.change_instrument();
                 Pair cordinates = new Pair(x,y);
                 Note n = new Note(x,y,current_instrument);
-                System.out.print(selected);
                 selected.clear();
-                System.out.print("wrf");
-                System.out.print(selected);
                 selected.add(n);
                 controller.music_staff.getChildren().add(n.display_note);
                 for (Note note : selected){
-                    n.display_select();
+                    note.display_select();
                 }
 
                 if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
@@ -247,25 +247,46 @@ public class TuneComposer extends Application {
          {
             starting_point_x = event.getX() ;
             starting_point_y = event.getY() ;
+            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
+                    && (entry.getValue().x <= starting_point_x && entry.getValue().x + 100  >  starting_point_x )
+                    && (entry.getValue().isSelected == true)){ 
+                    drag = true;
+                    break;
+                }
+            }
+             
+            
+            if (drag == false){
+                select_rect = new Rectangle() ;
 
-            select_rect = new Rectangle() ;
+                // A non-finished rectangle has always the same color.
+                select_rect.setFill( TRANSPARENT ) ; // almost white color
+                select_rect.setStroke( BLACK ) ;
 
-            // A non-finished rectangle has always the same color.
-            select_rect.setFill( TRANSPARENT ) ; // almost white color
-            select_rect.setStroke( BLACK ) ;
+                controller.music_staff.getChildren().add( select_rect ) ;
 
-            controller.music_staff.getChildren().add( select_rect ) ;
-   
-            new_rectangle_is_being_drawn = true ;
+                new_rectangle_is_being_drawn = true ;
+            }
          }
       } ) ;
 
       controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
       {
+       
+        double current_ending_point_x = event.getX() ;
+        double current_ending_point_y = event.getY() ;
+          
+        if (drag == true){     
+          for (Note note : selected) {
+             note.display_note.setX(note.x - current_ending_point_x);
+             note.display_note.setY(note.y - current_ending_point_y); 
+          }    
+        }
+          
+          
          if ( new_rectangle_is_being_drawn == true )
          {
-            double current_ending_point_x = event.getX() ;
-            double current_ending_point_y = event.getY() ;
 
             adjust_rectangle_properties( starting_point_x,
                                          starting_point_y,
@@ -278,20 +299,28 @@ public class TuneComposer extends Application {
       controller.music_staff.setOnMouseReleased( ( MouseEvent event ) ->
       {
             if ( new_rectangle_is_being_drawn == true )
-         {
-            double ending_point_x = event.getX();
-            double ending_point_y = event.getY();
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if ((entry.getValue().y > starting_point_y && entry.getValue().y < ending_point_y)
-                        && (entry.getValue().x > starting_point_x && entry.getValue().x < ending_point_x )){  
-                    entry.getValue().display_select();
+                {
+                    for (Note note : selected){
+                        note.display_deselect();
+                    }
+                    selected.clear();
+                    double ending_point_x = event.getX();
+                    double ending_point_y = event.getY();
+                    for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                       if ((entry.getValue().y > starting_point_y && entry.getValue().y < ending_point_y)
+                               && (entry.getValue().x > starting_point_x && entry.getValue().x < ending_point_x )){  
+                           selected.add(entry.getValue());
+                       }
+                   }
+                    for (Note note : selected){
+                        note.display_select();
+                    }
+
+
+                   controller.music_staff.getChildren().remove( select_rect ) ;
+                   new_rectangle_is_being_drawn = false ;
+                   drag = false;
                 }
-            } 
-            
-            
-            controller.music_staff.getChildren().remove( select_rect ) ;
-            new_rectangle_is_being_drawn = false ;
-         }
       } ) ;
        
             primaryStage.setTitle("Scale Player");
