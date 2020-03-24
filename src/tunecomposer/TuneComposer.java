@@ -26,6 +26,7 @@ import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javax.sound.midi.ShortMessage;
+import javafx.util.Pair;
 
 
 /**
@@ -60,7 +61,10 @@ public class TuneComposer extends Application {
      * Represents the pitch position of notes along the height as values
      * player object will play given pitch when time has passed the position.
      */
-    private static TreeMap<Double, Double> notePosition;
+
+    private static Map<Pair, Note> notePosition;
+    
+    private ArrayList<Pair> selected;
     
     /**
      * ArrayList of integer lists that stores the MIDI event parameters
@@ -74,7 +78,6 @@ public class TuneComposer extends Application {
     @FXML
     private ToggleGroup instrument;
     
-    
     @FXML Line red_line;
     
     @FXML
@@ -83,28 +86,25 @@ public class TuneComposer extends Application {
     public static String current_instrument;
   
     public TranslateTransition transition;
-    
 
-    
-    Rectangle select_rect = null ;
-    boolean new_rectangle_is_being_drawn = false ;
+    Rectangle select_rect = null;
+    boolean new_rectangle_is_being_drawn = false;
     boolean drag = false;
-     double starting_point_x;
-     double starting_point_y;
-
+    double starting_point_x;
+    double starting_point_y;
     
-   
-    
+    private static double finalNote;
 
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
-        this.notePosition = new TreeMap<>();
         this.MIDI_events = new ArrayList<>();
+        this.notePosition = new HashMap<>();
+        this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
-
+        this.finalNote = 0.0;
     }
     
      /**
@@ -139,14 +139,16 @@ public class TuneComposer extends Application {
         int duration;
         player.stop();
         player.clear();
+
         sortArrayList(MIDI_events, 3);
         addAllEvents();
         channel_accum = 0;
         duration = 4;
-        for(Map.Entry<Double, Double> entry : notePosition.entrySet()){
-            player.addNote((int)Math.round(entry.getValue()), VOLUME, (int)Math.round(entry.getKey()), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);    
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
             channel_accum += 1;
-                } 
+        } 
+
         player.play();
     }
     
@@ -157,13 +159,11 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        double finalNote = notePosition.lastEntry().getKey();
         transition.stop();
-        move_red(finalNote);
+        move_red();
         playScale();
         
     } 
-    
     
     /**
      * When the user clicks the "Stop playing" button, stop playing the scale.
@@ -173,7 +173,24 @@ public class TuneComposer extends Application {
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
         transition.stop();
-    }    
+    }  
+    
+    @FXML
+    protected void handleDeleteAllButtonAction(ActionEvent event){
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_delete();
+        } 
+        finalNote = 0.0;
+        notePosition.clear(); //deletes note positions that are used to create player composition.
+    }
+    
+    @FXML
+    protected void handleSelectAllButtonAction(ActionEvent event){
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            entry.getValue().display_select();
+            selected.add(entry.getKey());
+        } 
+    }
     
     /**
      * When the user clicks the "Exit" menu item, exit the program.
@@ -218,7 +235,6 @@ public class TuneComposer extends Application {
     
     @Override
     public void start(Stage primaryStage) throws IOException {
-        System.out.println(current_instrument);
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("TuneComposer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -231,21 +247,22 @@ public class TuneComposer extends Application {
             double x  = event.getX();
             double y  = event.getY();
             controller.change_instrument();
-            double midi_val = Math.floor(127-((y - 30) / 10));
-            Note n = new Note(current_instrument);
-            MIDI_events.add(n.get_MIDI(x));
-            Rectangle r = n.draw_note(x, y);
-            
-            controller.music_staff.getChildren().add(r);
 
-            if(midi_val >= 0 && midi_val < 128){ //ignores menu bar click
-            notePosition.put(x,midi_val);
+            Pair cordinates = new Pair(x,y);
+            Note n = new Note(x,y,current_instrument);
+            MIDI_events.add(n.get_MIDI(x));
+            controller.music_staff.getChildren().add(n.display_note);
+
+            if(n.midi_y >= 0 && n.midi_y < 128){
+                notePosition.put(cordinates,n);
+                if(x > finalNote){
+                    finalNote=x;
+                }
             } 
-        });
-        
-        
+
+        });   
       
-            controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
+      controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
       {            
          if ( new_rectangle_is_being_drawn == false )
          {
@@ -284,7 +301,7 @@ public class TuneComposer extends Application {
             if ( new_rectangle_is_being_drawn == true )
          {
             //select_rect = null ;
-             controller.music_staff.getChildren().remove( select_rect ) ;
+            controller.music_staff.getChildren().remove( select_rect ) ;
             new_rectangle_is_being_drawn = false ;
          }
       } ) ;
@@ -310,27 +327,26 @@ public class TuneComposer extends Application {
         }
     }
     
-    
     public void change_instrument(){
         RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
         String toggleGroupValue = selectedRadioButton.getText();
-        current_instrument = toggleGroupValue;
-        //System.out.println(current_instrument);
-        
-        
-        
+        current_instrument = toggleGroupValue;    
     }
 
     /**
      * Creates and moves a red line across the screen to show the duration of time.
      * @param finalNote the x time position of the last note
      */
-    public void move_red(double finalNote) {
+    public void move_red() {
+        System.out.println("FN_moveRed: "+finalNote);
         double duration = finalNote * 6 + 600;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
         transition.setFromX(red_line.getStartX() + 22);
-        transition.setToX(finalNote + 100);
+        if(finalNote == 0){
+            transition.setToX(finalNote);
+        }
+        else{transition.setToX(finalNote+100);}
         transition.setInterpolator(Interpolator.LINEAR);
         red_line.setOpacity(1);
         transition.play();
