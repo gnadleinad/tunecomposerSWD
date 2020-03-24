@@ -86,7 +86,7 @@ public class TuneComposer extends Application {
     double starting_point_x;
     double starting_point_y;
     
-    double finalNote;
+    private static double finalNote;
 
     /**
      * Constructs a new ScalePlayer application.
@@ -96,6 +96,7 @@ public class TuneComposer extends Application {
         this.notePosition = new HashMap<>();
         this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
+        this.finalNote = 0.0;
     }
     
     
@@ -122,7 +123,9 @@ public class TuneComposer extends Application {
     protected void handlePlayScaleButtonAction(ActionEvent event) {
         //double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
+        System.out.println("finalNote before: "+finalNote);
         move_red();
+        System.out.println("finalNote after: "+ finalNote);
         playScale();
         
     } 
@@ -142,6 +145,7 @@ public class TuneComposer extends Application {
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_delete();
         } 
+        finalNote = -100.0;
         notePosition.clear(); //deletes note positions that are used to create player composition.
     }
     
@@ -300,6 +304,7 @@ public class TuneComposer extends Application {
      * @param finalNote the x time position of the last note
      */
     public void move_red() {
+        System.out.println("FN_moveRed: "+finalNote);
         double duration = finalNote * 6 + 600;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
