@@ -121,11 +121,8 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        //double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
-        System.out.println("finalNote before: "+finalNote);
         move_red();
-        System.out.println("finalNote after: "+ finalNote);
         playScale();
         
     } 
@@ -145,7 +142,7 @@ public class TuneComposer extends Application {
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_delete();
         } 
-        finalNote = -100.0;
+        finalNote = 0.0;
         notePosition.clear(); //deletes note positions that are used to create player composition.
     }
     
@@ -219,11 +216,9 @@ public class TuneComposer extends Application {
 
             if(n.midi_y >= 0 && n.midi_y < 128){
                 notePosition.put(cordinates,n);
-                System.out.println("X: "+x+" finalNote: "+finalNote);
                 if(x > finalNote){
                     finalNote=x;
                 }
-                System.out.println("New-X: "+x+" New-finalNote: "+finalNote);
             } 
 
         });   
@@ -309,7 +304,10 @@ public class TuneComposer extends Application {
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
         transition.setFromX(red_line.getStartX() + 22);
-        transition.setToX(finalNote + 100);
+        if(finalNote == 0){
+            transition.setToX(finalNote);
+        }
+        else{transition.setToX(finalNote+100);}
         transition.setInterpolator(Interpolator.LINEAR);
         red_line.setOpacity(1);
         transition.play();
