@@ -126,7 +126,7 @@ public class TuneComposer extends Application {
      */
     protected void addAllEvents() {
         for  (int[] event : MIDI_events) {
-            //System.out.println(Arrays.toString(event));
+            System.out.println(Arrays.toString(event));
             player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
         }
     }
@@ -182,6 +182,7 @@ public class TuneComposer extends Application {
         } 
         finalNote = 0.0;
         notePosition.clear(); //deletes note positions that are used to create player composition.
+        MIDI_events.clear();
     }
     
     @FXML
