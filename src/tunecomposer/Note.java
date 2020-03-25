@@ -90,7 +90,7 @@ public class Note {
                 MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 2;
                 MIDI_array[1] = 12;
                 break;
-            case "Church Organ":
+            case "Church-Organ":
                 MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 3;
                 MIDI_array[1] = 19;
                 break;
@@ -106,7 +106,7 @@ public class Note {
                 MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 6;
                 MIDI_array[1] = 40;
                 break;
-            case "French Horn":
+            case "French-Horn":
                 MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 7;
                 MIDI_array[1] = 60;
                 break;
