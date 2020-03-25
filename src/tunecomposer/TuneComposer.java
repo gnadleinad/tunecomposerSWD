@@ -84,6 +84,7 @@ public class TuneComposer extends Application {
     Rectangle select_rect = null;
     boolean new_rectangle_is_being_drawn = false;
     boolean drag = false;
+    boolean extend = false;
     double starting_point_x;
     double starting_point_y;
     
@@ -210,7 +211,6 @@ public class TuneComposer extends Application {
 
 
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
-            selected.clear();
             if (drag == false){
             double x  = event.getX();
             double y  = event.getY();
@@ -253,16 +253,23 @@ public class TuneComposer extends Application {
             starting_point_y = event.getY() ;
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                 if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
-                    && (entry.getValue().x <= starting_point_x && entry.getValue().x + 100  >  starting_point_x )
+                    && (entry.getValue().x <= starting_point_x && (entry.getValue().x)+(entry.getValue()).display_note.getWidth() - 10  >  starting_point_x )
                     && (entry.getValue().isSelected == true)){ 
                     drag = true;
+                    dragged = entry.getValue();
+                    break;
+                }
+              if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
+                    && (entry.getValue().x)+(entry.getValue().display_note.getWidth()-10) <= starting_point_x && (entry.getValue().x)+entry.getValue().display_note.getWidth()  >  starting_point_x 
+                    && (entry.getValue().isSelected == true)){ 
+                    extend = true;
                     dragged = entry.getValue();
                     break;
                 }
             }
              
             
-            if (drag == false){
+            if (drag == false && extend == false){
                 select_rect = new Rectangle() ;
 
                 // A non-finished rectangle has always the same color.
@@ -291,7 +298,13 @@ public class TuneComposer extends Application {
           }    
         }
           
+        if (extend == true){
+          double extentionlen = (current_ending_point_x - dragged.x);
+          for (Note note : selected) {
+             note.display_note.setWidth(extentionlen); 
+             }
           
+        }
          if ( new_rectangle_is_being_drawn == true )
          {
 
@@ -327,11 +340,8 @@ public class TuneComposer extends Application {
                    controller.music_staff.getChildren().remove( select_rect ) ;
                    new_rectangle_is_being_drawn = false ;
                 }
-            else{
-                
-                
-                
-                
+            if (drag == true){
+
                 double ending_point_x = event.getX();
                 double ending_point_y = event.getY();
                 double dify = (ending_point_y - dragged.y);
@@ -343,6 +353,15 @@ public class TuneComposer extends Application {
                     note.x = note.x + difx;
                 }
                 drag = false;
+            }
+            if (extend == true) {
+                double current_ending_point_x = event.getX() ;
+                double difx = (current_ending_point_x - dragged.x);
+                for (Note note : selected) {
+                    note.display_note.setWidth(note.display_note.getWidth() + difx); 
+              }
+                extend = false;
+            
             }
       } ) ;
        
