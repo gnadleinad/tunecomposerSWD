@@ -87,6 +87,8 @@ public class TuneComposer extends Application {
     double starting_point_x;
     double starting_point_y;
     
+    Note dragged;
+    
     final Timeline timeline = new Timeline(); //Necessary?
 
     /**
@@ -208,13 +210,14 @@ public class TuneComposer extends Application {
 
 
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+            selected.clear();
+            if (drag == false){
             double x  = event.getX();
             double y  = event.getY();
             y = Math.floor(y / 10) * 10;
             boolean made_select = false;
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                 if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + 100  >  x )){  
-                    selected.clear();
                     selected.add(entry.getValue());
                     entry.getValue().display_select();
                     made_select = true;
@@ -238,6 +241,7 @@ public class TuneComposer extends Application {
                 if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
                 //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
             }
+            }
 
         });   
       
@@ -252,6 +256,7 @@ public class TuneComposer extends Application {
                     && (entry.getValue().x <= starting_point_x && entry.getValue().x + 100  >  starting_point_x )
                     && (entry.getValue().isSelected == true)){ 
                     drag = true;
+                    dragged = entry.getValue();
                     break;
                 }
             }
@@ -277,10 +282,12 @@ public class TuneComposer extends Application {
         double current_ending_point_x = event.getX() ;
         double current_ending_point_y = event.getY() ;
           
-        if (drag == true){     
+        if (drag == true){
+          double dify = (current_ending_point_y - dragged.y);
+          double difx = (current_ending_point_x - dragged.x);
           for (Note note : selected) {
-             note.display_note.setX(note.x - current_ending_point_x);
-             note.display_note.setY(note.y - current_ending_point_y); 
+             note.display_note.setX(note.x + difx);
+             note.display_note.setY(note.y + dify); 
           }    
         }
           
@@ -319,8 +326,24 @@ public class TuneComposer extends Application {
 
                    controller.music_staff.getChildren().remove( select_rect ) ;
                    new_rectangle_is_being_drawn = false ;
-                   drag = false;
                 }
+            else{
+                
+                
+                
+                
+                double ending_point_x = event.getX();
+                double ending_point_y = event.getY();
+                double dify = (ending_point_y - dragged.y);
+                double difx = (ending_point_x - dragged.x);
+                for (Note note : selected) {
+                    note.display_note.setX(note.x + difx);
+                    note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
+                    note.y = Math.floor((note.y + dify)/ 10) * 10;
+                    note.x = note.x + difx;
+                }
+                drag = false;
+            }
       } ) ;
        
             primaryStage.setTitle("Scale Player");
