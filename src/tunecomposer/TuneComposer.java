@@ -211,13 +211,13 @@ public class TuneComposer extends Application {
 
 
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
-            if (drag == false){
+            if (drag == false && extend == false){
             double x  = event.getX();
             double y  = event.getY();
             y = Math.floor(y / 10) * 10;
             boolean made_select = false;
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + 100  >  x )){  
+                if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
                     selected.add(entry.getValue());
                     entry.getValue().display_select();
                     made_select = true;
@@ -241,6 +241,12 @@ public class TuneComposer extends Application {
                 if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
                 //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
             }
+            }
+            if (extend == true){
+                extend = false;
+            }
+            if (drag == true){
+                drag = false;
             }
 
         });   
@@ -352,16 +358,13 @@ public class TuneComposer extends Application {
                     note.y = Math.floor((note.y + dify)/ 10) * 10;
                     note.x = note.x + difx;
                 }
-                drag = false;
             }
             if (extend == true) {
                 double current_ending_point_x = event.getX() ;
-                double difx = (current_ending_point_x - dragged.x);
+                double ext_len = (current_ending_point_x - dragged.x);
                 for (Note note : selected) {
-                    note.display_note.setWidth(note.display_note.getWidth() + difx); 
+                    note.display_note.setWidth(ext_len); 
               }
-                extend = false;
-            
             }
       } ) ;
        
