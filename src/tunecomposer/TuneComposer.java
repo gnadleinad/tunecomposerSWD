@@ -27,6 +27,7 @@ import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
+import javax.sound.midi.ShortMessage;
 
 
 /**
@@ -66,6 +67,12 @@ public class TuneComposer extends Application {
     
     private ArrayList<Note> selected;
     
+        /**
+     * ArrayList of integer lists that stores the MIDI event parameters
+     * for the addMidiEvent method
+     */
+    private static ArrayList<int[]> MIDI_events;
+    
     @FXML
     private Line one_line;
     
@@ -89,31 +96,65 @@ public class TuneComposer extends Application {
     double starting_point_y;
     
     Note dragged;
+    private static double finalNote;
     
-    final Timeline timeline = new Timeline(); //Necessary?
+    //final Timeline timeline = new Timeline(); //Necessary?
 
     /**
      * Constructs a new ScalePlayer application.
      */
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
+        this.MIDI_events = new ArrayList<>();
         this.notePosition = new HashMap<>();
         this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
+        this.finalNote = 0.0;
     }
     
+         /**
+     * Sorts an ArrayList of list of integers given an element to compare.
+     * @param unsorted the ArrayList with which to sort
+     * @param element the element within all integer lists that will be compared
+     */
     
+    public void sortArrayList(ArrayList<int[]> unsorted, int element) {
+        Collections.sort(unsorted, new Comparator<int[]>() {
+            public int compare(int[] current_int, int[] other_int) {
+                return Integer.compare(current_int[element],other_int[element]);
+            }
+        });
+    }
+    
+    /**
+     * Adds all of the MIDI_events to the current composition.
+     */
+    protected void addAllEvents() {
+        for  (int[] event : MIDI_events) {
+            System.out.println(Arrays.toString(event));
+            player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
+        }
+    }
     
     /**
      * Play a new scale, after stopping and clearing any previous scale.
      * @param startingPitch an integer between 0 and 115
      */
     protected void playScale() {
+        int channel_accum;
+        int duration;
         player.stop();
         player.clear();
+
+        sortArrayList(MIDI_events, 3);
+        addAllEvents();
+        channel_accum = 0;
+        duration = 4;
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x),  1, 0, 0);       
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+            channel_accum += 1;
         } 
+
         player.play();
     }
     
@@ -126,7 +167,7 @@ public class TuneComposer extends Application {
     protected void handlePlayScaleButtonAction(ActionEvent event) {
         //double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
-        move_red(100);
+        move_red();
         playScale();
         
     } 
@@ -138,16 +179,18 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
-        timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
+        //timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
         transition.stop();
     }  
     
     @FXML
     protected void handleDeleteAllButtonAction(ActionEvent event){
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_delete();
         } 
+        finalNote = 0.0;
         notePosition.clear(); //deletes note positions that are used to create player composition.
+        MIDI_events.clear();
     }
     
     @FXML
@@ -212,35 +255,40 @@ public class TuneComposer extends Application {
 
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
             if (drag == false && extend == false){
-            double x  = event.getX();
-            double y  = event.getY();
-            y = Math.floor(y / 10) * 10;
-            boolean made_select = false;
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
-                    selected.add(entry.getValue());
-                    entry.getValue().display_select();
-                    made_select = true;
-                    break;
-                }
-            } 
-            if (made_select == false){
-                for (Note note : selected){
-                    note.display_deselect();
-                }
-                controller.change_instrument();
-                Pair cordinates = new Pair(x,y);
-                Note n = new Note(x,y,current_instrument);
-                selected.clear();
-                selected.add(n);
-                controller.music_staff.getChildren().add(n.display_note);
-                for (Note note : selected){
-                    note.display_select();
-                }
+                double x  = event.getX();
+                double y  = event.getY();
+                y = Math.floor(y / 10) * 10;
+                boolean made_select = false;
+                for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                    if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
+                        selected.add(entry.getValue());
+                        entry.getValue().display_select();
+                        made_select = true;
+                        break;
+                    }
+                } 
+                if (made_select == false){
+                    for (Note note : selected){
+                        note.display_deselect();
+                    }
+                    controller.change_instrument();
+                    Pair cordinates = new Pair(x,y);
+                    Note n = new Note(x,y,current_instrument);
+                    MIDI_events.add(n.get_MIDI(x));
+                    selected.clear();
+                    selected.add(n);
+                    controller.music_staff.getChildren().add(n.display_note);
+                    for (Note note : selected){
+                        note.display_select();
+                    }
 
-                if(n.midi_y >= 0 && n.midi_y < 128){notePosition.put(cordinates,n);} //ignores menu bar click
-                //sortNoteKeys(); Notes remain unsorted. If this becomes an issue must switch pair to a list.
-            }
+                    if(n.midi_y >= 0 && n.midi_y < 128){
+                        notePosition.put(cordinates,n);
+                        if(x > finalNote){
+                            finalNote=x;
+                        }
+                    }
+                }
             }
             if (extend == true){
                 extend = false;
@@ -399,16 +447,20 @@ public class TuneComposer extends Application {
      * Creates and moves a red line across the screen to show the duration of time.
      * @param finalNote the x time position of the last note
      */
-    public void move_red(double finalNote) {
+    public void move_red() {
+        System.out.println("FN_moveRed: "+finalNote);
         double duration = finalNote * 6 + 600;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
         transition.setFromX(red_line.getStartX() + 22);
-        transition.setToX(finalNote + 100);
+        if(finalNote == 0){
+            transition.setToX(finalNote);
+        }
+        else{transition.setToX(finalNote+100);}
         transition.setInterpolator(Interpolator.LINEAR);
         red_line.setOpacity(1);
         transition.play();
-        }
+    }
     
     /**
      * Launch the application.
