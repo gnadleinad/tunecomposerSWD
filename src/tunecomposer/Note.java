@@ -20,6 +20,7 @@ public class Note {
     public Double y; //midi value of y
     public Double midi_y; 
     public Rectangle display_note;
+    public Double duration;
     
     /**
      * Constructs a note. 
@@ -28,10 +29,10 @@ public class Note {
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
         instrument = temp_instrument;
-        
         x = temp_x;
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
+        duration = 100.0;
         draw_note(x,y);
         
     }
