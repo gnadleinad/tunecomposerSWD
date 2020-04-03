@@ -96,6 +96,7 @@ public class TuneComposer extends Application {
     double starting_point_y;
     
     Note dragged;
+    public static Note lastNote;
     private static double finalNote;
     
     //final Timeline timeline = new Timeline(); //Necessary?
@@ -131,7 +132,7 @@ public class TuneComposer extends Application {
      */
     protected void addAllEvents() {
         for  (int[] event : MIDI_events) {
-            System.out.println(Arrays.toString(event));
+            //System.out.println(Arrays.toString(event));
             player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
         }
     }
@@ -142,16 +143,14 @@ public class TuneComposer extends Application {
      */
     protected void playScale() {
         int channel_accum;
-        int duration;
         player.stop();
         player.clear();
 
         sortArrayList(MIDI_events, 3);
         addAllEvents();
         channel_accum = 0;
-        duration = 4;
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
             channel_accum += 1;
         } 
 
@@ -254,11 +253,13 @@ public class TuneComposer extends Application {
 
 
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+            double x  = event.getX();
+            double y  = event.getY();
+            boolean made_select = true;
+            
             if (drag == false && extend == false){
-                double x  = event.getX();
-                double y  = event.getY();
                 y = Math.floor(y / 10) * 10;
-                boolean made_select = false;
+                made_select = false;
                 for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                     if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
                         selected.add(entry.getValue());
@@ -266,7 +267,7 @@ public class TuneComposer extends Application {
                         made_select = true;
                         break;
                     }
-                } 
+                }              
                 if (made_select == false){
                     for (Note note : selected){
                         note.display_deselect();
@@ -281,14 +282,22 @@ public class TuneComposer extends Application {
                     for (Note note : selected){
                         note.display_select();
                     }
-
+                    
                     if(n.midi_y >= 0 && n.midi_y < 128){
                         notePosition.put(cordinates,n);
-                        if(x > finalNote){
-                            finalNote=x;
-                        }
                     }
                 }
+            }
+            
+            
+            //This would be faster if we converted to treeMap
+            finalNote = 0.0;
+            double current_end = 0.0;
+            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
+                if(current_end > finalNote){
+                    finalNote = current_end;
+                }      
             }
             if (extend == true){
                 extend = false;
@@ -353,11 +362,14 @@ public class TuneComposer extends Application {
         }
           
         if (extend == true){
-          double extentionlen = (current_ending_point_x - dragged.x);
-          for (Note note : selected) {
-             note.display_note.setWidth(extentionlen); 
-             }
-          
+            double extentionlen = (current_ending_point_x - dragged.x);
+            for (Note note : selected) {
+                if(extentionlen < 5.0){
+                    extentionlen = 5.0;
+                }
+                note.display_note.setWidth(extentionlen);
+            }
+            
         }
          if ( new_rectangle_is_being_drawn == true )
          {
@@ -401,17 +413,28 @@ public class TuneComposer extends Application {
                 double dify = (ending_point_y - dragged.y);
                 double difx = (ending_point_x - dragged.x);
                 for (Note note : selected) {
+                    Pair orig_cordinate = new Pair(note.x,note.y);
+                    
                     note.display_note.setX(note.x + difx);
                     note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
                     note.y = Math.floor((note.y + dify)/ 10) * 10;
                     note.x = note.x + difx;
+                    Pair new_cordinate = new Pair(note.x,note.y);
+                    
+                    notePosition.remove(orig_cordinate);
+                    notePosition.put(new_cordinate, note);
                 }
             }
             if (extend == true) {
                 double current_ending_point_x = event.getX() ;
                 double ext_len = (current_ending_point_x - dragged.x);
                 for (Note note : selected) {
-                    note.display_note.setWidth(ext_len); 
+                    Pair cordinate = new Pair(note.x,note.y);
+                    if(ext_len < 5.0){
+                        ext_len = 5.0;
+                    }
+                    note.display_note.setWidth(ext_len);
+                    notePosition.get(cordinate).duration = ext_len;
               }
             }
       } ) ;
@@ -448,15 +471,14 @@ public class TuneComposer extends Application {
      * @param finalNote the x time position of the last note
      */
     public void move_red() {
-        System.out.println("FN_moveRed: "+finalNote);
         double duration = finalNote * 6 + 600;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
-        transition.setFromX(red_line.getStartX() + 22);
+        transition.setFromX(red_line.getStartX()+22);
         if(finalNote == 0){
             transition.setToX(finalNote);
         }
-        else{transition.setToX(finalNote+100);}
+        else{transition.setToX(finalNote);}
         transition.setInterpolator(Interpolator.LINEAR);
         red_line.setOpacity(1);
         transition.play();
