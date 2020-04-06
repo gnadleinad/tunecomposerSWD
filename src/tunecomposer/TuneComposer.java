@@ -18,6 +18,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
@@ -65,6 +67,8 @@ public class TuneComposer extends Application {
 
     private static Map<Pair, Note> notePosition;
     
+    private static TreeMap<Pair,Note> noteTreeMap;
+    
     private ArrayList<Note> selected;
     
         /**
@@ -111,6 +115,8 @@ public class TuneComposer extends Application {
         this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
         this.finalNote = 0.0;
+        
+        this.noteTreeMap = new TreeMap<>(new PairComparator());
     }
     
          /**
@@ -240,7 +246,7 @@ public class TuneComposer extends Application {
          given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
       }
    }
-    
+          
     
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -250,12 +256,14 @@ public class TuneComposer extends Application {
         TuneComposer controller = loader.getController();
         controller.one_Line();
         controller.change_instrument();
-
-
+        
+  
         controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
             double x  = event.getX();
             double y  = event.getY();
             boolean made_select = true;
+            
+            //System.out.println(event.isControlDown());
             
             if (drag == false && extend == false){
                 y = Math.floor(y / 10) * 10;
@@ -267,8 +275,10 @@ public class TuneComposer extends Application {
                         made_select = true;
                         break;
                     }
-                }              
+                } 
+                
                 if (made_select == false){
+                    System.out.println("made select == false");
                     for (Note note : selected){
                         note.display_deselect();
                     }
@@ -276,7 +286,11 @@ public class TuneComposer extends Application {
                     Pair cordinates = new Pair(x,y);
                     Note n = new Note(x,y,current_instrument);
                     MIDI_events.add(n.get_MIDI(x));
-                    selected.clear();
+                    
+                    if(event.isControlDown() == false){
+                        selected.clear();
+                    }
+
                     selected.add(n);
                     controller.music_staff.getChildren().add(n.display_note);
                     for (Note note : selected){
@@ -285,12 +299,12 @@ public class TuneComposer extends Application {
                     
                     if(n.midi_y >= 0 && n.midi_y < 128){
                         notePosition.put(cordinates,n);
+                        noteTreeMap.put(cordinates,n);
                     }
                 }
             }
             
-            
-            //This would be faster if we converted to treeMap
+            //This would be faster if we converted to treeMap????? Consider 4/3 - would need to be sorted by end points
             finalNote = 0.0;
             double current_end = 0.0;
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
@@ -299,6 +313,9 @@ public class TuneComposer extends Application {
                     finalNote = current_end;
                 }      
             }
+            System.out.println(current_end);
+            System.out.println((double)noteTreeMap.lastKey().getKey()+noteTreeMap.lastEntry().getValue().duration);
+            
             if (extend == true){
                 extend = false;
             }
@@ -389,7 +406,8 @@ public class TuneComposer extends Application {
                     for (Note note : selected){
                         note.display_deselect();
                     }
-                    selected.clear();
+                    if(event.isControlDown() == false){selected.clear();}
+                    
                     double ending_point_x = event.getX();
                     double ending_point_y = event.getY();
                     for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
@@ -437,6 +455,7 @@ public class TuneComposer extends Application {
                     notePosition.get(cordinate).duration = ext_len;
               }
             }
+        
       } ) ;
        
             primaryStage.setTitle("Scale Player");
