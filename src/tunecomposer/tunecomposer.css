@@ -9,6 +9,7 @@
 
 .selected{
     -fx-stroke: red;
+    -fx-stroke-width: 2;
 }
 
 .Piano{
