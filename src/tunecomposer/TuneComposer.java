@@ -5,6 +5,7 @@ package tunecomposer;
 
 import java.util.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
@@ -99,6 +100,8 @@ public class TuneComposer extends Application {
     double starting_point_x;
     double starting_point_y;
     
+    boolean inside_rect = false;
+    
     Note dragged;
     public static Note lastNote;
     private static double finalNote;
@@ -189,13 +192,26 @@ public class TuneComposer extends Application {
     }  
     
     @FXML
-    protected void handleDeleteAllButtonAction(ActionEvent event){
-             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            entry.getValue().display_delete();
+    protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
+        
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            if (entry.getValue().isSelected){
+                entry.getValue().display_delete();
+                notePosition.remove(entry.getKey());
+            }
         } 
         finalNote = 0.0;
-        notePosition.clear(); //deletes note positions that are used to create player composition.
-        MIDI_events.clear();
+        //notePosition.clear(); //deletes note positions that are used to create player composition.
+        //MIDI_events.clear();
+        double current_end = 0.0;
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
+            if(current_end > finalNote){
+                finalNote = current_end;
+            }      
+        }
+
+        
     }
     
     @FXML
@@ -265,7 +281,7 @@ public class TuneComposer extends Application {
             
             //System.out.println(event.isControlDown());
             
-            if (drag == false && extend == false){
+            if (inside_rect == false){
                 y = Math.floor(y / 10) * 10;
                 made_select = false;
                 for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
@@ -273,12 +289,17 @@ public class TuneComposer extends Application {
                         selected.add(entry.getValue());
                         entry.getValue().display_select();
                         made_select = true;
+                        /*
+                        if(event.isControlDown() == true){
+                            System.out.println("ctrl is down");
+                        }
+                        */
                         break;
                     }
                 } 
                 
                 if (made_select == false){
-                    System.out.println("made select == false");
+                    
                     for (Note note : selected){
                         note.display_deselect();
                     }
@@ -313,8 +334,20 @@ public class TuneComposer extends Application {
                     finalNote = current_end;
                 }      
             }
-            System.out.println(current_end);
-            System.out.println((double)noteTreeMap.lastKey().getKey()+noteTreeMap.lastEntry().getValue().duration);
+            
+            if(inside_rect == true){
+                y = Math.floor(y / 10) * 10;
+                if(event.isControlDown() == true){
+                    for(Note entry : selected){ 
+                        if (entry.y == y && (entry.x <= x && entry.x + entry.display_note.getWidth()  >  x )){  
+                            entry.display_deselect();
+                            selected.remove(entry);
+                            break;
+                        }
+                    } 
+                }
+            }
+            
             
             if (extend == true){
                 extend = false;
@@ -326,7 +359,8 @@ public class TuneComposer extends Application {
         });   
       
       controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
-      {            
+      {  
+         inside_rect = false;
          if ( new_rectangle_is_being_drawn == false )
          {
             starting_point_x = event.getX() ;
@@ -335,7 +369,8 @@ public class TuneComposer extends Application {
                 if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
                     && (entry.getValue().x <= starting_point_x && (entry.getValue().x)+(entry.getValue()).display_note.getWidth() - 10  >  starting_point_x )
                     && (entry.getValue().isSelected == true)){ 
-                    drag = true;
+                    drag = false;
+                    inside_rect = true;
                     dragged = entry.getValue();
                     break;
                 }
@@ -343,13 +378,14 @@ public class TuneComposer extends Application {
                     && (entry.getValue().x)+(entry.getValue().display_note.getWidth()-10) <= starting_point_x && (entry.getValue().x)+entry.getValue().display_note.getWidth()  >  starting_point_x 
                     && (entry.getValue().isSelected == true)){ 
                     extend = true;
+                    inside_rect = true;
                     dragged = entry.getValue();
                     break;
                 }
             }
              
             
-            if (drag == false && extend == false){
+            if (inside_rect == false){
                 select_rect = new Rectangle() ;
 
                 // A non-finished rectangle has always the same color.
@@ -365,7 +401,12 @@ public class TuneComposer extends Application {
 
       controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
       {
-       
+        if(extend == true || new_rectangle_is_being_drawn == true){
+            drag = false;
+        }
+        else{
+            drag = true;
+        }
         double current_ending_point_x = event.getX() ;
         double current_ending_point_y = event.getY() ;
           
@@ -378,7 +419,7 @@ public class TuneComposer extends Application {
           }    
         }
           
-        if (extend == true){
+        else if (extend == true){
             double extentionlen = (current_ending_point_x - dragged.x);
             for (Note note : selected) {
                 if(extentionlen < 5.0){
