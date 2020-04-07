@@ -37,6 +37,26 @@ public class Note {
         
     }
     
+    @Override
+    public boolean equals(Object o){
+        if (o == this) { 
+            return true; 
+        } 
+  
+        /* Check if o is an instance of Complex or not 
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof Note)) { 
+            return false; 
+        } 
+        Note other = (Note) o; 
+          
+        // Compare the data members and return accordingly  
+        return Boolean.compare(isSelected, other.isSelected) == 0 
+                && Double.compare(x, other.x) == 0 
+                && Double.compare(duration, other.duration) == 0; 
+                
+    }
+    
     /**
      * makes the rectangle on screen symbolizing a note
      * @param x the x coordinate of the note
