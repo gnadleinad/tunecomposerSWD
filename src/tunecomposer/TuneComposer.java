@@ -193,8 +193,6 @@ public class TuneComposer extends Application {
     
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
-        System.out.println(notePosition.size());
-        System.out.println(selected.size());
         Set<Pair> set = new HashSet<> ();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             if (entry.getValue().isSelected){
@@ -207,8 +205,6 @@ public class TuneComposer extends Application {
         }
         
         notePosition.keySet().removeAll(set);
-        System.out.println(notePosition.size());
-        System.out.println(selected.size());
         
         finalNote = 0.0;
         //notePosition.clear(); //deletes note positions that are used to create player composition.
@@ -541,7 +537,7 @@ public class TuneComposer extends Application {
      * @param finalNote the x time position of the last note
      */
     public void move_red() {
-        double duration = finalNote * 6 + 600;
+        double duration = finalNote * 6 + 150;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
         transition.setFromX(red_line.getStartX()+22);
