@@ -193,16 +193,23 @@ public class TuneComposer extends Application {
     
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
-        
+        System.out.println(notePosition.size());
+        System.out.println(selected.size());
+        Set<Pair> set = new HashSet<> ();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             if (entry.getValue().isSelected){
                 entry.getValue().display_delete();
-                MIDI_events.clear();
-                notePosition.remove(entry);
-                selected.clear();
-                player.clear();
+                set.add(entry.getKey());
+                //notePosition.remove(entry.getKey());
+
             }
-        } 
+            
+        }
+        
+        notePosition.keySet().removeAll(set);
+        System.out.println(notePosition.size());
+        System.out.println(selected.size());
+        
         finalNote = 0.0;
         //notePosition.clear(); //deletes note positions that are used to create player composition.
         //MIDI_events.clear();
