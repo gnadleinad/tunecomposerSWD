@@ -197,7 +197,10 @@ public class TuneComposer extends Application {
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             if (entry.getValue().isSelected){
                 entry.getValue().display_delete();
-                notePosition.remove(entry.getKey());
+                MIDI_events.clear();
+                notePosition.remove(entry);
+                selected.clear();
+                player.clear();
             }
         } 
         finalNote = 0.0;
