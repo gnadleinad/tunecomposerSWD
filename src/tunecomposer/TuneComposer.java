@@ -458,8 +458,9 @@ public class TuneComposer extends Application {
                     double ending_point_x = event.getX();
                     double ending_point_y = event.getY();
                     for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                       if ((entry.getValue().y > starting_point_y && entry.getValue().y < ending_point_y)
-                               && (entry.getValue().x > starting_point_x && entry.getValue().x < ending_point_x )){  
+                       if ((entry.getValue().y > Math.min(starting_point_y,ending_point_y)  && entry.getValue().y < Math.max(ending_point_y,starting_point_y))
+                               && (entry.getValue().x > Math.min(starting_point_x, ending_point_x) && entry.getValue().x < Math.max(ending_point_x, starting_point_x)))
+                       {  
                            selected.add(entry.getValue());
                        }
                    }
