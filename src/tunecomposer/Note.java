@@ -21,6 +21,7 @@ public class Note {
     public Double midi_y; 
     public Rectangle display_note;
     public Double duration;
+
     
     /**
      * Constructs a note. 
@@ -33,6 +34,11 @@ public class Note {
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
         duration = 100.0;
+        draw_note(x,y);
+        
+        x = temp_x;
+        y = temp_y;
+        midi_y = Math.floor(127-((temp_y - 30) / 10));
         draw_note(x,y);
         
     }
@@ -80,6 +86,7 @@ public class Note {
         isSelected = true;
     }
     
+
     public void display_deselect(){
         display_note.getStyleClass().remove("selected");
         isSelected = false;
@@ -155,4 +162,6 @@ public class Note {
     
     
     
+
 }
+

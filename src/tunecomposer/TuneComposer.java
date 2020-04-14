@@ -33,6 +33,7 @@ import javafx.util.Pair;
 import javax.sound.midi.ShortMessage;
 
 
+
 /**
  * This JavaFX app lets the user play scales.
  * @author Janet Davis 
@@ -68,11 +69,12 @@ public class TuneComposer extends Application {
 
     private static Map<Pair, Note> notePosition;
     
+
     private static TreeMap<Pair,Note> noteTreeMap;
     
     private ArrayList<Note> selected;
     
-        /**
+     /**
      * ArrayList of integer lists that stores the MIDI event parameters
      * for the addMidiEvent method
      */
@@ -122,7 +124,7 @@ public class TuneComposer extends Application {
         this.noteTreeMap = new TreeMap<>(new PairComparator());
     }
     
-         /**
+     /**
      * Sorts an ArrayList of list of integers given an element to compare.
      * @param unsorted the ArrayList with which to sort
      * @param element the element within all integer lists that will be compared
@@ -136,19 +138,18 @@ public class TuneComposer extends Application {
         });
     }
     
+
     /**
      * Adds all of the MIDI_events to the current composition.
      */
     protected void addAllEvents() {
         for  (int[] event : MIDI_events) {
-            //System.out.println(Arrays.toString(event));
             player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
         }
     }
     
     /**
      * Play a new scale, after stopping and clearing any previous scale.
-     * @param startingPitch an integer between 0 and 115
      */
     protected void playScale() {
         int channel_accum;
@@ -160,6 +161,7 @@ public class TuneComposer extends Application {
         channel_accum = 0;
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+
             channel_accum += 1;
         } 
 
@@ -173,7 +175,6 @@ public class TuneComposer extends Application {
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        //double finalNote = notePosition.lastEntry().getKey(); //PROBLEM: Accesses final note.(Assumes Sorted)
         transition.stop();
         move_red();
         playScale();
@@ -192,6 +193,7 @@ public class TuneComposer extends Application {
     }  
     
     @FXML
+
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
         Set<Pair> set = new HashSet<> ();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
@@ -218,6 +220,7 @@ public class TuneComposer extends Application {
         }
 
         
+
     }
     
     @FXML
@@ -226,6 +229,7 @@ public class TuneComposer extends Application {
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_select();
             selected.add(entry.getValue());
+
         } 
     }
     
@@ -367,6 +371,7 @@ public class TuneComposer extends Application {
       controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
       {  
          inside_rect = false;
+
          if ( new_rectangle_is_being_drawn == false )
          {
             starting_point_x = event.getX() ;
