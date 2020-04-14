@@ -26,6 +26,7 @@ import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -89,7 +90,13 @@ public class TuneComposer extends Application {
     @FXML Line red_line;
     
     @FXML
-    public AnchorPane music_staff;
+    public AnchorPane lines_pane;
+    
+    @FXML
+    public AnchorPane notes_pane;
+    
+    @FXML
+    public AnchorPane redline_pane;
     
     public static String current_instrument;
   
@@ -284,7 +291,7 @@ public class TuneComposer extends Application {
         controller.change_instrument();
         
   
-        controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+        controller.notes_pane.setOnMouseClicked((MouseEvent event) -> {
             double x  = event.getX();
             double y  = event.getY();
             boolean made_select = true;
@@ -323,7 +330,7 @@ public class TuneComposer extends Application {
                     }
 
                     selected.add(n);
-                    controller.music_staff.getChildren().add(n.display_note);
+                    controller.notes_pane.getChildren().add(n.display_note);
                     for (Note note : selected){
                         note.display_select();
                     }
@@ -368,7 +375,7 @@ public class TuneComposer extends Application {
 
         });   
       
-      controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
+      controller.notes_pane.setOnMousePressed( ( MouseEvent event ) ->
       {  
          inside_rect = false;
 
@@ -403,14 +410,14 @@ public class TuneComposer extends Application {
                 select_rect.setFill( TRANSPARENT ) ; // almost white color
                 select_rect.setStroke( BLACK ) ;
 
-                controller.music_staff.getChildren().add( select_rect ) ;
+                controller.notes_pane.getChildren().add( select_rect ) ;
 
                 new_rectangle_is_being_drawn = true ;
             }
          }
       } ) ;
 
-      controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
+      controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) ->
       {
         if(extend == true || new_rectangle_is_being_drawn == true){
             drag = false;
@@ -451,7 +458,7 @@ public class TuneComposer extends Application {
          }
       } ) ;
 
-      controller.music_staff.setOnMouseReleased( ( MouseEvent event ) ->
+      controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) ->
       {
             if ( new_rectangle_is_being_drawn == true )
                 {
@@ -474,7 +481,7 @@ public class TuneComposer extends Application {
                     }
 
 
-                   controller.music_staff.getChildren().remove( select_rect ) ;
+                   controller.notes_pane.getChildren().remove( select_rect ) ;
                    new_rectangle_is_being_drawn = false ;
                 }
             if (drag == true){
@@ -527,7 +534,7 @@ public class TuneComposer extends Application {
      double y = 0;
      while (y < 1280){
          Line line = new Line(0,y,2000, y);
-         music_staff.getChildren().add(line);
+         redline_pane.getChildren().add(line);
          y = y + 10;
         }
     }
