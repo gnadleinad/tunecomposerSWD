@@ -20,6 +20,8 @@ public class Note {
     public Double y; //midi value of y
     public Double midi_y; 
     public Rectangle display_note;
+    public Double duration;
+
     
     /**
      * Constructs a note. 
@@ -28,12 +30,37 @@ public class Note {
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
         instrument = temp_instrument;
+        x = temp_x;
+        y = temp_y;
+        midi_y = Math.floor(127-((temp_y - 30) / 10));
+        duration = 100.0;
+        draw_note(x,y);
         
         x = temp_x;
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
         draw_note(x,y);
         
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this) { 
+            return true; 
+        } 
+  
+        /* Check if o is an instance of Complex or not 
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof Note)) { 
+            return false; 
+        } 
+        Note other = (Note) o; 
+          
+        // Compare the data members and return accordingly  
+        return Boolean.compare(isSelected, other.isSelected) == 0 
+                && Double.compare(x, other.x) == 0 
+                && Double.compare(duration, other.duration) == 0; 
+                
     }
     
     /**
@@ -58,6 +85,13 @@ public class Note {
         display_note.getStyleClass().add("selected");
         isSelected = true;
     }
+    
+
+    public void display_deselect(){
+        display_note.getStyleClass().remove("selected");
+        isSelected = false;
+    }
+    
     
     /**
      * function that returns information about the note that communicates with 
@@ -128,4 +162,6 @@ public class Note {
     
     
     
+
 }
+

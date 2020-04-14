@@ -33,7 +33,7 @@
                         <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#handleDeleteAllButtonAction" text="Delete All" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleDeleteButtonAction" text="Delete" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Action">

@@ -5,7 +5,9 @@ package tunecomposer;
 
 import java.util.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javafx.animation.Interpolator;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -17,6 +19,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Line;
@@ -25,8 +29,9 @@ import javafx.scene.input.MouseEvent;
 import static javafx.scene.paint.Color.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import javax.sound.midi.ShortMessage;
 import javafx.util.Pair;
+import javax.sound.midi.ShortMessage;
+
 
 
 /**
@@ -64,9 +69,12 @@ public class TuneComposer extends Application {
 
     private static Map<Pair, Note> notePosition;
     
-    private ArrayList<Pair> selected;
+
+    private static TreeMap<Pair,Note> noteTreeMap;
     
-    /**
+    private ArrayList<Note> selected;
+    
+     /**
      * ArrayList of integer lists that stores the MIDI event parameters
      * for the addMidiEvent method
      */
@@ -90,10 +98,17 @@ public class TuneComposer extends Application {
     Rectangle select_rect = null;
     boolean new_rectangle_is_being_drawn = false;
     boolean drag = false;
+    boolean extend = false;
     double starting_point_x;
     double starting_point_y;
     
+    boolean inside_rect = false;
+    
+    Note dragged;
+    public static Note lastNote;
     private static double finalNote;
+    
+    //final Timeline timeline = new Timeline(); //Necessary?
 
     /**
      * Constructs a new ScalePlayer application.
@@ -105,6 +120,8 @@ public class TuneComposer extends Application {
         this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
         this.finalNote = 0.0;
+        
+        this.noteTreeMap = new TreeMap<>(new PairComparator());
     }
     
      /**
@@ -121,12 +138,12 @@ public class TuneComposer extends Application {
         });
     }
     
+
     /**
      * Adds all of the MIDI_events to the current composition.
      */
     protected void addAllEvents() {
         for  (int[] event : MIDI_events) {
-            System.out.println(Arrays.toString(event));
             player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
         }
     }
@@ -136,16 +153,15 @@ public class TuneComposer extends Application {
      */
     protected void playScale() {
         int channel_accum;
-        int duration;
         player.stop();
         player.clear();
 
         sortArrayList(MIDI_events, 3);
         addAllEvents();
         channel_accum = 0;
-        duration = 4;
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), duration, MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+
             channel_accum += 1;
         } 
 
@@ -172,24 +188,48 @@ public class TuneComposer extends Application {
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         player.stop();
+        //timeline.jumpTo(Duration.INDEFINITE); //Possibly not necessary line
         transition.stop();
     }  
     
     @FXML
-    protected void handleDeleteAllButtonAction(ActionEvent event){
+
+    protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
+        Set<Pair> set = new HashSet<> ();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            entry.getValue().display_delete();
-        } 
+            if (entry.getValue().isSelected){
+                entry.getValue().display_delete();
+                set.add(entry.getKey());
+                //notePosition.remove(entry.getKey());
+
+            }
+            
+        }
+        
+        notePosition.keySet().removeAll(set);
+        
         finalNote = 0.0;
-        notePosition.clear(); //deletes note positions that are used to create player composition.
-        MIDI_events.clear();
+        //notePosition.clear(); //deletes note positions that are used to create player composition.
+        //MIDI_events.clear();
+        double current_end = 0.0;
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
+            if(current_end > finalNote){
+                finalNote = current_end;
+            }      
+        }
+
+        
+
     }
     
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
+        selected.clear();
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             entry.getValue().display_select();
-            selected.add(entry.getKey());
+            selected.add(entry.getValue());
+
         } 
     }
     
@@ -232,7 +272,7 @@ public class TuneComposer extends Application {
          given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
       }
    }
-    
+          
     
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -242,52 +282,166 @@ public class TuneComposer extends Application {
         TuneComposer controller = loader.getController();
         controller.one_Line();
         controller.change_instrument();
-
-
-            controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
+        
+  
+        controller.music_staff.setOnMouseClicked((MouseEvent event) -> {
             double x  = event.getX();
             double y  = event.getY();
-            controller.change_instrument();
+            boolean made_select = true;
+            
+            //System.out.println(event.isControlDown());
+            
+            if (inside_rect == false){
+                y = Math.floor(y / 10) * 10;
+                made_select = false;
+                for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                    if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
+                        selected.add(entry.getValue());
+                        entry.getValue().display_select();
+                        made_select = true;
+                        /*
+                        if(event.isControlDown() == true){
+                            System.out.println("ctrl is down");
+                        }
+                        */
+                        break;
+                    }
+                } 
+                
+                if (made_select == false){
+                    
+                    for (Note note : selected){
+                        note.display_deselect();
+                    }
+                    controller.change_instrument();
+                    Pair cordinates = new Pair(x,y);
+                    Note n = new Note(x,y,current_instrument);
+                    MIDI_events.add(n.get_MIDI(x));
+                    
+                    if(event.isControlDown() == false){
+                        selected.clear();
+                    }
 
-            Pair cordinates = new Pair(x,y);
-            Note n = new Note(x,y,current_instrument);
-            MIDI_events.add(n.get_MIDI(x));
-            controller.music_staff.getChildren().add(n.display_note);
-
-            if(n.midi_y >= 0 && n.midi_y < 128){
-                notePosition.put(cordinates,n);
-                if(x > finalNote){
-                    finalNote=x;
+                    selected.add(n);
+                    controller.music_staff.getChildren().add(n.display_note);
+                    for (Note note : selected){
+                        note.display_select();
+                    }
+                    
+                    if(n.midi_y >= 0 && n.midi_y < 128){
+                        notePosition.put(cordinates,n);
+                        noteTreeMap.put(cordinates,n);
+                    }
                 }
-            } 
+            }
+            
+            //This would be faster if we converted to treeMap????? Consider 4/3 - would need to be sorted by end points
+            finalNote = 0.0;
+            double current_end = 0.0;
+            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
+                if(current_end > finalNote){
+                    finalNote = current_end;
+                }      
+            }
+            
+            if(inside_rect == true){
+                y = Math.floor(y / 10) * 10;
+                if(event.isControlDown() == true){
+                    for(Note entry : selected){ 
+                        if (entry.y == y && (entry.x <= x && entry.x + entry.display_note.getWidth()  >  x )){  
+                            entry.display_deselect();
+                            selected.remove(entry);
+                            break;
+                        }
+                    } 
+                }
+            }
+            
+            
+            if (extend == true){
+                extend = false;
+            }
+            if (drag == true){
+                drag = false;
+            }
 
         });   
       
       controller.music_staff.setOnMousePressed( ( MouseEvent event ) ->
-      {            
+      {  
+         inside_rect = false;
+
          if ( new_rectangle_is_being_drawn == false )
          {
             starting_point_x = event.getX() ;
             starting_point_y = event.getY() ;
+            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
+                    && (entry.getValue().x <= starting_point_x && (entry.getValue().x)+(entry.getValue()).display_note.getWidth() - 10  >  starting_point_x )
+                    && (entry.getValue().isSelected == true)){ 
+                    drag = false;
+                    inside_rect = true;
+                    dragged = entry.getValue();
+                    break;
+                }
+              if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
+                    && (entry.getValue().x)+(entry.getValue().display_note.getWidth()-10) <= starting_point_x && (entry.getValue().x)+entry.getValue().display_note.getWidth()  >  starting_point_x 
+                    && (entry.getValue().isSelected == true)){ 
+                    extend = true;
+                    inside_rect = true;
+                    dragged = entry.getValue();
+                    break;
+                }
+            }
+             
+            
+            if (inside_rect == false){
+                select_rect = new Rectangle() ;
 
-            select_rect = new Rectangle() ;
+                // A non-finished rectangle has always the same color.
+                select_rect.setFill( TRANSPARENT ) ; // almost white color
+                select_rect.setStroke( BLACK ) ;
 
-            // A non-finished rectangle has always the same color.
-            select_rect.setFill( TRANSPARENT ) ; // almost white color
-            select_rect.setStroke( BLACK ) ;
+                controller.music_staff.getChildren().add( select_rect ) ;
 
-            controller.music_staff.getChildren().add( select_rect ) ;
-   
-            new_rectangle_is_being_drawn = true ;
+                new_rectangle_is_being_drawn = true ;
+            }
          }
       } ) ;
 
       controller.music_staff.setOnMouseDragged( ( MouseEvent event ) ->
       {
+        if(extend == true || new_rectangle_is_being_drawn == true){
+            drag = false;
+        }
+        else{
+            drag = true;
+        }
+        double current_ending_point_x = event.getX() ;
+        double current_ending_point_y = event.getY() ;
+          
+        if (drag == true){
+          double dify = (current_ending_point_y - dragged.y);
+          double difx = (current_ending_point_x - dragged.x);
+          for (Note note : selected) {
+             note.display_note.setX(note.x + difx);
+             note.display_note.setY(note.y + dify); 
+          }    
+        }
+          
+        else if (extend == true){
+            double extentionlen = (current_ending_point_x - dragged.x);
+            for (Note note : selected) {
+                if(extentionlen < 5.0){
+                    extentionlen = 5.0;
+                }
+                note.display_note.setWidth(extentionlen);
+            }
+            
+        }
          if ( new_rectangle_is_being_drawn == true )
          {
-            double current_ending_point_x = event.getX() ;
-            double current_ending_point_y = event.getY() ;
 
             adjust_rectangle_properties( starting_point_x,
                                          starting_point_y,
@@ -300,11 +454,61 @@ public class TuneComposer extends Application {
       controller.music_staff.setOnMouseReleased( ( MouseEvent event ) ->
       {
             if ( new_rectangle_is_being_drawn == true )
-         {
-            //select_rect = null ;
-            controller.music_staff.getChildren().remove( select_rect ) ;
-            new_rectangle_is_being_drawn = false ;
-         }
+                {
+                    for (Note note : selected){
+                        note.display_deselect();
+                    }
+                    if(event.isControlDown() == false){selected.clear();}
+                    
+                    double ending_point_x = event.getX();
+                    double ending_point_y = event.getY();
+                    for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                       if ((entry.getValue().y > Math.min(starting_point_y,ending_point_y)  && entry.getValue().y < Math.max(ending_point_y,starting_point_y))
+                               && (entry.getValue().x > Math.min(starting_point_x, ending_point_x) && entry.getValue().x < Math.max(ending_point_x, starting_point_x)))
+                       {  
+                           selected.add(entry.getValue());
+                       }
+                   }
+                    for (Note note : selected){
+                        note.display_select();
+                    }
+
+
+                   controller.music_staff.getChildren().remove( select_rect ) ;
+                   new_rectangle_is_being_drawn = false ;
+                }
+            if (drag == true){
+
+                double ending_point_x = event.getX();
+                double ending_point_y = event.getY();
+                double dify = (ending_point_y - dragged.y);
+                double difx = (ending_point_x - dragged.x);
+                for (Note note : selected) {
+                    Pair orig_cordinate = new Pair(note.x,note.y);
+                    
+                    note.display_note.setX(note.x + difx);
+                    note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
+                    note.y = Math.floor((note.y + dify)/ 10) * 10;
+                    note.x = note.x + difx;
+                    Pair new_cordinate = new Pair(note.x,note.y);
+                    
+                    notePosition.remove(orig_cordinate);
+                    notePosition.put(new_cordinate, note);
+                }
+            }
+            if (extend == true) {
+                double current_ending_point_x = event.getX() ;
+                double ext_len = (current_ending_point_x - dragged.x);
+                for (Note note : selected) {
+                    Pair cordinate = new Pair(note.x,note.y);
+                    if(ext_len < 5.0){
+                        ext_len = 5.0;
+                    }
+                    note.display_note.setWidth(ext_len);
+                    notePosition.get(cordinate).duration = ext_len;
+              }
+            }
+        
       } ) ;
        
             primaryStage.setTitle("Scale Player");
@@ -339,19 +543,18 @@ public class TuneComposer extends Application {
      * @param finalNote the x time position of the last note
      */
     public void move_red() {
-        System.out.println("FN_moveRed: "+finalNote);
-        double duration = finalNote * 6 + 600;
+        double duration = finalNote * 6 + 150;
         transition.setDuration(Duration.millis(duration));
         transition.setNode(red_line);
-        transition.setFromX(red_line.getStartX() + 22);
+        transition.setFromX(red_line.getStartX()+22);
         if(finalNote == 0){
             transition.setToX(finalNote);
         }
-        else{transition.setToX(finalNote+100);}
+        else{transition.setToX(finalNote);}
         transition.setInterpolator(Interpolator.LINEAR);
         red_line.setOpacity(1);
         transition.play();
-        }
+    }
     
     /**
      * Launch the application.
