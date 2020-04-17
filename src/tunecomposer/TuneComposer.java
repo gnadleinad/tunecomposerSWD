@@ -41,7 +41,7 @@ import javax.sound.midi.ShortMessage;
  * @author Project 3 - Team 4
  * @since March 3, 2020
  */
-public class TuneComposer extends Application {
+public class TuneComposer extends Application implements EventHandle {
     
     /**
      * Represents the number of pitch steps for 
@@ -288,91 +288,12 @@ public class TuneComposer extends Application {
         Scene scene = new Scene(root);
         TuneComposer controller = loader.getController();
         controller.one_Line();
-        controller.change_instrument();
         
   
         controller.notes_pane.setOnMouseClicked((MouseEvent event) -> {
-            double x  = event.getX();
-            double y  = event.getY();
-            boolean made_select = true;
-            
-            //System.out.println(event.isControlDown());
-            
-            if (inside_rect == false){
-                y = Math.floor(y / 10) * 10;
-                made_select = false;
-                for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                    if (entry.getValue().y == y && (entry.getValue().x <= x && entry.getValue().x + entry.getValue().display_note.getWidth()  >  x )){  
-                        selected.add(entry.getValue());
-                        entry.getValue().display_select();
-                        made_select = true;
-                        /*
-                        if(event.isControlDown() == true){
-                            System.out.println("ctrl is down");
-                        }
-                        */
-                        break;
-                    }
-                } 
-                
-                if (made_select == false){
-                    
-                    for (Note note : selected){
-                        note.display_deselect();
-                    }
-                    controller.change_instrument();
-                    Pair cordinates = new Pair(x,y);
-                    Note n = new Note(x,y,current_instrument);
-                    MIDI_events.add(n.get_MIDI(x));
-                    
-                    if(event.isControlDown() == false){
-                        selected.clear();
-                    }
-
-                    selected.add(n);
-                    controller.notes_pane.getChildren().add(n.display_note);
-                    for (Note note : selected){
-                        note.display_select();
-                    }
-                    
-                    if(n.midi_y >= 0 && n.midi_y < 128){
-                        notePosition.put(cordinates,n);
-                        noteTreeMap.put(cordinates,n);
-                    }
-                }
-            }
-            
-            //This would be faster if we converted to treeMap????? Consider 4/3 - would need to be sorted by end points
-            finalNote = 0.0;
-            double current_end = 0.0;
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
-                if(current_end > finalNote){
-                    finalNote = current_end;
-                }      
-            }
-            
-            if(inside_rect == true){
-                y = Math.floor(y / 10) * 10;
-                if(event.isControlDown() == true){
-                    for(Note entry : selected){ 
-                        if (entry.y == y && (entry.x <= x && entry.x + entry.display_note.getWidth()  >  x )){  
-                            entry.display_deselect();
-                            selected.remove(entry);
-                            break;
-                        }
-                    } 
-                }
-            }
-            
-            
-            if (extend == true){
-                extend = false;
-            }
-            if (drag == true){
-                drag = false;
-            }
-
+            controller.change_instrument();
+            System.out.println("notePane");
+           EventHandle.onClick(event, notePosition, selected,controller);
         });   
       
       controller.notes_pane.setOnMousePressed( ( MouseEvent event ) ->
