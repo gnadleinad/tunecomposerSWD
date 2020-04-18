@@ -14,7 +14,6 @@ import javax.sound.midi.ShortMessage;
  */
 public class Note {
 
-    boolean isSelected = false;
     private String instrument;
     public Double x;
     public Double y; //midi value of y
@@ -57,9 +56,9 @@ public class Note {
         Note other = (Note) o; 
           
         // Compare the data members and return accordingly  
-        return Boolean.compare(isSelected, other.isSelected) == 0 
-                && Double.compare(x, other.x) == 0 
-                && Double.compare(duration, other.duration) == 0; 
+        return Double.compare(x, other.x) == 0 
+                && Double.compare(duration, other.duration) == 0
+                && display_note.equals(other.display_note); 
                 
     }
     
@@ -83,13 +82,13 @@ public class Note {
     
     public void display_select(){
         display_note.getStyleClass().add("selected");
-        isSelected = true;
+//        isSelected = true;
     }
     
 
     public void display_deselect(){
         display_note.getStyleClass().remove("selected");
-        isSelected = false;
+//        isSelected = false;
     }
     
     

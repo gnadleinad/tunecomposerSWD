@@ -41,7 +41,7 @@ import javax.sound.midi.ShortMessage;
  * @author Project 3 - Team 4
  * @since March 3, 2020
  */
-public class TuneComposer extends Application implements EventHandle {
+public class TuneComposer extends Application {
     
     /**
      * Represents the number of pitch steps for 
@@ -202,34 +202,34 @@ public class TuneComposer extends Application implements EventHandle {
     @FXML
 
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
-        Set<Pair> set = new HashSet<> ();
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            if (entry.getValue().isSelected){
-                entry.getValue().display_delete();
-                set.add(entry.getKey());
-                //notePosition.remove(entry.getKey());
+//        Set<Pair> set = new HashSet<> ();
+//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+////            if (entry.getValue().isSelected){
+////                entry.getValue().display_delete();
+////                set.add(entry.getKey());
+//                //notePosition.remove(entry.getKey());
+//
+//            //}
+//            
+//        }
+//        
+//        notePosition.keySet().removeAll(set);
+//        
+//        finalNote = 0.0;
+//        //notePosition.clear(); //deletes note positions that are used to create player composition.
+//        //MIDI_events.clear();
+//        double current_end = 0.0;
+//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+//            current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
+//            if(current_end > finalNote){
+//                finalNote = current_end;
+//            }      
+//        }
+//
+//        
+//
+  }
 
-            }
-            
-        }
-        
-        notePosition.keySet().removeAll(set);
-        
-        finalNote = 0.0;
-        //notePosition.clear(); //deletes note positions that are used to create player composition.
-        //MIDI_events.clear();
-        double current_end = 0.0;
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            current_end = (double)(entry.getKey()).getKey()+(entry.getValue()).duration;
-            if(current_end > finalNote){
-                finalNote = current_end;
-            }      
-        }
-
-        
-
-    }
-    
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
         selected.clear();
@@ -293,50 +293,12 @@ public class TuneComposer extends Application implements EventHandle {
         controller.notes_pane.setOnMouseClicked((MouseEvent event) -> {
             controller.change_instrument();
             System.out.println("notePane");
-           EventHandle.onClick(event, notePosition, selected,controller);
+            EventHandle.onClick(event, selected,controller);
         });   
       
-      controller.notes_pane.setOnMousePressed( ( MouseEvent event ) ->
-      {  
-         inside_rect = false;
-
-         if ( new_rectangle_is_being_drawn == false )
-         {
-            starting_point_x = event.getX() ;
-            starting_point_y = event.getY() ;
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
-                    && (entry.getValue().x <= starting_point_x && (entry.getValue().x)+(entry.getValue()).display_note.getWidth() - 10  >  starting_point_x )
-                    && (entry.getValue().isSelected == true)){ 
-                    drag = false;
-                    inside_rect = true;
-                    dragged = entry.getValue();
-                    break;
-                }
-              if (entry.getValue().y == Math.floor(starting_point_y/10)*10 
-                    && (entry.getValue().x)+(entry.getValue().display_note.getWidth()-10) <= starting_point_x && (entry.getValue().x)+entry.getValue().display_note.getWidth()  >  starting_point_x 
-                    && (entry.getValue().isSelected == true)){ 
-                    extend = true;
-                    inside_rect = true;
-                    dragged = entry.getValue();
-                    break;
-                }
-            }
-             
-            
-            if (inside_rect == false){
-                select_rect = new Rectangle() ;
-
-                // A non-finished rectangle has always the same color.
-                select_rect.setFill( TRANSPARENT ) ; // almost white color
-                select_rect.setStroke( BLACK ) ;
-
-                controller.notes_pane.getChildren().add( select_rect ) ;
-
-                new_rectangle_is_being_drawn = true ;
-            }
-         }
-      } ) ;
+      controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {  
+         EventHandle.onPressed(event,controller);
+    });
 
       controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) ->
       {

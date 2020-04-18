@@ -23,7 +23,6 @@
     
 }
 
-
 .Marimba{
     -fx-fill: blueviolet;
     -fx-text-fill: blueviolet;
@@ -57,5 +56,9 @@
 .playbar{
     -fx-fill: red;
     -fx-text-fill: red;
+}
+.selectionRect{
+    -fx-fill: transparent;
+    -fx-stroke: black;
 }
 
