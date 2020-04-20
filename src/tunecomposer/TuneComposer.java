@@ -68,12 +68,12 @@ public class TuneComposer extends Application {
      * player object will play given pitch when time has passed the position.
      */
 
-    private static Map<Pair, Note> notePosition;
+    //private static Map<Pair, Note> notePosition;
     
 
     private static TreeMap<Pair,Note> noteTreeMap;
     
-    private ArrayList<Note> selected;
+    //private ArrayList<Note> selected;
     
      /**
      * ArrayList of integer lists that stores the MIDI event parameters
@@ -102,14 +102,14 @@ public class TuneComposer extends Application {
   
     public TranslateTransition transition;
 
-    Rectangle select_rect = null;
-    boolean new_rectangle_is_being_drawn = false;
-    boolean drag = false;
-    boolean extend = false;
-    double starting_point_x;
-    double starting_point_y;
+    //Rectangle select_rect = null;
+    //boolean new_rectangle_is_being_drawn = false;
+    //boolean drag = false;
+    //boolean extend = false;
+    //double starting_point_x;
+    //double starting_point_y;
     
-    boolean inside_rect = false;
+    //boolean inside_rect = false;
     
     Note dragged;
     public static Note lastNote;
@@ -123,8 +123,8 @@ public class TuneComposer extends Application {
     public TuneComposer() {
         this.player = new MidiPlayer(1,10000);
         this.MIDI_events = new ArrayList<>();
-        this.notePosition = new HashMap<>();
-        this.selected = new ArrayList<>();
+        //this.notePosition = new HashMap<>();
+        //this.selected = new ArrayList<>();
         this.transition = new TranslateTransition();
         this.finalNote = 0.0;
         
@@ -158,21 +158,23 @@ public class TuneComposer extends Application {
     /**
      * Play a new scale, after stopping and clearing any previous scale.
      */
+    
+    
     protected void playScale() {
-        int channel_accum;
-        player.stop();
-        player.clear();
-
-        sortArrayList(MIDI_events, 3);
-        addAllEvents();
-        channel_accum = 0;
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
-
-            channel_accum += 1;
-        } 
-
-        player.play();
+//        int channel_accum;
+//        player.stop();
+//        player.clear();
+//
+//        sortArrayList(MIDI_events, 3);
+//        addAllEvents();
+//        channel_accum = 0;
+//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+//            player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+//
+//            channel_accum += 1;
+//        } 
+//
+//        player.play();
     }
     
     /**
@@ -232,12 +234,12 @@ public class TuneComposer extends Application {
 
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
-        selected.clear();
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            entry.getValue().display_select();
-            selected.add(entry.getValue());
-
-        } 
+//        selected.clear();
+//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+//            entry.getValue().display_select();
+//            selected.add(entry.getValue());
+//
+//        } 
     }
     
     /**
@@ -293,13 +295,29 @@ public class TuneComposer extends Application {
         controller.notes_pane.setOnMouseClicked((MouseEvent event) -> {
             controller.change_instrument();
             System.out.println("notePane");
-            EventHandle.onClick(event, selected,controller);
+            EventHandle.onClick(event,controller);
         });   
       
-      controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {  
-         EventHandle.onPressed(event,controller);
+        controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {  
+            EventHandle.onPressed(event,controller);
     });
+        
+        controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) -> {  
+            EventHandle.onDragged(event,controller);
+    });
+      
+      
+            primaryStage.setTitle("Scale Player");
+            primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest((WindowEvent we) -> {
+                System.exit(0);
+            });   
+            primaryStage.show();
+      
+    }
 
+      /*
+      
       controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) ->
       {
         if(extend == true || new_rectangle_is_being_drawn == true){
@@ -340,6 +358,9 @@ public class TuneComposer extends Application {
                                          select_rect) ;
          }
       } ) ;
+      */
+      
+      /*
 
       controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) ->
       {
@@ -408,6 +429,8 @@ public class TuneComposer extends Application {
             });   
             primaryStage.show();
         }
+      
+      */
         
     /**
      * Constructs a line graphic and duplicates until window is filled.
