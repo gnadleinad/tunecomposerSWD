@@ -52,6 +52,11 @@ public class EventHandle {
     }
 
     static public void onClick(MouseEvent event, TuneComposer tc){
+        //drag = !(extend == true || new_rectangle_is_being_drawn == true); 
+        if (drag == true || extend == true || new_rectangle_is_being_drawn == true){
+            resetBooleans(); 
+        }
+        else{
             double x  = event.getX();
             double y  = event.getY();
             y = Math.floor(y / 10) * 10;
@@ -64,7 +69,8 @@ public class EventHandle {
                     return;
                 }  
             }
-            makeNote(x,y,tc);        
+            makeNote(x,y,tc);
+        }
     }
       
     static public void onPressed(MouseEvent event, TuneComposer tc) {  
@@ -77,7 +83,7 @@ public class EventHandle {
             // A non-finished rectangle has always the same color.
             tc.notes_pane.getChildren().add(select_rect);
             select_rect.getStyleClass().add("selectionRect");
-//                new_rectangle_is_being_drawn = true ;
+            new_rectangle_is_being_drawn = true ;
             }
         }
     
@@ -97,38 +103,53 @@ public class EventHandle {
             
         }
          
-        if ( new_rectangle_is_being_drawn == true )
-         {
-
+        if ( new_rectangle_is_being_drawn == true ){
             adjust_rectangle_properties( starting_point_x,
                                          starting_point_y,
                                          current_ending_point_x,
                                          current_ending_point_y,
                                          select_rect) ;
-         }
+        }
+    }
+    
+    static public void onReleased(MouseEvent event, TuneComposer tc) {
+        double ending_point_x = event.getX();
+        double ending_point_y = event.getY();
+        
+        if ( new_rectangle_is_being_drawn == true ){
+            endDrawingRectangle(ending_point_x,ending_point_y, tc);
+        }
+        if (drag == true){
+            endDrag(ending_point_x,ending_point_y, tc);
+        }
+        if (extend == true) {
+            endExtend(ending_point_x, tc);
+        }
+        //resetBooleans();
     }
     
     
     
-        static public void makeNote(double x,double y, TuneComposer tc){
-            deselectNotes();
-            //controller.change_instrument();
-            System.out.println("sdfsf");
-            Pair cordinates = new Pair(x,y);
-            Note n = new Note(x,y,current_instrument);
-            //MIDI_events.add(n.get_MIDI(x));
+    static public void makeNote(double x,double y, TuneComposer tc){
+        deselectNotes();
+        //controller.change_instrument();
+        System.out.println("sdfsf");
+        Pair cordinates = new Pair(x,y);
+        Note n = new Note(x,y,current_instrument);
+        //MIDI_events.add(n.get_MIDI(x));
 //            if(event.isControlDown() == false){
 //                selected.clear();
 //            }
-            selected.add(n);
-            tc.notes_pane.getChildren().add(n.display_note);
-            n.display_select();
-            if(n.midi_y >= 0 && n.midi_y < 128){
-                notePosition.put(cordinates,n);
-                //noteTreeMap.put(cordinates,n);
-            }
+        selected.add(n);
+        tc.notes_pane.getChildren().add(n.display_note);
+        n.display_select();
+        if(n.midi_y >= 0 && n.midi_y < 128){
+            notePosition.put(cordinates,n);
+            //noteTreeMap.put(cordinates,n);
+        }
 
     }
+       
         
     static public void changeDragOrExtendBooleans(double x, double y){
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
@@ -152,7 +173,7 @@ public class EventHandle {
                 selectNote(entry.getValue(), selected);
                 break;
             }
-            drag = !(extend == true || new_rectangle_is_being_drawn == true);    
+            //drag = (extend == true || new_rectangle_is_being_drawn == true);    
         }
     }
     
@@ -194,6 +215,63 @@ public class EventHandle {
         } 
     }
     
+    
+    public static void endDrawingRectangle(double x, double y, TuneComposer tc){
+        deselectNotes();                
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+           if ((entry.getValue().y > Math.min(starting_point_y,y)  && entry.getValue().y < Math.max(y,starting_point_y))
+                   && (entry.getValue().x > Math.min(starting_point_x, x) && entry.getValue().x < Math.max(x, starting_point_x)))
+           {  
+               selected.add(entry.getValue());
+           }
+       }
+
+        for (Note note : selected){
+            note.display_select();
+        }
+
+
+       tc.notes_pane.getChildren().remove( select_rect ) ;
+       new_rectangle_is_being_drawn = false ;
+        
+    }
+    
+    public static void endDrag(double x, double y, TuneComposer tc) {
+        double dify = (y - dragged.y);
+        double difx = (x - dragged.x);
+        for (Note note : selected) {
+//            Pair orig_cordinate = new Pair(note.x,note.y);
+            note.display_note.setX(note.x + difx);
+            note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
+      ///      note.y = Math.floor((note.y + dify)/ 10) * 10;
+      ///      note.x = note.x + difx;
+      
+      
+//            Pair new_cordinate = new Pair(note.x,note.y);
+//            System.out.print(new_cordinate);
+//            notePosition.remove(orig_cordinate);
+//            notePosition.put(new_cordinate, note);
+        }
+    }
+    
+    public static void resetBooleans(){
+        drag = false;
+        extend = false;
+        inside_rect = false;
+        new_rectangle_is_being_drawn = false;     
+    }
+    
+    public static void endExtend(double x, TuneComposer tc) {
+        double ext_len = (x - dragged.x);
+        for (Note note : selected) {
+            Pair cordinate = new Pair(note.x,note.y);
+            if(ext_len < 5.0){
+                ext_len = 5.0;
+            }
+            note.display_note.setWidth(ext_len);
+            notePosition.get(cordinate).duration = ext_len;
+        }
+    }
     
     public static void adjust_rectangle_properties( double starting_point_x,
                                      double starting_point_y,

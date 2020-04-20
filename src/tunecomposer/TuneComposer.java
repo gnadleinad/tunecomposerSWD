@@ -300,11 +300,15 @@ public class TuneComposer extends Application {
       
         controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {  
             EventHandle.onPressed(event,controller);
-    });
+        });
         
         controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) -> {  
             EventHandle.onDragged(event,controller);
-    });
+        });
+        
+        controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) -> {  
+            EventHandle.onReleased(event,controller);
+        });
       
       
             primaryStage.setTitle("Scale Player");
