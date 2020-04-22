@@ -297,11 +297,11 @@ public class TuneComposer extends Application {
             EventHandle.onClick(event,controller);
         });   
       
-        controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> { 
+        controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {
             EventHandle.onPressed(event,controller);
         });
         
-        controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) -> {  
+        controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) -> { 
             EventHandle.onDragged(event,controller);
         });
         
@@ -319,121 +319,6 @@ public class TuneComposer extends Application {
       
     }
 
-      /*
-      
-      controller.notes_pane.setOnMouseDragged( ( MouseEvent event ) ->
-      {
-        if(extend == true || new_rectangle_is_being_drawn == true){
-            drag = false;
-        }
-        else{
-            drag = true;
-        }
-        double current_ending_point_x = event.getX() ;
-        double current_ending_point_y = event.getY() ;
-          
-        if (drag == true){
-          double dify = (current_ending_point_y - dragged.y);
-          double difx = (current_ending_point_x - dragged.x);
-          for (Note note : selected) {
-             note.display_note.setX(note.x + difx);
-             note.display_note.setY(note.y + dify); 
-          }    
-        }
-          
-        else if (extend == true){
-            double extentionlen = (current_ending_point_x - dragged.x);
-            for (Note note : selected) {
-                if(extentionlen < 5.0){
-                    extentionlen = 5.0;
-                }
-                note.display_note.setWidth(extentionlen);
-            }
-            
-        }
-         if ( new_rectangle_is_being_drawn == true )
-         {
-
-            adjust_rectangle_properties( starting_point_x,
-                                         starting_point_y,
-                                         current_ending_point_x,
-                                         current_ending_point_y,
-                                         select_rect) ;
-         }
-      } ) ;
-      */
-      
-      /*
-
-      controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) ->
-      {
-            if ( new_rectangle_is_being_drawn == true )
-                {
-                    for (Note note : selected){
-                        note.display_deselect();
-                    }
-                    if(event.isControlDown() == false){selected.clear();}
-                    
-                    double ending_point_x = event.getX();
-                    double ending_point_y = event.getY();
-                    for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                       if ((entry.getValue().y > Math.min(starting_point_y,ending_point_y)  && entry.getValue().y < Math.max(ending_point_y,starting_point_y))
-                               && (entry.getValue().x > Math.min(starting_point_x, ending_point_x) && entry.getValue().x < Math.max(ending_point_x, starting_point_x)))
-                       {  
-                           selected.add(entry.getValue());
-                       }
-                   }
-                    for (Note note : selected){
-                        note.display_select();
-                    }
-
-
-                   controller.notes_pane.getChildren().remove( select_rect ) ;
-                   new_rectangle_is_being_drawn = false ;
-                }
-            if (drag == true){
-
-                double ending_point_x = event.getX();
-                double ending_point_y = event.getY();
-                double dify = (ending_point_y - dragged.y);
-                double difx = (ending_point_x - dragged.x);
-                for (Note note : selected) {
-                    Pair orig_cordinate = new Pair(note.x,note.y);
-                    
-                    note.display_note.setX(note.x + difx);
-                    note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
-                    note.y = Math.floor((note.y + dify)/ 10) * 10;
-                    note.x = note.x + difx;
-                    Pair new_cordinate = new Pair(note.x,note.y);
-                    
-                    notePosition.remove(orig_cordinate);
-                    notePosition.put(new_cordinate, note);
-                }
-            }
-            if (extend == true) {
-                double current_ending_point_x = event.getX() ;
-                double ext_len = (current_ending_point_x - dragged.x);
-                for (Note note : selected) {
-                    Pair cordinate = new Pair(note.x,note.y);
-                    if(ext_len < 5.0){
-                        ext_len = 5.0;
-                    }
-                    note.display_note.setWidth(ext_len);
-                    notePosition.get(cordinate).duration = ext_len;
-              }
-            }
-        
-      } ) ;
-       
-            primaryStage.setTitle("Scale Player");
-            primaryStage.setScene(scene);
-            primaryStage.setOnCloseRequest((WindowEvent we) -> {
-                System.exit(0);
-            });   
-            primaryStage.show();
-        }
-      
-      */
         
     /**
      * Constructs a line graphic and duplicates until window is filled.
