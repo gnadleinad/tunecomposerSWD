@@ -105,7 +105,6 @@ public class EventHandle {
         double current_ending_point_y = event.getY() ;
           
         if (drag == true){
-            System.out.println("Drag == True");
             dragNotes(selected,current_ending_point_x,current_ending_point_y);   
         }
           
@@ -136,11 +135,13 @@ public class EventHandle {
         if (extend == true) {
             endExtend(ending_point_x, tc);
         }
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
-                if(event.isControlDown() == false){
-                    deselectNotes(event);
-                    selectNote(event, entry.getValue(), selected);
+        else{
+            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+                if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
+                    if(event.isControlDown() == false){
+                        deselectNotes(event);
+                        selectNote(event, entry.getValue(), selected);
+                    }
                 }
             }
         }
@@ -192,7 +193,7 @@ public class EventHandle {
                 
                 if(event.isControlDown() == true){
                     controlClick(event,entry.getValue(),starting_point_x,starting_point_y);
-                } else{      
+                } else{
                     selectNote(event, entry.getValue(), selected);
                     
                 }
