@@ -294,11 +294,10 @@ public class TuneComposer extends Application {
   
         controller.notes_pane.setOnMouseClicked((MouseEvent event) -> {
             controller.change_instrument();
-            System.out.println("notePane");
             EventHandle.onClick(event,controller);
         });   
       
-        controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> {  
+        controller.notes_pane.setOnMousePressed( ( MouseEvent event ) -> { 
             EventHandle.onPressed(event,controller);
         });
         
@@ -306,7 +305,7 @@ public class TuneComposer extends Application {
             EventHandle.onDragged(event,controller);
         });
         
-        controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) -> {  
+        controller.notes_pane.setOnMouseReleased( ( MouseEvent event ) -> { 
             EventHandle.onReleased(event,controller);
         });
       
