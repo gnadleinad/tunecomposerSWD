@@ -65,7 +65,10 @@ public class EventHandle {
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                 if(entry.getValue().display_note.getY() == y && (entry.getValue().display_note.getX() <= x && entry.getValue().display_note.getX() + entry.getValue().display_note.getWidth()  >  x )){ 
                     if(event.isControlDown() == true){
-                        controlClick(entry.getValue(),x,y);
+                        controlClick(event,entry.getValue(),x,y);
+                    } else{
+                        //deselectNotes(event);
+                        selectNote(event, entry.getValue(),selected);
                     }
                     return;
                 }  
@@ -137,7 +140,7 @@ public class EventHandle {
         double ending_point_y = event.getY();
         
         if ( new_rectangle_is_being_drawn == true ){
-            endDrawingRectangle(ending_point_x,ending_point_y, tc);
+            endDrawingRectangle(event, ending_point_x,ending_point_y, tc);
         }
         if (drag == true){
             endDrag(ending_point_x,ending_point_y, tc);
@@ -151,13 +154,7 @@ public class EventHandle {
     
     
     static public void makeNote(MouseEvent event, double x,double y, TuneComposer tc){
-        //if(event.isControlDown() == false){
-            //System.out.println("ctrl ");
-            deselectNotes();
-        //} else{
-            //System.out.println("all selected");
-        //}
-
+        deselectNotes(event);
         //controller.change_instrument();
 
         Pair cordinates = new Pair(x,y);
@@ -205,23 +202,29 @@ public class EventHandle {
     }
     
     
-    static public void selectNote(Note n, ArrayList<Note> selected){ 
+    static public void selectNote(MouseEvent event, Note n, ArrayList<Note> array){
+        deselectNotes(event);
+
         if(!selected.contains(n)){
             n.display_select();
             selected.add(n); 
         }
+
     }
     
-    public static void deselectNotes(){
-        for (Note note : selected){
-            note.display_deselect();
+    public static void deselectNotes(MouseEvent event){
+        if(event.isControlDown() == false){
+            for (Note note : selected){
+                note.display_deselect();
+            }
+            selected.clear();
         }
-        selected.clear();
+        
     }
     
     public static void deselectNote(Note n){
         n.display_deselect();
-        selected.remove(n);
+        //selected.remove(n);
     }
     
     public static void dragNotes(ArrayList<Note> array, double x, double y){
@@ -246,8 +249,8 @@ public class EventHandle {
     }
     
     
-    public static void endDrawingRectangle(double x, double y, TuneComposer tc){
-        deselectNotes();                
+    public static void endDrawingRectangle(MouseEvent event, double x, double y, TuneComposer tc){
+        deselectNotes(event);                
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
            if ((entry.getValue().display_note.getY() > Math.min(starting_point_y,y)  && entry.getValue().display_note.getY() < Math.max(y,starting_point_y))
                    && (entry.getValue().display_note.getX() > Math.min(starting_point_x, x) && entry.getValue().display_note.getX() < Math.max(x, starting_point_x)))
@@ -257,7 +260,9 @@ public class EventHandle {
        }
 
         for (Note note : selected){
-            note.display_select();
+            if(!note.display_note.getStyleClass().contains("selected")){
+                note.display_select();
+            }
         }
 
 
@@ -307,9 +312,9 @@ public class EventHandle {
         }
     }
     
-    private static void controlClick(Note note, double x, double y){
+    private static void controlClick(MouseEvent event, Note note, double x, double y){
         if(!selected.contains(note)){
-            selectNote(note, selected);
+            selectNote(event, note, selected);
         }
         else{
             for(Note e : selected){ 
