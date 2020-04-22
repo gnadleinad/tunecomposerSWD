@@ -55,24 +55,18 @@ public class EventHandle {
         
         double x  = event.getX();
         double y  = event.getY();
-        //drag = !(extend == true || new_rectangle_is_being_drawn == true); 
         if (drag == true || extend == true || new_rectangle_is_being_drawn == true){
             resetBooleans(); 
         }
         else{
             y = Math.floor(y / 10) * 10;
-
+            
             for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
                 if(entry.getValue().display_note.getY() == y && (entry.getValue().display_note.getX() <= x && entry.getValue().display_note.getX() + entry.getValue().display_note.getWidth()  >  x )){ 
-                    if(event.isControlDown() == true){
-                        controlClick(event,entry.getValue(),x,y);
-                    } else{
-                        //deselectNotes(event);
-                        selectNote(event, entry.getValue(),selected);
-                    }
                     return;
                 }  
             }
+
             makeNote(event,x,y,tc);
         }
         
@@ -86,14 +80,7 @@ public class EventHandle {
         starting_point_x = event.getX() ;
         starting_point_y = event.getY() ;
         changeDragOrExtendBooleans(starting_point_x,starting_point_y);
- 
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
-                inside_rect = true;
-
-                //selectNote(entry.getValue(), selected);
-            }
-        }
+        selectNotes(event);
 
         if (inside_rect == false){
             select_rect = new Rectangle() ;
@@ -118,6 +105,7 @@ public class EventHandle {
         double current_ending_point_y = event.getY() ;
           
         if (drag == true){
+            System.out.println("Drag == True");
             dragNotes(selected,current_ending_point_x,current_ending_point_y);   
         }
           
@@ -148,7 +136,14 @@ public class EventHandle {
         if (extend == true) {
             endExtend(ending_point_x, tc);
         }
-        //resetBooleans();
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
+                if(event.isControlDown() == false){
+                    deselectNotes(event);
+                    selectNote(event, entry.getValue(), selected);
+                }
+            }
+        }
     }
     
     
@@ -160,9 +155,6 @@ public class EventHandle {
         Pair cordinates = new Pair(x,y);
         Note n = new Note(x,y,current_instrument);
         //MIDI_events.add(n.get_MIDI(x));
-//            if(event.isControlDown() == false){
-//                selected.clear();
-//            }
 
 
         selected.add(n);
@@ -180,31 +172,35 @@ public class EventHandle {
         for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
             
             if (entry.getValue().display_note.getY() == Math.floor(y/10)*10 
-                && (entry.getValue().display_note.getX() <= x && (entry.getValue().display_note.getX())+(entry.getValue()).display_note.getWidth() - 10  >  x ) 
-                && (selected.contains(entry.getValue()))){
-                dragged = entry.getValue();
+                && (entry.getValue().display_note.getX() <= x && (entry.getValue().display_note.getX())+(entry.getValue()).display_note.getWidth() - 10  >  x )){
                 drag = false;
-                inside_rect = true;
-                //selectNote(entry.getValue(), selected);
                 break;
             }
             else if (entry.getValue().display_note.getY() == Math.floor(y/10)*10 
-                && (entry.getValue().display_note.getX())+(entry.getValue().display_note.getWidth()-10) <= x && (entry.getValue().display_note.getX())+entry.getValue().display_note.getWidth()  >  x 
-                && (selected.contains(entry.getValue()))){ 
-                dragged = entry.getValue();
+                && (entry.getValue().display_note.getX())+(entry.getValue().display_note.getWidth()-10) <= x && (entry.getValue().display_note.getX())+entry.getValue().display_note.getWidth()  >  x ){ 
                 extend = true;
-                inside_rect = true;
-                //selectNote(entry.getValue(), selected);
                 break;
-            }
-            //drag = (extend == true || new_rectangle_is_being_drawn == true);    
+            }   
         }
     }
     
+    public static void selectNotes(MouseEvent event){
+        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+            if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
+                dragged = entry.getValue();
+                inside_rect = true;
+                
+                if(event.isControlDown() == true){
+                    controlClick(event,entry.getValue(),starting_point_x,starting_point_y);
+                } else{      
+                    selectNote(event, entry.getValue(), selected);
+                    
+                }
+            }
+        }
+    }
     
     static public void selectNote(MouseEvent event, Note n, ArrayList<Note> array){
-        deselectNotes(event);
-
         if(!selected.contains(n)){
             n.display_select();
             selected.add(n); 
@@ -224,13 +220,12 @@ public class EventHandle {
     
     public static void deselectNote(Note n){
         n.display_deselect();
-        //selected.remove(n);
+        selected.remove(n);
     }
     
     public static void dragNotes(ArrayList<Note> array, double x, double y){
         double dify = (y - dragged.y);
         double difx = (x - dragged.x);
-        
         for (Note note : selected) {
             note.display_note.setX(note.x + difx);
             note.display_note.setY(note.y + dify); 
@@ -313,17 +308,11 @@ public class EventHandle {
     }
     
     private static void controlClick(MouseEvent event, Note note, double x, double y){
-        if(!selected.contains(note)){
+        if(!selected.contains(note)){       
             selectNote(event, note, selected);
         }
         else{
-            for(Note e : selected){ 
-                if (e.y == y && (e.x <= x && e.x + e.display_note.getWidth()  >  x )){  
-                    deselectNote(e);
-                    break;
-                } 
-
-            }
+            deselectNote(note);
         }
     }
     
