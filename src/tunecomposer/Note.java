@@ -12,7 +12,7 @@ import javax.sound.midi.ShortMessage;
  *
  * @author schneicw
  */
-public class Note {
+public class Note extends Rectangle{
 
     private String instrument;
     public Double x;
@@ -28,17 +28,24 @@ public class Note {
      * @param start_position
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
+        this.setX(temp_x);
+        this.setY(temp_y);
+        this.setWidth(100);
+        this.setHeight(10);
+        this.getStyleClass().add("note");
+        this.getStyleClass().add(temp_instrument);
+        
         instrument = temp_instrument;
         x = temp_x;
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
         duration = 100.0;
-        draw_note(x,y);
+        //draw_note(x,y);
         
         x = temp_x;
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
-        draw_note(x,y);
+        //draw_note(x,y);
         
     }
     
@@ -77,17 +84,17 @@ public class Note {
     }
     
     public void display_delete(){
-        display_note.setVisible(false);
+        this.setVisible(false);
     }
     
     public void display_select(){
-        display_note.getStyleClass().add("selected");
+        this.getStyleClass().add("selected");
 //        isSelected = true;
     }
     
 
     public void display_deselect(){
-        display_note.getStyleClass().remove("selected");
+        this.getStyleClass().remove("selected");
 //        isSelected = false;
     }
     
