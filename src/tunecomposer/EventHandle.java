@@ -17,6 +17,7 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
@@ -42,7 +43,6 @@ public class EventHandle {
      * @param map
      * @param selected
      */
-    private static Map<Pair, Note> notePosition = new HashMap<>();
     private static ArrayList<Note> selected = new ArrayList<>();
     public static boolean drag = false;
     public static boolean extend = false;
@@ -206,6 +206,12 @@ public class EventHandle {
     @FXML
 
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
+        //System.out.println(notes_pane.getChildren().size());
+        for(Note note: selected){
+            notes_pane.getChildren().remove(note); 
+        }
+        selected.clear();
+        
 //        Set<Pair> set = new HashSet<> ();
 //        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
 ////            if (entry.getValue().isSelected){
@@ -291,7 +297,6 @@ public class EventHandle {
  
     // GOOD STUFF STARTS HERE
     public void onClick(MouseEvent event){
-        
         double x  = event.getX();
         double y  = event.getY();
         if (drag == true || extend == true || new_rectangle_is_being_drawn == true){
@@ -299,15 +304,17 @@ public class EventHandle {
         }
         else{
             y = Math.floor(y / 10) * 10;
-            
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if(entry.getValue().display_note.getY() == y && (entry.getValue().display_note.getX() <= x && entry.getValue().display_note.getX() + entry.getValue().display_note.getWidth()  >  x )){ 
+
+            for(Node node : notes_pane.getChildren()){
+                //System.out.println("for loop");
+                if(((Note)node).contains(x, y)){
+                    System.out.println("return");
                     return;
                 }  
             }
 
             makeNote(event,x,y);
-        }   
+        } 
     }
       
     public void onPressed(MouseEvent event) { 
@@ -328,7 +335,6 @@ public class EventHandle {
     }
     
     public void onDragged(MouseEvent event) {  
-
         if(extend == true || new_rectangle_is_being_drawn == true){
             drag = false;
         }
@@ -370,11 +376,12 @@ public class EventHandle {
             endExtend(ending_point_x);
         }
         else{
-            for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-                if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
+            
+            for(Node node : notes_pane.getChildren()){ 
+                if(((Note)node).contains(starting_point_x, starting_point_y)){
                     if(event.isControlDown() == false){
                         deselectNotes(event);
-                        selectNote(event, entry.getValue(), selected);
+                        selectNote(event, (Note)node, selected);
                     }
                 }
             }
@@ -391,28 +398,25 @@ public class EventHandle {
         Note n = new Note(x,y,current_instrument);
         //MIDI_events.add(n.get_MIDI(x));
 
-
         selected.add(n);
-        notes_pane.getChildren().add(n.display_note);
+        notes_pane.getChildren().add(n);
         n.display_select();
-        if(n.midi_y >= 0 && n.midi_y < 128){
-            notePosition.put(cordinates,n);
-            //noteTreeMap.put(cordinates,n);
-        }
+
 
     }
        
         
-    static public void changeDragOrExtendBooleans(double x, double y){
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
+    public void changeDragOrExtendBooleans(double x, double y){
+        for(Node node : notes_pane.getChildren()){
+            Rectangle rnote = (Rectangle)node; 
             
-            if (entry.getValue().display_note.getY() == Math.floor(y/10)*10 
-                && (entry.getValue().display_note.getX() <= x && (entry.getValue().display_note.getX())+(entry.getValue()).display_note.getWidth() - 10  >  x )){
+            if (rnote.getY() == Math.floor(y/10)*10 
+                && (rnote.getX() <= x && (rnote.getX())+rnote.getWidth() - 10  >  x )){
                 drag = false;
                 break;
             }
-            else if (entry.getValue().display_note.getY() == Math.floor(y/10)*10 
-                && (entry.getValue().display_note.getX())+(entry.getValue().display_note.getWidth()-10) <= x && (entry.getValue().display_note.getX())+entry.getValue().display_note.getWidth()  >  x ){ 
+            else if (rnote.getY() == Math.floor(y/10)*10 
+                && (rnote.getX())+(rnote.getWidth()-10) <= x && (rnote.getX())+rnote.getWidth()  >  x ){ 
                 extend = true;
                 break;
             }   
@@ -420,15 +424,15 @@ public class EventHandle {
     }
     
     public void selectNotes(MouseEvent event){
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-            if(entry.getValue().display_note.contains(starting_point_x, starting_point_y)){
-                dragged = entry.getValue();
+        for(Node node : notes_pane.getChildren()){
+            if(((Note)node).contains(starting_point_x, starting_point_y)){
+                dragged = (Note)node;
                 inside_rect = true;
                 
                 if(event.isControlDown() == true){
-                    controlClick(event,entry.getValue(),starting_point_x,starting_point_y);
+                    controlClick(event,(Note)node,starting_point_x,starting_point_y);
                 } else{
-                    selectNote(event, entry.getValue(), selected);
+                    selectNote(event, (Note)node, selected);
                     
                 }
             }
@@ -456,19 +460,15 @@ public class EventHandle {
     public void deselectNote(Note n){
         n.display_deselect();
         selected.remove(n);
-        //REMOVE
-        //System.out.println(notes_pane.equals(tcx.notes_pane));
-        //System.out.println(tcx.notes_pane.getChildren().size());
-        //notes_pane.getChildren().remove(n.display_note);
-        //System.out.println(notes_pane.getChildren().size());
+        
     }
     
     public void dragNotes(ArrayList<Note> array, double x, double y){
         double dify = (y - dragged.y);
         double difx = (x - dragged.x);
         for (Note note : selected) {
-            note.display_note.setX(note.x + difx);
-            note.display_note.setY(note.y + dify); 
+            note.setX(note.x + difx);
+            note.setY(note.y + dify); 
 
         } 
     }
@@ -479,23 +479,24 @@ public class EventHandle {
             if(extentionlen < 5.0){
                 extentionlen = 5.0;
             }
-            note.display_note.setWidth(extentionlen); 
+            note.setWidth(extentionlen); 
         } 
     }
     
     
     public void endDrawingRectangle(MouseEvent event, double x, double y){
-        deselectNotes(event);                
-        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-           if ((entry.getValue().display_note.getY() > Math.min(starting_point_y,y)  && entry.getValue().display_note.getY() < Math.max(y,starting_point_y))
-                   && (entry.getValue().display_note.getX() > Math.min(starting_point_x, x) && entry.getValue().display_note.getX() < Math.max(x, starting_point_x)))
-           {  
-               selected.add(entry.getValue());
-           }
+        deselectNotes(event);
+        for(Node node : notes_pane.getChildren()){
+            
+            
+            if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
+                   && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
+            {  
+                selected.add((Note)node);
+            }
        }
-
         for (Note note : selected){
-            if(!note.display_note.getStyleClass().contains("selected")){
+            if(!note.getStyleClass().contains("selected")){
                 note.display_select();
             }
         }
@@ -511,19 +512,15 @@ public class EventHandle {
         double difx = (x - dragged.x);
 
         for (Note note : selected) {
-            Pair orig_cordinate = new Pair(note.x,note.y);
 
-            note.display_note.setX(note.x + difx);
-            note.display_note.setY(Math.floor((note.y + dify)/ 10) * 10);
+            note.setX(note.x + difx);
+            note.setY(Math.floor((note.y + dify)/ 10) * 10);
             
             note.y = Math.floor((note.y+ dify)/ 10) * 10;
             note.x = note.x+ difx;
       
       
-            Pair new_cordinate = new Pair(note.x,note.y);
 
-            notePosition.remove(orig_cordinate);
-            notePosition.put(new_cordinate, note);
 
         }
     }
@@ -542,8 +539,7 @@ public class EventHandle {
             if(ext_len < 5.0){
                 ext_len = 5.0;
             }
-            note.display_note.setWidth(ext_len);
-            notePosition.get(cordinate).duration = ext_len;
+            note.setWidth(ext_len);
         }
     }
     
