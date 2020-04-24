@@ -57,6 +57,11 @@ public class Group extends Rectangle implements Moveable{
 
     public void display_deselect(){
         this.getStyleClass().remove("group");
+        this.getStyleClass().add("unselect-group");    
+    }
+    
+    public void display_ungroup(){
+        this.getStyleClass().remove("group");
     }
     
 }
