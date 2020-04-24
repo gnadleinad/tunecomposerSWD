@@ -37,12 +37,12 @@
                   </MenuItem>
                   <MenuItem mnemonicParsing="false" onAction="#handleDeleteButtonAction" text="Delete" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Group">
+                  <MenuItem mnemonicParsing="false" onAction="#handleGroupButtonAction" text="Group">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Ungroup">
+                  <MenuItem mnemonicParsing="false" onAction="#handleUngroupButtonAction" text="Ungroup">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator>
