@@ -62,3 +62,12 @@
     -fx-stroke: black;
 }
 
+.group{
+    -fx-fill: transparent;
+    -fx-stroke: red;
+    -fx-stroke-width: 2;
+    -fx-stroke-dash-array: 12 2 4 2;
+    -fx-stroke-dash-offset: 6;
+    -fx-stroke-line-cap: butt;
+}
+
