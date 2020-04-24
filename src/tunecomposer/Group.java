@@ -26,10 +26,16 @@ public class Group extends Rectangle implements Moveable{
     }
     
     private void setXandY(){
+        double width_x = 0;
+        double height_y = 0;
         for(Moveable mov: group){
             x = Math.min(mov.getMoveableX(), x);
             y = Math.min(mov.getMoveableY(), y);
+            width_x = Math.max(mov.getMoveableX(), x);
+            height_y = Math.max(mov.getMoveableY(), y);
         }
+        this.setWidth(width_x - x);
+        this.setHeight(y-height_y);
         
     }
     
