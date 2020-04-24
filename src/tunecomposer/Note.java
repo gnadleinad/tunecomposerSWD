@@ -12,7 +12,7 @@ import javax.sound.midi.ShortMessage;
  *
  * @author schneicw
  */
-public class Note extends Rectangle{
+public class Note extends Rectangle implements Moveable{
 
     private String instrument;
     public Double x;
@@ -28,6 +28,7 @@ public class Note extends Rectangle{
      * @param start_position
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
+
         this.setX(temp_x);
         this.setY(temp_y);
         this.setWidth(100);
@@ -40,13 +41,28 @@ public class Note extends Rectangle{
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
         duration = 100.0;
-        //draw_note(x,y);
         
-        x = temp_x;
-        y = temp_y;
-        midi_y = Math.floor(127-((temp_y - 30) / 10));
-        //draw_note(x,y);
-        
+    }
+    
+    public void drag(double difx, double dify){
+        this.setX(x + difx);
+        this.setY(y + dify);
+    }
+    
+    public void releaseDrag(double difx, double dify){
+        this.setX(x + difx);
+        this.setY(Math.floor((y + dify)/ 10) * 10);
+
+        this.y = Math.floor((y+ dify)/ 10) * 10;
+        this.x = x+ difx;
+    }
+    
+    public void extend(double extentionlen){
+        this.setWidth(extentionlen);
+    }
+    
+    public void releaseExtend(double extentionlen){
+        this.setWidth(extentionlen);
     }
     
     @Override
@@ -69,19 +85,16 @@ public class Note extends Rectangle{
                 
     }
     
-    /**
-     * makes the rectangle on screen symbolizing a note
-     * @param x the x coordinate of the note
-     * @param y the y coordinate of the note
-     * @return display_note
-     */
-    public void draw_note(double x, double y) {
-        y = Math.floor(y / 10) * 10;
-        display_note = new Rectangle(x, y, 100, 10);
-        display_note.getStyleClass().add("note");
-        Convert_Instrument();
-        display_note.getStyleClass().add(instrument);
+    public double getMoveableX(){
+        return x;
     }
+    
+    public double getMoveableY(){
+        return y;
+    }
+    
+
+    
     
     public void display_delete(){
         this.setVisible(false);
@@ -89,13 +102,11 @@ public class Note extends Rectangle{
     
     public void display_select(){
         this.getStyleClass().add("selected");
-//        isSelected = true;
     }
     
 
     public void display_deselect(){
         this.getStyleClass().remove("selected");
-//        isSelected = false;
     }
     
     
