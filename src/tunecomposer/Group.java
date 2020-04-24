@@ -21,9 +21,6 @@ public class Group extends Rectangle implements Moveable{
         group = selected;
         x = 0.0;
         y = 0.0;
-        
-        
-        
     }
     
     private void setXandY(){
@@ -39,10 +36,25 @@ public class Group extends Rectangle implements Moveable{
     
     public double getMoveableY(){return 0.0;}
     
-    public void drag(double difx, double dify){}
+    public void drag(double difx, double dify){
+        this.setX(x + difx);
+        this.setY(y + dify);
+        
+        for(Moveable mov : group) {
+            mov.drag(difx,dify);
+        }
+    }
     
-    public void releaseDrag(double difx, double dify){}
-    
+    public void releaseDrag(double difx, double dify){
+        this.setX(x + difx);
+        this.setY(Math.floor((y + dify)/ 10) * 10);
+
+        this.y = Math.floor((y+ dify)/ 10) * 10;
+        this.x = x+ difx;
+        for(Moveable mov : group) {
+            mov.releaseDrag(difx,dify);
+        }
+    }
     public void extend(double extentionlen){}
     
     public void releaseExtend(double extentionlen){}
