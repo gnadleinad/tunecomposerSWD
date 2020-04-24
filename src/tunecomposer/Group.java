@@ -19,22 +19,27 @@ public class Group extends Rectangle implements Moveable{
     
     public Group(ArrayList selected){
         group = selected;
-        x = 0.0;
-        y = 0.0;
+        setXandY();
+           
     }
     
     private void setXandY(){
-        /*
+        double width_x = 0;
+        double height_y = 0;
         for(Moveable mov: group){
-            if(mov.getMoveableX() < x ){
-            }
+            x = Math.min(mov.getMoveableX(), x);
+            y = Math.min(mov.getMoveableY(), y);
+            width_x = Math.max(mov.getMoveableX(), x);
+            height_y = Math.max(mov.getMoveableY(), y);
         }
-        */
+        this.setWidth(width_x - x);
+        this.setHeight(y-height_y);
+        
     }
     
-    public double getMoveableX(){return 0.0;}
+    public double getMoveableX(){return x;}
     
-    public double getMoveableY(){return 0.0;}
+    public double getMoveableY(){return y;}
     
     public void drag(double difx, double dify){
         this.setX(x + difx);
@@ -64,6 +69,11 @@ public class Group extends Rectangle implements Moveable{
     }
 
     public void display_deselect(){
+        this.getStyleClass().remove("group");
+        this.getStyleClass().add("unselect-group");    
+    }
+    
+    public void display_ungroup(){
         this.getStyleClass().remove("group");
     }
     
