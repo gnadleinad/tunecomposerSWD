@@ -19,25 +19,23 @@ public class Group extends Rectangle implements Moveable{
     
     public Group(ArrayList selected){
         group = selected;
-        x = 0.0;
-        y = 0.0;
+        setXandY();
         
         
         
     }
     
     private void setXandY(){
-        /*
         for(Moveable mov: group){
-            if(mov.getMoveableX() < x ){
-            }
+            x = Math.min(mov.getMoveableX(), x);
+            y = Math.min(mov.getMoveableY(), y);
         }
-        */
+        
     }
     
-    public double getMoveableX(){return 0.0;}
+    public double getMoveableX(){return x;}
     
-    public double getMoveableY(){return 0.0;}
+    public double getMoveableY(){return y;}
     
     public void drag(double difx, double dify){}
     
