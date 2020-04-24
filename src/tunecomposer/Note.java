@@ -37,6 +37,7 @@ public class Note extends Rectangle implements Moveable{
         this.getStyleClass().add(temp_instrument);
         
         instrument = temp_instrument;
+        Convert_Instrument();
         x = temp_x;
         y = temp_y;
         midi_y = Math.floor(127-((temp_y - 30) / 10));
@@ -91,13 +92,6 @@ public class Note extends Rectangle implements Moveable{
     
     public double getMoveableY(){
         return y;
-    }
-    
-
-    
-    
-    public void display_delete(){
-        this.setVisible(false);
     }
     
     public void display_select(){
