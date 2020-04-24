@@ -17,8 +17,6 @@ public class Note extends Rectangle implements Moveable{
     private String instrument;
     public Double x;
     public Double y; //midi value of y
-    public Double midi_y; 
-    public Rectangle display_note;
     public Double duration;
 
     
@@ -40,7 +38,6 @@ public class Note extends Rectangle implements Moveable{
         Convert_Instrument();
         x = temp_x;
         y = temp_y;
-        midi_y = Math.floor(127-((temp_y - 30) / 10));
         duration = 100.0;
         
     }
@@ -82,7 +79,7 @@ public class Note extends Rectangle implements Moveable{
         // Compare the data members and return accordingly  
         return Double.compare(x, other.x) == 0 
                 && Double.compare(duration, other.duration) == 0
-                && display_note.equals(other.display_note); 
+                && this.equals(other); 
                 
     }
     
