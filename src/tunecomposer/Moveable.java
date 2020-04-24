@@ -23,8 +23,6 @@ public interface Moveable {
     
     public void releaseExtend(double extentionlen);
     
-    public void display_delete();
-    
     public void display_select();
 
     public void display_deselect();
