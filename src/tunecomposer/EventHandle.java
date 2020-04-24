@@ -237,6 +237,21 @@ public class EventHandle {
         System.exit(0);
     }
     /**
+     * 
+     * @param event 
+     */
+    @FXML
+    protected void handleGroupButtonAction(ActionEvent event) {
+    }
+    /**
+     * 
+     * @param event 
+     */
+    @FXML
+    protected void handleUngroupButtonAction(ActionEvent event) {
+    }
+    
+    /**
      * Constructs a line graphic and duplicates until window is filled.
      */
     @FXML
