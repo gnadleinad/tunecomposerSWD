@@ -83,13 +83,9 @@ public class Note extends Rectangle implements Moveable{
                 
     }
     
-    public double getMoveableX(){
-        return x;
-    }
+    public double getMoveableX(){return x;}
     
-    public double getMoveableY(){
-        return y;
-    }
+    public double getMoveableY(){return y;}
     
     public void display_select(){
         this.getStyleClass().add("selected");
