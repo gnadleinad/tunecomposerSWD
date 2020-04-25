@@ -15,6 +15,8 @@ public interface Moveable {
     
     public double getMoveableY();
     
+    public boolean equals(Object o);
+    
     public void drag(double difx, double dify);
     
     public void releaseDrag(double difx, double dify);
@@ -26,5 +28,7 @@ public interface Moveable {
     public void display_select();
 
     public void display_deselect();
+
+    public boolean contains(double starting_point_x, double starting_point_y);
     
 }
