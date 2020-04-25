@@ -71,3 +71,9 @@
     -fx-stroke-line-cap: butt;
 }
 
+.unselect-group{
+    -fx-fill: transparent;
+    -fx-stroke: grey;
+    -fx-stroke-width: 2;
+}
+
