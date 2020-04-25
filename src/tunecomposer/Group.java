@@ -18,23 +18,60 @@ public class Group extends Rectangle implements Moveable{
     private static ArrayList<Moveable> group = new ArrayList<>();
     
     public Group(ArrayList selected){
-        group = selected;
+        group = (ArrayList<Moveable>)selected.clone();
+        x = group.get(0).getMoveableX();
+        y = group.get(0).getMoveableY();
         setXandY();
+        
+        this.display_select();
+        
+        //this.setX(x);
+        //this.setY(y);
+        //this.setWidth(100);
+        //this.setHeight(100);
+        
+        //this.display_select();
            
     }
     
     private void setXandY(){
-        double width_x = 0;
-        double height_y = 0;
-        for(Moveable mov: group){
-            x = Math.min(mov.getMoveableX(), x);
-            y = Math.min(mov.getMoveableY(), y);
-            width_x = Math.max(mov.getMoveableX(), x);
-            height_y = Math.max(mov.getMoveableY(), y);
-        }
-        this.setWidth(width_x - x);
-        this.setHeight(y-height_y);
+        double max_x = group.get(0).getMoveableX();
+        double max_y = group.get(0).getMoveableY();
+        double min_x = group.get(0).getMoveableX();
+        double min_y = group.get(0).getMoveableY();
         
+        for(Moveable mov: group){
+            min_x = Math.min(mov.getMoveableX(), min_x);
+            min_y = Math.min(mov.getMoveableY(), min_y);
+            max_x = Math.max(mov.getMoveableX(), max_x);
+            max_y = Math.max(mov.getMoveableY(), max_y);
+        }
+        max_x = max_x+100;
+        max_y = max_y +10;
+        this.setX(min_x); // correct
+        this.setY(min_y); 
+        this.setWidth(max_x - min_x);
+        this.setHeight(max_y - min_y);
+        
+    }
+    
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this) { 
+            return true; 
+        } 
+  
+        /* Check if o is an instance of Complex or not 
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof Group)) { 
+            return false; 
+        } 
+        Group other = (Group) o; 
+          
+        // Compare the data members and return accordingly  
+        return  group.equals(other.group) && this.equals(other); 
+                
     }
     
     public double getMoveableX(){return x;}
@@ -65,10 +102,14 @@ public class Group extends Rectangle implements Moveable{
     public void releaseExtend(double extentionlen){}
     
     public void display_select(){
+        this.getStyleClass().remove("unselect-group");
         this.getStyleClass().add("group");
     }
 
     public void display_deselect(){
+        for(Moveable mov : group){
+            mov.display_deselect();
+        }
         this.getStyleClass().remove("group");
         this.getStyleClass().add("unselect-group");    
     }
