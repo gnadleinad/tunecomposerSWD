@@ -242,6 +242,11 @@ public class EventHandle {
      */
     @FXML
     protected void handleGroupButtonAction(ActionEvent event) {
+        Group group = new Group(selected);
+        notes_pane.getChildren().add(group);
+        selected.clear();
+        selected.add(group);
+
     }
     /**
      * 
@@ -249,6 +254,7 @@ public class EventHandle {
      */
     @FXML
     protected void handleUngroupButtonAction(ActionEvent event) {
+        
     }
     
     /**
@@ -300,7 +306,7 @@ public class EventHandle {
 
             for(Node node : notes_pane.getChildren()){
                 //System.out.println("for loop");
-                if(((Note)node).contains(x, y)){
+                if(((Moveable)node).contains(x, y)){
                     return;
                 }  
             }
@@ -370,16 +376,15 @@ public class EventHandle {
         else{
             
             for(Node node : notes_pane.getChildren()){ 
-                if(((Note)node).contains(starting_point_x, starting_point_y)){
+                if(((Moveable)node).contains(starting_point_x, starting_point_y)){
                     if(event.isControlDown() == false){
                         deselectNotes(event);
-                        selectNote((Note)node);
+                        selectNote((Moveable)node);
                     }
                 }
             }
         }
     }
-    
     
     
     public void makeNote(MouseEvent event, double x,double y){
@@ -417,24 +422,24 @@ public class EventHandle {
     
     public void selectNotes(MouseEvent event){
         for(Node node : notes_pane.getChildren()){
-            if(((Note)node).contains(starting_point_x, starting_point_y)){
-                dragged = (Note)node;
+            if(((Moveable)node).contains(starting_point_x, starting_point_y)){
+                dragged = (Moveable)node;
                 inside_rect = true;
                 
                 if(event.isControlDown() == true){
-                    controlClick((Note)node);
+                    controlClick((Moveable)node);
                 } else{
-                    selectNote((Note)node);
+                    selectNote((Moveable)node);
                     
                 }
             }
         }
     }
     
-    public void selectNote(Note n){
-        if(!selected.contains(n)){
-            n.display_select();
-            selected.add(n); 
+    public void selectNote(Moveable mov){
+        if(!selected.contains(mov)){
+            mov.display_select();
+            selected.add(mov); 
         }
 
     }
@@ -449,9 +454,9 @@ public class EventHandle {
         
     }
     
-    public void deselectNote(Note n){
-        n.display_deselect();
-        selected.remove(n);
+    public void deselectNote(Moveable mov){
+        mov.display_deselect();
+        selected.remove(mov);
         
     }
     
@@ -484,7 +489,7 @@ public class EventHandle {
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                selected.add((Note)node);
+                selected.add((Moveable)node);
             }
        }
         for (Moveable mov : selected){
@@ -524,12 +529,12 @@ public class EventHandle {
         }
     }
     
-    private void controlClick(Note note){
-        if(!selected.contains(note)){       
-            selectNote(note);
+    private void controlClick(Moveable mov){
+        if(!selected.contains(mov)){       
+            selectNote(mov);
         }
         else{
-            deselectNote(note);
+            deselectNote(mov);
         }
     }
     
