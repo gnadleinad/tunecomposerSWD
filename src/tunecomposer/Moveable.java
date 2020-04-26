@@ -15,6 +15,12 @@ public interface Moveable {
     
     public double getMoveableY();
     
+    public double getMoveableWidth();
+    
+    public void setMoveableX(double x);
+    
+    public void setMoveableWidth(double width);
+    
     public boolean equals(Object o);
     
     public void drag(double difx, double dify);

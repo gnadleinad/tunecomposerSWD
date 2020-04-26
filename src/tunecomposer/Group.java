@@ -78,6 +78,12 @@ public class Group extends Rectangle implements Moveable{
     
     public double getMoveableY(){return y;}
     
+    public double getMoveableWidth() {return this.getWidth();}
+    
+    public void setMoveableX(double x) {this.setX(x);}
+    
+    public void setMoveableWidth(double width) {this.setWidth(width);}
+    
     public void drag(double difx, double dify){
         this.setX(x + difx);
         this.setY(y + dify);
@@ -97,9 +103,24 @@ public class Group extends Rectangle implements Moveable{
             mov.releaseDrag(difx,dify);
         }
     }
-    public void extend(double extentionlen){}
+    public void extend(double extentionlen){
+        double leftFraction;
+        double rightFraction;
+        double widthFraction;
+        this.setWidth(extentionlen);
+        for(Moveable mov : group) {
+            leftFraction = (mov.getMoveableX() - this.getMoveableX()) / extentionlen;
+            rightFraction = (this.getMoveableX() - mov.getMoveableX())/ extentionlen;
+            widthFraction = mov.getMoveableWidth()/ extentionlen;
+            mov.setMoveableX((leftFraction * extentionlen));
+            System.out.println(leftFraction * extentionlen);
+            //mov.setMoveableWidth(extentionlen * widthFraction);
+        }
+    }
     
-    public void releaseExtend(double extentionlen){}
+    public void releaseExtend(double extentionlen){
+        extend(extentionlen);
+    }
     
     public void display_select(){
         this.getStyleClass().remove("unselect-group");

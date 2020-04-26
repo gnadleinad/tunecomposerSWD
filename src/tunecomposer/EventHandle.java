@@ -412,9 +412,10 @@ public class EventHandle {
                 drag = false;
                 break;
             }
-            else if (rnote.getY() == Math.floor(y/10)*10 
+            else if (rnote.contains(x,y)
                 && (rnote.getX())+(rnote.getWidth()-10) <= x && (rnote.getX())+rnote.getWidth()  >  x ){ 
                 extend = true;
+                System.out.println("extend");
                 break;
             }   
         }
