@@ -246,7 +246,6 @@ public class EventHandle {
         notes_pane.getChildren().add(group);
         selected.clear();
         selected.add(group);
-
     }
     /**
      * 
@@ -382,6 +381,11 @@ public class EventHandle {
                         selectNote((Moveable)node);
                     }
                 }
+
+                if(((Moveable)node).getClassName() == "group"){
+                    selected.removeAll((((Group)node).group));
+                }
+
             }
         }
     }
@@ -422,6 +426,7 @@ public class EventHandle {
     
     public void selectNotes(MouseEvent event){
         for(Node node : notes_pane.getChildren()){
+            
             if(((Moveable)node).contains(starting_point_x, starting_point_y)){
                 dragged = (Moveable)node;
                 inside_rect = true;
@@ -433,6 +438,15 @@ public class EventHandle {
                     
                 }
             }
+            /*
+            System.out.println("selected size: " +selected.size());
+            if(((Moveable)node).getClassName() == "group"){
+                selected.remove(((Group)node).group);
+            
+            }
+*/
+            //if moveable is a group
+                //remove all moveables inside that group
         }
     }
     
