@@ -88,6 +88,7 @@ public class Note extends Rectangle implements Moveable{
     public double getMoveableY(){return y;}
     
     public void display_select(){
+        //System.out.println(this.getStyleClass());
         this.getStyleClass().add("selected");
     }
     
@@ -161,6 +162,18 @@ public class Note extends Rectangle implements Moveable{
             instrument = instrument.replace(' ', '-');
         }
     }
+    
+    
+    @Override
+    public String getClassName(){
+        return "note";
+    }
+    
+    public double getMoveableHeight(){return this.getHeight();}
+    
+    public double getMoveableWidth(){return this.getWidth();}
+    
+    public void setMoveableWidth(double width){this.setWidth(width);}
     
     
     
