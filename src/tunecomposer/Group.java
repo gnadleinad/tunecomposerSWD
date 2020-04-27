@@ -22,13 +22,15 @@ public class Group extends Rectangle implements Moveable{
         x = group.get(0).getMoveableX();
         y = group.get(0).getMoveableY();
         
+        
+        setXandY();
+        this.display_select();
+        
+        System.out.println("Group size: " + group.size());
         for(Moveable mov: group){
             System.out.println("x: "+ mov.getMoveableX());
             System.out.println("y: "+ mov.getMoveableY());
         }
-        
-        setXandY();
-        this.display_select();
         
 
            
@@ -47,7 +49,9 @@ public class Group extends Rectangle implements Moveable{
             max_y = Math.max(mov.getMoveableY()+mov.getMoveableHeight(), max_y);    
         }
         this.setX(min_x); // correct
+        x = min_x;
         this.setY(min_y); 
+        y = min_y;
         this.setWidth(max_x - min_x);
         this.setHeight(max_y - min_y);
         
