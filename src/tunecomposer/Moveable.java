@@ -15,6 +15,8 @@ public interface Moveable {
     
     public double getMoveableY();
     
+    public double getMoveableHeight();
+
     public double getMoveableWidth();
     
     public void setMoveableX(double x);
@@ -40,5 +42,7 @@ public interface Moveable {
     public void display_deselect();
 
     public boolean contains(double starting_point_x, double starting_point_y);
+    
+    public String getClassName();
     
 }

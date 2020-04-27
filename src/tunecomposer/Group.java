@@ -15,43 +15,40 @@ import javafx.scene.shape.Rectangle;
 public class Group extends Rectangle implements Moveable{
     public Double x;
     public Double y;
-    private static ArrayList<Moveable> group = new ArrayList<>();
+    public ArrayList<Moveable> group = new ArrayList<>();
     public double originalWidth;
     
     public Group(ArrayList selected){
         group = (ArrayList<Moveable>)selected.clone();
         x = group.get(0).getMoveableX();
         y = group.get(0).getMoveableY();
+
         setXandY();
         originalWidth = 100;
-        
+
         this.display_select();
         
-        //this.setX(x);
-        //this.setY(y);
-        //this.setWidth(100);
-        //this.setHeight(100);
         
-        //this.display_select();
+
            
     }
     
     private void setXandY(){
-        double max_x = group.get(0).getMoveableX();
-        double max_y = group.get(0).getMoveableY();
+        double max_x = group.get(0).getMoveableX()+group.get(0).getMoveableWidth();
+        double max_y = group.get(0).getMoveableY()+group.get(0).getMoveableHeight();
         double min_x = group.get(0).getMoveableX();
         double min_y = group.get(0).getMoveableY();
         
         for(Moveable mov: group){
             min_x = Math.min(mov.getMoveableX(), min_x);
             min_y = Math.min(mov.getMoveableY(), min_y);
-            max_x = Math.max(mov.getMoveableX(), max_x);
-            max_y = Math.max(mov.getMoveableY(), max_y);
+            max_x = Math.max(mov.getMoveableX()+mov.getMoveableWidth(), max_x);
+            max_y = Math.max(mov.getMoveableY()+mov.getMoveableHeight(), max_y);    
         }
-        max_x = max_x+100;
-        max_y = max_y +10;
         this.setX(min_x); // correct
+        x = min_x;
         this.setY(min_y); 
+        y = min_y;
         this.setWidth(max_x - min_x);
         this.setHeight(max_y - min_y);
         
@@ -93,7 +90,6 @@ public class Group extends Rectangle implements Moveable{
     public void drag(double difx, double dify){
         this.setX(x + difx);
         this.setY(y + dify);
-        
         for(Moveable mov : group) {
             mov.drag(difx,dify);
         }
@@ -135,7 +131,11 @@ public class Group extends Rectangle implements Moveable{
     }
     
     public void display_select(){
-        this.getStyleClass().remove("unselect-group");
+        for(Moveable mov : group){
+            mov.display_deselect();
+            mov.display_select();
+        }
+        this.getStyleClass().clear();
         this.getStyleClass().add("group");
     }
 
@@ -143,6 +143,7 @@ public class Group extends Rectangle implements Moveable{
         for(Moveable mov : group){
             mov.display_deselect();
         }
+        this.getStyleClass().clear();
         this.getStyleClass().remove("group");
         this.getStyleClass().add("unselect-group");    
     }
@@ -150,5 +151,16 @@ public class Group extends Rectangle implements Moveable{
     public void display_ungroup(){
         this.getStyleClass().remove("group");
     }
+    
+    @Override
+    public String getClassName(){
+        return "group";
+    }
+    
+    public double getMoveableHeight(){return this.getHeight();}
+    
+    public double getMoveableWidth(){return this.getWidth();};
+    
+    public void setMoveableWidth(double width){this.setWidth(width);};
     
 }
