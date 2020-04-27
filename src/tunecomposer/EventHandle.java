@@ -53,6 +53,7 @@ public class EventHandle {
     public static Moveable dragged;
     public static double starting_point_x;
     public static double starting_point_y;
+    public static double startExtendWidth;
     
     //START OF BAD STUFF
     /**
@@ -416,9 +417,11 @@ public class EventHandle {
                 drag = false;
                 break;
             }
-            else if (rnote.getY() == Math.floor(y/10)*10 
+            else if (rnote.contains(x,y)
                 && (rnote.getX())+(rnote.getWidth()-10) <= x && (rnote.getX())+rnote.getWidth()  >  x ){ 
                 extend = true;
+                startExtendWidth = rnote.getWidth();
+                System.out.println("extend");
                 break;
             }   
         }
@@ -493,7 +496,7 @@ public class EventHandle {
             if(extentionlen < 5.0){
                 extentionlen = 5.0;
             }
-            mov.extend(extentionlen);
+            mov.extend(extentionlen, startExtendWidth);
         } 
     }
     
@@ -533,7 +536,8 @@ public class EventHandle {
         drag = false;
         extend = false;
         inside_rect = false;
-        new_rectangle_is_being_drawn = false;     
+        new_rectangle_is_being_drawn = false;
+        startExtendWidth = -1;
     }
     
     public void endExtend(double x) {
@@ -542,7 +546,7 @@ public class EventHandle {
             if(ext_len < 5.0){
                 ext_len = 5.0;
             }
-            mov.releaseExtend(ext_len);
+            mov.releaseExtend(ext_len, startExtendWidth);
         }
     }
     
