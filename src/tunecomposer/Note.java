@@ -183,9 +183,9 @@ public class Note extends Rectangle implements Moveable{
     
     public double getMoveableHeight(){return this.getHeight();}
     
-    public double getMoveableWidth(){return this.getWidth();}
+    //public double getMoveableWidth(){return this.getWidth();}
     
-    public void setMoveableWidth(double width){this.setWidth(width);}
+    //public void setMoveableWidth(double width){this.setWidth(width);}
     
     
     
