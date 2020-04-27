@@ -438,6 +438,9 @@ public class EventHandle {
                     
                 }
             }
+            if(((Moveable)node).getClassName() == "group"){
+                selected.removeAll((((Group)node).group));
+            }
             /*
             System.out.println("selected size: " +selected.size());
             if(((Moveable)node).getClassName() == "group"){
