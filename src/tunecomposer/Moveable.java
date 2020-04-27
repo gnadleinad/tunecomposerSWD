@@ -27,9 +27,13 @@ public interface Moveable {
     
     public void releaseDrag(double difx, double dify);
     
-    public void extend(double extentionlen);
+    public void extend(double extentionlen, double startWidth);
     
-    public void releaseExtend(double extentionlen);
+    public double getOriginalWidth();
+    
+    public void setOriginalWidth();
+    
+    public void releaseExtend(double extentionlen, double startWidth);
     
     public void display_select();
 

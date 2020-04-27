@@ -18,6 +18,7 @@ public class Note extends Rectangle implements Moveable{
     public Double x;
     public Double y; //midi value of y
     public Double duration;
+    public double originalWidth;
 
     
     /**
@@ -26,7 +27,8 @@ public class Note extends Rectangle implements Moveable{
      * @param start_position
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
-
+        
+        originalWidth = 100;
         this.setX(temp_x);
         this.setY(temp_y);
         this.setWidth(100);
@@ -55,11 +57,11 @@ public class Note extends Rectangle implements Moveable{
         this.x = x+ difx;
     }
     
-    public void extend(double extentionlen){
+    public void extend(double extentionlen, double width){
         this.setWidth(extentionlen);
     }
     
-    public void releaseExtend(double extentionlen){
+    public void releaseExtend(double extentionlen, double startWidth){
         this.setWidth(extentionlen);
     }
     
@@ -88,6 +90,10 @@ public class Note extends Rectangle implements Moveable{
     public double getMoveableY(){return y;}
     
     public double getMoveableWidth() {return this.getWidth();}
+    
+    public double getOriginalWidth() {return this.originalWidth;}
+    
+    public void setOriginalWidth() {this.originalWidth = this.getWidth();}
     
     public void setMoveableX(double x) {this.setX(x);}
     
