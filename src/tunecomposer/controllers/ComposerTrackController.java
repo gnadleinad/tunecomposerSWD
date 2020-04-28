@@ -5,6 +5,7 @@
  */
 package tunecomposer.controllers;
 
+import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
@@ -16,15 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import tunecomposer.Moveable;
 import tunecomposer.Note;
-//import static tunecomposer.controllers.MainController.drag;
-//import static tunecomposer.controllers.MainController.extend;
-//import static tunecomposer.controllers.MainController.inside_rect;
-//import static tunecomposer.controllers.MainController.new_rectangle_is_being_drawn;
-//import static tunecomposer.controllers.MainController.select_rect;
-//import static tunecomposer.controllers.MainController.starting_point_x;
-//import static tunecomposer.controllers.MainController.starting_point_y;
 
 
 /**
@@ -47,10 +40,14 @@ public class ComposerTrackController{
     
     //@FXML
     //private ScrollPane composerTrack;
+    
+    //private static double finalNote;
         
     private MainController main;
-     
     
+    //prepare endAnimation for use in "Stop Playing" menu button + full play animation
+    public TranslateTransition endAnimation;
+        
     @FXML
     private void onReleased(MouseEvent event) {
         double ending_point_x = event.getX();
@@ -123,7 +120,6 @@ public class ComposerTrackController{
                     return;
                 }  
             }
-
             main.makeNote(event,x,y);
         } 
     }
@@ -145,21 +141,45 @@ public class ComposerTrackController{
         }
     } 
     
+    private double getLastX() {
+        double lastNoteX = 0.0;
+        if (main.redlineAnimation.getStatus() == Status.RUNNING) {
+           System.out.println(red_line.getLayoutX());
+           lastNoteX = red_line.getLayoutX();
+        }
+        else {
+            for(Node node : notes_pane.getChildren()){
+                double currentDuration = ((Note)node).duration;
+                double currentStartX = ((Note)node).x;
+                double currentEndX = currentStartX + currentDuration;
+                if (currentEndX > lastNoteX) {
+                    lastNoteX = currentEndX;
+                }
+            }
+        }
+        return lastNoteX;
+    }
     
-    public void init(MainController mainController) {
-        this.main = mainController;
+    public double prepareEndAnimation() {
+        //finalNote will be updated in both cases, individual and in prepareFullAnimation()
+        double lastNoteX = getLastX();
+        endAnimation = new TranslateTransition();
+        endAnimation.setNode(red_line);
+        endAnimation.setDuration(Duration.ONE);
+        endAnimation.setFromX(lastNoteX);
+        endAnimation.setToX(red_line.getStartX()+22);
+        return lastNoteX;
     }
     
      /**
      * Creates and moves a red line across the screen to show the duration of time.
-     * @param finalNote the x time position of the last note
      */
  
-    public void prepareAnimation() {
-    // Make sure to replace finalNote as soon as Note class is extended
-    int finalNote = 150; // implement later
-    double duration = finalNote * 6 + 150;
-    red_line.setOpacity(1);
+    public SequentialTransition prepareFullAnimation() {
+    //finalNote prepared here
+    double lastNoteX = prepareEndAnimation();
+    double duration = lastNoteX * 6 + 150;
+    //red_line.setOpacity(1);
     
     // startAnimation refers to the red line going to the location of the final note
     TranslateTransition startAnimation = new TranslateTransition();
@@ -167,22 +187,17 @@ public class ComposerTrackController{
     startAnimation.setDuration(Duration.millis(duration));
     startAnimation.setFromX(red_line.getStartX()+ 22);
     //ask about if statement later
-    if(finalNote == 0){
-        startAnimation.setToX(finalNote);
-    }
-    else{startAnimation.setToX(finalNote);}
+    startAnimation.setToX(lastNoteX);
     startAnimation.setInterpolator(Interpolator.LINEAR);
 
-    TranslateTransition endAnimation = new TranslateTransition();
-    endAnimation.setNode(red_line);
-    endAnimation.setDuration(Duration.ONE);
-    endAnimation.setFromX(finalNote);
-    endAnimation.setToX(red_line.getStartX()+22);
-
     //maybe issues with new?
-    main.redlineAnimation = new SequentialTransition(startAnimation, endAnimation);
+    SequentialTransition finalTransition = new SequentialTransition(startAnimation, endAnimation);
+    return finalTransition;
     }
     
+    public void init(MainController mainController) {
+        this.main = mainController;
+    }
        
     
     /**

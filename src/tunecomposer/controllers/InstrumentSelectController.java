@@ -14,30 +14,9 @@ import javafx.scene.control.ToggleGroup;
  * @author andrewyeon
  */
 public class InstrumentSelectController{
-    /**
-    *@FXML
-    *private RadioButton pianoButton;
-    *@FXML
-    *private RadioButton harpsichordButton;
-    *@FXML
-    *private RadioButton marimbaButton;
-    *@FXML
-    *private RadioButton organButton;
-    *@FXML
-    *private RadioButton accordionButton;
-    *@FXML
-    *private RadioButton guitarButton;
-    *@FXML
-    *private RadioButton violinButton;
-    *@FXML
-    *private RadioButton frenchhornButton;
-    */
         
     @FXML
     private ToggleGroup instrument;
-    
-    //@FXML
-    //private AnchorPane instrumentSelect;
     
     public static String current_instrument;
     
@@ -50,7 +29,6 @@ public class InstrumentSelectController{
         RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
         String toggleGroupValue = selectedRadioButton.getText();
         current_instrument = toggleGroupValue;
-        System.out.println(current_instrument);
     }
     
     public final String getInstrument() {

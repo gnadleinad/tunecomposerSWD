@@ -5,7 +5,7 @@
  */
 package tunecomposer.controllers;
 
-import java.lang.reflect.InvocationTargetException;
+//import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import javafx.animation.Interpolator;
 import javafx.animation.SequentialTransition;
+import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -62,9 +63,6 @@ public class MainController {
     @FXML
     private ComposerTrackController composerTrackController;
     
-    //@FXML
-    //private VBox main;
-    
     @FXML 
     private void initialize() {
         instrumentSelectController.init(this);
@@ -75,7 +73,7 @@ public class MainController {
     }
 
     private static ArrayList<Moveable> selected = new ArrayList<>();
-    
+ 
     public static boolean drag = false;
     public static boolean extend = false;
     public static boolean inside_rect = false;
@@ -86,12 +84,6 @@ public class MainController {
     public static double starting_point_y;
     
     //START OF BAD STUFF
-    /**
-     * Represents the number of pitch steps for 
-     * do, re, mi, fa, so, la, ti, do.
-     * Source: https://en.wikipedia.org/wiki/Solfège
-     */
-    private static final int[] SCALE = {0, 2, 4, 5, 7, 9, 11, 12};
     
     /**
      * Play notes at maximum volume.
@@ -114,7 +106,7 @@ public class MainController {
     //private static Map<Pair, Note> notePosition;
     
 
-    private static TreeMap<Pair,Note> noteTreeMap;
+    //private static TreeMap<Pair,Note> noteTreeMap;
     
     //private ArrayList<Note> selected;
     
@@ -122,20 +114,15 @@ public class MainController {
      * ArrayList of integer lists that stores the MIDI event parameters
      * for the addMidiEvent method
      */
-    private static ArrayList<int[]> MIDI_events;
-    
-    public static String current_instrument;
+    //private static ArrayList<int[]> MIDI_events;
   
-    public SequentialTransition redlineAnimation;
-
-    private static double finalNote;
-    //Object redlineAnimation;
+    public Transition redlineAnimation;
 
     
     
     public MainController() {
         this.player = new MidiPlayer(1,10000);
-        this.MIDI_events = new ArrayList<>();
+        //this.MIDI_events = new ArrayList<>();
         this.redlineAnimation = new SequentialTransition();
         //transition = new TranslateTransition();
         //this.notePosition = new HashMap<>();
@@ -152,8 +139,16 @@ public class MainController {
      * Creates and moves a red line across the screen to show the duration of time.
      * @param finalNote the x time position of the last note
      */
-    public void moveRed() {
-        composerTrackController.prepareAnimation();
+    public void moveRedFull() {
+        redlineAnimation.stop();
+        redlineAnimation = composerTrackController.prepareFullAnimation();
+        redlineAnimation.play();
+    }
+    
+    public void moveRedBack() {
+        redlineAnimation.stop();
+        composerTrackController.prepareEndAnimation();
+        redlineAnimation = composerTrackController.endAnimation;
         redlineAnimation.play();
     }
     
@@ -169,49 +164,18 @@ public class MainController {
         composerTrackController.removePaneChild(paneName, node);
     }
     
-    
-     /**
-     * Sorts an ArrayList of list of integers given an element to compare.
-     * @param unsorted the ArrayList with which to sort
-     * @param element the element within all integer lists that will be compared
-     */
-    
-    public void sortArrayList(ArrayList<int[]> unsorted, int element) {
-        Collections.sort(unsorted, new Comparator<int[]>() {
-            public int compare(int[] current_int, int[] other_int) {
-                return Integer.compare(current_int[element],other_int[element]);
-            }
-        });
+    public ArrayList getSelected() {
+        return selected;
     }
     
+    public String getInstrument() {
+        return instrumentSelectController.getInstrument();
+    }
+    
+    public void updateSelected(ArrayList newSelected) {
+        selected = newSelected;
+    }
 
-    /**
-     * Adds all of the MIDI_events to the current composition.
-     */
-    protected void addAllEvents() {
-        for  (int[] event : MIDI_events) {
-            player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
-        }
-    }
-    
-    /**
-     * Play a new scale, after stopping and clearing any previous scale.
-     */
-    
-    
-    protected void playScale() {
-        int channel_accum;
-        player.stop();
-        player.clear();
-        sortArrayList(MIDI_events, 3);
-        addAllEvents();
-        channel_accum = 0;
-        //for(Map.Entry<Pair, Note> entry : MainController.notePosition.entrySet()){ 
-        //   player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
-        //  channel_accum += 1;
-        //} 
-        //player.play();
-    }
 
     // GOOD STUFF STARTS HERE
     
@@ -219,7 +183,9 @@ public class MainController {
         deselectNotes(event);
         //change_instrument();
 
-        Pair cordinates = new Pair(x,y);
+        Pair coordinates = new Pair(x,y);
+        
+        String current_instrument = getInstrument();
         Note n = new Note(x,y,current_instrument);
         //MIDI_events.add(n.get_MIDI(x));
 
@@ -394,12 +360,49 @@ public class MainController {
       }
    }
     
-    public ArrayList getSelected() {
-        return selected;
+       
+    
+     /**
+     * Sorts an ArrayList of list of integers given an element to compare.
+     * @param unsorted the ArrayList with which to sort
+     * @param element the element within all integer lists that will be compared
+     */
+    
+    public void sortArrayList(ArrayList<int[]> unsorted, int element) {
+        Collections.sort(unsorted, new Comparator<int[]>() {
+            public int compare(int[] current_int, int[] other_int) {
+                return Integer.compare(current_int[element],other_int[element]);
+            }
+        });
     }
     
-    public void updateSelected(ArrayList newSelected) {
-        selected = newSelected;
+
+    /**
+     * Adds all of the MIDI_events to the current composition.
+     */
+    protected void addAllEvents() {
+        //for  (int[] event : MIDI_events) {
+        //    player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
+        //}
+    }
+    
+    /**
+     * Play a new scale, after stopping and clearing any previous scale.
+     */
+    
+    
+    protected void playScale() {
+        //int channel_accum;
+        player.stop();
+        player.clear();
+        //sortArrayList(MIDI_events, 3);
+        addAllEvents();
+        //channel_accum = 0;
+        //for(Map.Entry<Pair, Note> entry : MainController.notePosition.entrySet()){ 
+        //   player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
+        //  channel_accum += 1;
+        //} 
+        //player.play();
     }
    //GOOD STUFF ENDS HERE
 }   

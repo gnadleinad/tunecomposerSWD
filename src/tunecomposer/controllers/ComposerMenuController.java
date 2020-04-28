@@ -22,9 +22,6 @@ public class ComposerMenuController{
     
     private MainController main;
     
-    //@FXML
-    //private MenuBar composerMenu;
-    
     
     /**
      * When the user clicks the "Play scale" button, show a dialog to get the 
@@ -33,8 +30,7 @@ public class ComposerMenuController{
      */
     @FXML 
     protected void handlePlayScaleButtonAction(ActionEvent event) {
-        main.redlineAnimation.stop();
-        main.moveRed();
+        main.moveRedFull();
         main.playScale();
         
     } 
@@ -46,7 +42,7 @@ public class ComposerMenuController{
     @FXML 
     protected void handleStopPlayingButtonAction(ActionEvent event) {
         main.player.stop();
-        main.redlineAnimation.stop();
+        main.moveRedBack();
     }  
     
         
