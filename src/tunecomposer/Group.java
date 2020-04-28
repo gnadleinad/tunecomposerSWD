@@ -24,7 +24,7 @@ public class Group extends Rectangle implements Moveable{
         y = group.get(0).getMoveableY();
 
         setXandY();
-        originalWidth = 100;
+        originalWidth = this.getWidth();
 
         this.display_select();
         
@@ -87,6 +87,8 @@ public class Group extends Rectangle implements Moveable{
     
     public void setOriginalWidth() {this.originalWidth = this.getWidth();}
     
+    public void setOriginalX(){this.x = this.getX();}
+    
     public void drag(double difx, double dify){
         this.setX(x + difx);
         this.setY(y + dify);
@@ -106,18 +108,29 @@ public class Group extends Rectangle implements Moveable{
         }
     }
     public void extend(double extentionlen, double startWidth){
+        System.out.println("(group) extend start");
+        //extentionlen = Math.round(extentionlen);
+        //startWidth = Math.round(startWidth);
         double startX;
         double widthFraction;
         this.setWidth(extentionlen);
         for(Moveable mov : group) {
+            System.out.println("(group) New Moveable start: ");
+            //System.out.println("mov getWidth: " + ((Rectangle)mov).getWidth());
+            System.out.println("mov origionalWidth(): " + mov.getOriginalWidth());
             startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX()) / startWidth) * extentionlen);
-            widthFraction = mov.getOriginalWidth()/ startWidth;
+            widthFraction = mov.getOriginalWidth()/ (startWidth);
             mov.setMoveableX(startX);
-            mov.setMoveableWidth(extentionlen * widthFraction);
+
+            mov.setMoveableWidth(extentionlen * (widthFraction));
+            System.out.println("new width: " + ((Rectangle)mov).getWidth());
+            System.out.println("(group) New Moveable end: ");
         }
+        System.out.println("(group) extend end");
     }
     
     public void releaseExtend(double extentionlen , double startWidth){
+        System.out.println("releaseExtend");
         double startX;
         double widthFraction;
         this.setWidth(extentionlen);
@@ -125,6 +138,7 @@ public class Group extends Rectangle implements Moveable{
             startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX()) / startWidth) * extentionlen);
             widthFraction = mov.getOriginalWidth()/ startWidth;
             mov.setMoveableX(startX);
+            mov.setOriginalX();
             mov.setMoveableWidth(extentionlen * widthFraction);
             mov.setOriginalWidth();
         }
