@@ -35,6 +35,8 @@ public interface Moveable {
     
     public void setOriginalWidth();
     
+    public void setOriginalX();
+    
     public void releaseExtend(double extentionlen, double startWidth);
     
     public void display_select();
