@@ -5,37 +5,16 @@
  */
 package tunecomposer.controllers;
 
-//import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import javafx.animation.Interpolator;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Transition;
-import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-//import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import static javafx.scene.paint.Color.BLACK;
-import static javafx.scene.paint.Color.TRANSPARENT;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 import javafx.util.Pair;
+import javax.sound.midi.ShortMessage;
 import tunecomposer.MidiPlayer;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
@@ -70,10 +49,24 @@ public class MainController {
         composerTrackController.init(this);
         composerTrackController.one_Line();
         instrumentSelectController.change_instrument();
-    }
-
+    } 
+    /**
+     * Play notes at maximum volume.
+     */
+    
+    private static final int VOLUME = 127;
+        
+    /**
+     * One midi player is used throughout, so we can stop a scale that is
+     * currently playing.
+     */
+    final MidiPlayer player;
+    
+    public Transition redlineAnimation;
+    
     private static ArrayList<Moveable> selected = new ArrayList<>();
- 
+    
+    
     public static boolean drag = false;
     public static boolean extend = false;
     public static boolean inside_rect = false;
@@ -85,55 +78,25 @@ public class MainController {
     
     //START OF BAD STUFF
     
-    /**
-     * Play notes at maximum volume.
-     */
-    
-    private static final int VOLUME = 127;
-    
-    /**
-     * One midi player is used throughout, so we can stop a scale that is
-     * currently playing.
-     */
-    final MidiPlayer player;
-    
-    /**
-     * Represents the time position of notes along the width as keys
-     * Represents the pitch position of notes along the height as values
-     * player object will play given pitch when time has passed the position.
-     */
-
-    //private static Map<Pair, Note> notePosition;
-    
-
-    //private static TreeMap<Pair,Note> noteTreeMap;
-    
-    //private ArrayList<Note> selected;
-    
-     /**
-     * ArrayList of integer lists that stores the MIDI event parameters
-     * for the addMidiEvent method
-     */
-    //private static ArrayList<int[]> MIDI_events;
-  
-    public Transition redlineAnimation;
-
-    
-    
     public MainController() {
         this.player = new MidiPlayer(1,10000);
-        //this.MIDI_events = new ArrayList<>();
         this.redlineAnimation = new SequentialTransition();
-        //transition = new TranslateTransition();
-        //this.notePosition = new HashMap<>();
-        //this.selected = new ArrayList<>();
-        //this.finalNote = 0.0;
-        
-        //initial function calls
- 
-
     }
     
+    private void prepareMIDIChannels(){
+        int data2Byte = 0;
+        int startTick = 0;
+        
+        
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE, 0, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 1, 6, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 2, 12, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 3, 19, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 4, 21, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 5, 24, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 6, 40, data2Byte, startTick, 0);
+        player.addMidiEvent(ShortMessage.PROGRAM_CHANGE + 7, 60, data2Byte, startTick, 0);
+    }
     
     /**
      * Creates and moves a red line across the screen to show the duration of time.
@@ -151,6 +114,7 @@ public class MainController {
         redlineAnimation = composerTrackController.endAnimation;
         redlineAnimation.play();
     }
+    
     
     public ObservableList<Node> getPaneChildren(String pane) {
         return composerTrackController.getPaneChildren(pane);
@@ -175,24 +139,43 @@ public class MainController {
     public void updateSelected(ArrayList newSelected) {
         selected = newSelected;
     }
+    
+        /**
+     * Play a new scale, after stopping and clearing any previous scale.
+     * Can't add as notes are made because there is no remove note method in MidiPlayer
+     */
+    protected void playScale() {
+
+        player.stop();
+        player.clear();
+        ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        prepareMIDIChannels();
+        for(Node node : notesChildren){
+            player.addNote((int)Math.round(((Note) node).midi_y), 
+                           VOLUME,
+                           (int)Math.round(((Note) node).x), 
+                           (int)Math.round(((Note) node).duration), 
+                           ((Note) node).channel_index,
+                           0);
+            }
+        player.play();
+        }      
 
 
     // GOOD STUFF STARTS HERE
     
     public void makeNote(MouseEvent event, double x,double y){
         deselectNotes(event);
-        //change_instrument();
 
         Pair coordinates = new Pair(x,y);
         
+        instrumentSelectController.change_instrument();
         String current_instrument = getInstrument();
         Note n = new Note(x,y,current_instrument);
-        //MIDI_events.add(n.get_MIDI(x));
 
         selected.add(n);
         
-        //notes_pane.getChildren().add(n);
-        addPaneChild("notes_pane", n);
+        addPaneChild("notes_pane", n);        
         n.display_select();
     }
        
@@ -359,51 +342,6 @@ public class MainController {
          given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
       }
    }
-    
-       
-    
-     /**
-     * Sorts an ArrayList of list of integers given an element to compare.
-     * @param unsorted the ArrayList with which to sort
-     * @param element the element within all integer lists that will be compared
-     */
-    
-    public void sortArrayList(ArrayList<int[]> unsorted, int element) {
-        Collections.sort(unsorted, new Comparator<int[]>() {
-            public int compare(int[] current_int, int[] other_int) {
-                return Integer.compare(current_int[element],other_int[element]);
-            }
-        });
-    }
-    
-
-    /**
-     * Adds all of the MIDI_events to the current composition.
-     */
-    protected void addAllEvents() {
-        //for  (int[] event : MIDI_events) {
-        //    player.addMidiEvent(event[0], event[1], event[2], event[3], event[4]);
-        //}
-    }
-    
-    /**
-     * Play a new scale, after stopping and clearing any previous scale.
-     */
-    
-    
-    protected void playScale() {
-        //int channel_accum;
-        player.stop();
-        player.clear();
-        //sortArrayList(MIDI_events, 3);
-        addAllEvents();
-        //channel_accum = 0;
-        //for(Map.Entry<Pair, Note> entry : MainController.notePosition.entrySet()){ 
-        //   player.addNote((int)Math.round((double)(entry.getValue()).midi_y), VOLUME, (int)Math.round((double)(entry.getValue()).x), (int)Math.round((double)(entry.getValue()).duration), MIDI_events.get(channel_accum)[0] - ShortMessage.PROGRAM_CHANGE, 0);       
-        //  channel_accum += 1;
-        //} 
-        //player.play();
-    }
    //GOOD STUFF ENDS HERE
 }   
 

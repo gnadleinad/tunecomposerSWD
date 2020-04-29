@@ -126,6 +126,8 @@ public class ComposerTrackController{
 
     @FXML
     private void onPressed(MouseEvent event) {
+        main.player.stop();
+        main.moveRedBack();
         main.inside_rect = false;
         main.starting_point_x = event.getX() ;
         main.starting_point_y = event.getY() ;
@@ -178,7 +180,7 @@ public class ComposerTrackController{
     public SequentialTransition prepareFullAnimation() {
     //finalNote prepared here
     double lastNoteX = prepareEndAnimation();
-    double duration = lastNoteX * 6 + 150;
+    double duration = lastNoteX * 6; //150
     //red_line.setOpacity(1);
     
     // startAnimation refers to the red line going to the location of the final note

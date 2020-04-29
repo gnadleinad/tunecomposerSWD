@@ -20,7 +20,7 @@ public class Note extends Rectangle implements Moveable{
     public Double midi_y; 
     public Rectangle display_note;
     public Double duration;
-
+    public int channel_index;
     
     /**
      * Constructs a note. 
@@ -38,9 +38,11 @@ public class Note extends Rectangle implements Moveable{
         
         instrument = temp_instrument;
         Convert_Instrument();
+        initChannelIndex();
         x = temp_x;
         y = temp_y;
-        midi_y = Math.floor(127-((temp_y - 30) / 10));
+        //midi_y = Math.floor(127-((temp_y - 30) / 10));
+        midi_y = Math.floor(124-((temp_y - 30) / 10));
         duration = 100.0;
         
     }
@@ -162,6 +164,32 @@ public class Note extends Rectangle implements Moveable{
     }
     
     
+    private void initChannelIndex() {
+        if ("Piano".equals(instrument)) {
+            channel_index = 0;
+        }
+        else if ("Harpsichord".equals(instrument)) {
+            channel_index = 1;
+        }
+        else if ("Marimba".equals(instrument)) {
+            channel_index = 2;
+        }
+        else if ("Church-Organ".equals(instrument)) {
+            channel_index = 3;
+        }
+        else if ("Accordion".equals(instrument)) {
+            channel_index = 4;
+        }
+        else if ("Guitar".equals(instrument)) {
+            channel_index = 5;
+        }
+        else if ("Violin".equals(instrument)) {
+            channel_index = 6;
+        }
+        else if ("French-Horn".equals(instrument)) {
+            channel_index = 7;
+        }    
+    }
     
     private void Convert_Instrument(){
         if(instrument.contains(" ")){
