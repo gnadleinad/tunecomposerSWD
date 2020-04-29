@@ -38,10 +38,6 @@ public class ComposerTrackController{
     @FXML
     private AnchorPane notes_pane;
     
-    //@FXML
-    //private ScrollPane composerTrack;
-    
-    //private static double finalNote;
         
     private MainController main;
     
