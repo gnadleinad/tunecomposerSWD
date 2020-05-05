@@ -6,7 +6,6 @@
 package tunecomposer;
 
 import javafx.scene.shape.Rectangle;
-import javax.sound.midi.ShortMessage;
 
 /**
  *
@@ -17,17 +16,18 @@ public class Note extends Rectangle implements Moveable{
     private String instrument;
     public Double x;
     public Double y; //midi value of y
+    public Double midi_y; 
+    public Rectangle display_note;
     public Double duration;
+    public int channel_index;
     public Double originalWidth;
-
     
     /**
      * Constructs a note. 
      * @param temp_instrument 
-     * @param start_position
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
-        
+
         originalWidth = 100.0;
         this.setX(temp_x);
         this.setY(temp_y);
@@ -38,8 +38,11 @@ public class Note extends Rectangle implements Moveable{
         
         instrument = temp_instrument;
         Convert_Instrument();
+        initChannelIndex();
         x = temp_x;
         y = temp_y;
+        //midi_y = Math.floor(127-((temp_y - 30) / 10));
+        midi_y = Math.floor(124-((temp_y - 30) / 10));
         duration = 100.0;
         
     }
@@ -57,14 +60,12 @@ public class Note extends Rectangle implements Moveable{
         this.x = x+ difx;
     }
     
-    public void extend(double extentionlen, double width){
+    public void extend(double extentionlen){
         this.setWidth(extentionlen);
-        //this.setOriginalWidth();
     }
     
-    public void releaseExtend(double extentionlen, double startWidth){
+    public void releaseExtend(double extentionlen){
         this.setWidth(extentionlen);
-        this.setOriginalWidth();
     }
     
     @Override
@@ -83,13 +84,17 @@ public class Note extends Rectangle implements Moveable{
         // Compare the data members and return accordingly  
         return Double.compare(x, other.x) == 0 
                 && Double.compare(duration, other.duration) == 0
-                && this.equals(other); 
+                && display_note.equals(other.display_note); 
                 
     }
     
-    public double getMoveableX(){return x;}
+    public double getMoveableX(){
+        return x;
+    }
     
-    public double getMoveableY(){return y;}
+    public double getMoveableY(){
+        return y;
+    }
     
     public double getMoveableWidth() {return this.getWidth();}
     
@@ -104,7 +109,6 @@ public class Note extends Rectangle implements Moveable{
     public void setMoveableWidth(double width) {this.setWidth(width);}
     
     public void display_select(){
-        //System.out.println(this.getStyleClass());
         this.getStyleClass().add("selected");
     }
     
@@ -125,53 +129,33 @@ public class Note extends Rectangle implements Moveable{
      * @param start_tick the start tick of the current note
      * @return the list of the parameters of the MIDI event corresponding to 
      *         the instrument of the note.
-     */
-    public int[] get_MIDI(double start_tick) {
-        int[] MIDI_array;
-        MIDI_array = new int[5];
-        MIDI_array[2] = 0;
-        MIDI_array[3] = (int)start_tick;
-        MIDI_array[4] = 0;
-        if (instrument != null) switch (instrument) {
-            case "Piano": //works
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE;
-                MIDI_array[1] = 0;
-                break;
-            case "Harpsichord":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 1;
-                MIDI_array[1] = 6;
-                break;
-            case "Marimba":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 2;
-                MIDI_array[1] = 12;
-                break;
-            case "Church-Organ":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 3;
-                MIDI_array[1] = 19;
-                break;
-            case "Accordion":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 4;
-                MIDI_array[1] = 21;
-                break;
-            case "Guitar":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 5;
-                MIDI_array[1] = 24;
-                break;
-            case "Violin":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 6;
-                MIDI_array[1] = 40;
-                break;
-            case "French-Horn":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 7;
-                MIDI_array[1] = 60;
-                break;
-            default:
-                break;
+     */ 
+    private void initChannelIndex() {
+        if ("Piano".equals(instrument)) {
+            channel_index = 0;
         }
-        return MIDI_array;
+        else if ("Harpsichord".equals(instrument)) {
+            channel_index = 1;
+        }
+        else if ("Marimba".equals(instrument)) {
+            channel_index = 2;
+        }
+        else if ("Church-Organ".equals(instrument)) {
+            channel_index = 3;
+        }
+        else if ("Accordion".equals(instrument)) {
+            channel_index = 4;
+        }
+        else if ("Guitar".equals(instrument)) {
+            channel_index = 5;
+        }
+        else if ("Violin".equals(instrument)) {
+            channel_index = 6;
+        }
+        else if ("French-Horn".equals(instrument)) {
+            channel_index = 7;
+        }    
     }
-    
-    
     
     private void Convert_Instrument(){
         if(instrument.contains(" ")){
@@ -179,17 +163,24 @@ public class Note extends Rectangle implements Moveable{
         }
     }
     
-    
+        
     @Override
     public String getClassName(){
         return "note";
     }
     
     public double getMoveableHeight(){return this.getHeight();}
+
     
-    //public double getMoveableWidth(){return this.getWidth();}
+     public void extend(double extentionlen, double width){
+        this.setWidth(extentionlen);
+        //this.setOriginalWidth();
+    }
     
-    //public void setMoveableWidth(double width){this.setWidth(width);}
+    public void releaseExtend(double extentionlen, double startWidth){
+        this.setWidth(extentionlen);
+        this.setOriginalWidth();
+    }
     
     
     

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="instrumentSelect" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tunecomposer.controllers.InstrumentSelectController">
+   <children>
+      <RadioButton fx:id="pianoButton" layoutX="19.0" layoutY="20.0" mnemonicParsing="false" selected="true" styleClass="Piano" text="Piano">
+         <toggleGroup>
+            <ToggleGroup fx:id="instrument" />
+         </toggleGroup>
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="harpsichordButton" layoutX="19.0" layoutY="60.0" mnemonicParsing="false" styleClass="Harpsichord" text="Harpsichord" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="marimbaButton" layoutX="19.0" layoutY="100.0" mnemonicParsing="false" styleClass="Marimba" text="Marimba" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="organButton" layoutX="19.0" layoutY="140.0" mnemonicParsing="false" styleClass="Church-Organ" text="Church Organ" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="accordionButton" layoutX="19.0" layoutY="180.0" mnemonicParsing="false" styleClass="Accordion" text="Accordion" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="guitarButton" layoutX="19.0" layoutY="220.0" mnemonicParsing="false" styleClass="Guitar" text="Guitar" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="violinButton" layoutX="19.0" layoutY="260.0" mnemonicParsing="false" styleClass="Violin" text="Violin" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="frenchhornButton" layoutX="19.0" layoutY="300.0" mnemonicParsing="false" styleClass="French-Horn" text="French Horn" toggleGroup="$instrument">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </RadioButton>
+   </children>
+</AnchorPane>
