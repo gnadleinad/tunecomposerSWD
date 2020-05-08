@@ -23,13 +23,14 @@ public interface Moveable {
     
     public void setMoveableWidth(double width);
     
+    @Override
     public boolean equals(Object o);
     
     public void drag(double difx, double dify);
     
     public void releaseDrag(double difx, double dify);
     
-    public void extend(double extentionlen, double startWidth);
+    public void extend(double extentionlen);
     
     public double getOriginalWidth();
     
@@ -37,7 +38,7 @@ public interface Moveable {
     
     public void setOriginalX();
     
-    public void releaseExtend(double extentionlen, double startWidth);
+    public void releaseExtend(double extentionlen);
     
     public void display_select();
 

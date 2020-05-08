@@ -13,24 +13,15 @@ import javafx.scene.shape.Rectangle;
  * @author zoehill
  */
 public class Group extends Rectangle implements Moveable{
-    public Double x;
-    public Double y;
+    public Double original_x;
     public ArrayList<Moveable> group = new ArrayList<>();
     public double originalWidth;
     
     public Group(ArrayList selected){
         group = (ArrayList<Moveable>)selected.clone();
-        x = group.get(0).getMoveableX();
-        y = group.get(0).getMoveableY();
-
         setXandY();
         originalWidth = this.getWidth();
-
         this.display_select();
-        
-        
-
-           
     }
     
     private void setXandY(){
@@ -46,9 +37,9 @@ public class Group extends Rectangle implements Moveable{
             max_y = Math.max(mov.getMoveableY()+mov.getMoveableHeight(), max_y);    
         }
         this.setX(min_x); // correct
-        x = min_x;
+
         this.setY(min_y); 
-        y = min_y;
+
         this.setWidth(max_x - min_x);
         this.setHeight(max_y - min_y);
         
@@ -73,75 +64,60 @@ public class Group extends Rectangle implements Moveable{
                 
     }
     
-    public double getMoveableX(){return x;}
+    public double getMoveableX(){return this.getX();}
     
-    public double getMoveableY(){return y;}
+    public double getMoveableY(){return this.getY();}
     
     public double getOriginalWidth() {return this.originalWidth;}
     
     public double getMoveableWidth() {return this.getWidth();}
     
-    public void setMoveableX(double x) {this.setX(x);}
+    public void setMoveableX(double x1) {; 
+        double dist;
+        dist = this.getMoveableX() - x1;
+        this.setX(x1);// if only this, then groups are good, notes are not
+        for (Moveable mov : this.group){
+            mov.setMoveableX(mov.getMoveableX() - dist);
+        }
+    }
     
     public void setMoveableWidth(double width) {this.setWidth(width);}
     
     public void setOriginalWidth() {this.originalWidth = this.getWidth();}
     
-    public void setOriginalX(){this.x = this.getX();}
+    public void setOriginalX(){this.original_x = this.getX();}
     
     public void drag(double difx, double dify){
-        this.setX(x + difx);
-        this.setY(y + dify);
+        this.setX(this.getX() + difx);
+        this.setY(this.getY() + dify);
         for(Moveable mov : group) {
             mov.drag(difx,dify);
         }
     }
     
     public void releaseDrag(double difx, double dify){
-        this.setX(x + difx);
-        this.setY(Math.floor((y + dify)/ 10) * 10);
-
-        this.y = Math.floor((y+ dify)/ 10) * 10;
-        this.x = x+ difx;
+        this.setX(this.getX() + difx);
+        this.setY(Math.floor((this.getY() + dify)/ 10) * 10);
         for(Moveable mov : group) {
             mov.releaseDrag(difx,dify);
         }
     }
-    public void extend(double extentionlen, double startWidth){
-        System.out.println("(group) extend start");
-        //extentionlen = Math.round(extentionlen);
-        //startWidth = Math.round(startWidth);
+      public void extend(double extentionlen){
         double startX;
         double widthFraction;
-        this.setWidth(extentionlen);
+        double scaleFactor = extentionlen / getMoveableWidth(); //
         for(Moveable mov : group) {
-            System.out.println("(group) New Moveable start: ");
-            //System.out.println("mov getWidth: " + ((Rectangle)mov).getWidth());
-            System.out.println("mov origionalWidth(): " + mov.getOriginalWidth());
-            startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX()) / startWidth) * extentionlen);
-            widthFraction = mov.getOriginalWidth()/ (startWidth);
+            startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX())*scaleFactor));
+            widthFraction = mov.getMoveableWidth() / this.getMoveableWidth();
             mov.setMoveableX(startX);
-
-            mov.setMoveableWidth(extentionlen * (widthFraction));
-            System.out.println("new width: " + ((Rectangle)mov).getWidth());
-            System.out.println("(group) New Moveable end: ");
+            mov.extend(extentionlen * widthFraction);
+            }
+        this.setWidth(extentionlen);
         }
-        System.out.println("(group) extend end");
-    }
     
-    public void releaseExtend(double extentionlen , double startWidth){
-        System.out.println("releaseExtend");
-        double startX;
-        double widthFraction;
-        this.setWidth(extentionlen);
-        for(Moveable mov : group) {
-            startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX()) / startWidth) * extentionlen);
-            widthFraction = mov.getOriginalWidth()/ startWidth;
-            mov.setMoveableX(startX);
-            mov.setOriginalX();
-            mov.setMoveableWidth(extentionlen * widthFraction);
-            mov.setOriginalWidth();
-        }
+    public void releaseExtend(double extentionlen){
+        //nothing is needed here!
+
     }
     
     public void display_select(){
@@ -172,9 +148,5 @@ public class Group extends Rectangle implements Moveable{
     }
     
     public double getMoveableHeight(){return this.getHeight();}
-    
-    //public double getMoveableWidth(){return this.getWidth();};
-    
-    //public void setMoveableWidth(double width){this.setWidth(width);};
     
 }

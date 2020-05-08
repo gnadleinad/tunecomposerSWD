@@ -14,8 +14,7 @@ import javafx.scene.shape.Rectangle;
 public class Note extends Rectangle implements Moveable{
 
     private String instrument;
-    public Double x;
-    public Double y; //midi value of y
+    public Double original_x;
     public Double midi_y; 
     public Rectangle display_note;
     public Double duration;
@@ -39,33 +38,19 @@ public class Note extends Rectangle implements Moveable{
         instrument = temp_instrument;
         Convert_Instrument();
         initChannelIndex();
-        x = temp_x;
-        y = temp_y;
-        //midi_y = Math.floor(127-((temp_y - 30) / 10));
         midi_y = Math.floor(124-((temp_y - 30) / 10));
         duration = 100.0;
         
     }
     
     public void drag(double difx, double dify){
-        this.setX(x + difx);
-        this.setY(y + dify);
+        this.setX(this.getX() + difx);
+        this.setY(this.getY() + dify);
     }
     
     public void releaseDrag(double difx, double dify){
-        this.setX(x + difx);
-        this.setY(Math.floor((y + dify)/ 10) * 10);
-
-        this.y = Math.floor((y+ dify)/ 10) * 10;
-        this.x = x+ difx;
-    }
-    
-    public void extend(double extentionlen){
-        this.setWidth(extentionlen);
-    }
-    
-    public void releaseExtend(double extentionlen){
-        this.setWidth(extentionlen);
+        this.setX(getX() + difx);
+        this.setY(Math.floor((getY() + dify)/ 10) * 10);
     }
     
     @Override
@@ -82,18 +67,18 @@ public class Note extends Rectangle implements Moveable{
         Note other = (Note) o; 
           
         // Compare the data members and return accordingly  
-        return Double.compare(x, other.x) == 0 
+        return Double.compare(getX(), other.getX()) == 0 
                 && Double.compare(duration, other.duration) == 0
                 && display_note.equals(other.display_note); 
                 
     }
     
     public double getMoveableX(){
-        return x;
+        return getX();
     }
     
     public double getMoveableY(){
-        return y;
+        return getY();
     }
     
     public double getMoveableWidth() {return this.getWidth();}
@@ -102,9 +87,9 @@ public class Note extends Rectangle implements Moveable{
     
     public void setOriginalWidth() {this.originalWidth = this.getWidth();}
     
-    public void setOriginalX(){this.x = this.getX();}
+    public void setOriginalX(){this.original_x = this.getX();}
     
-    public void setMoveableX(double x) {this.setX(x);}
+    public void setMoveableX(double x1) {this.setX(x1);}
     
     public void setMoveableWidth(double width) {this.setWidth(width);}
     
@@ -172,12 +157,12 @@ public class Note extends Rectangle implements Moveable{
     public double getMoveableHeight(){return this.getHeight();}
 
     
-     public void extend(double extentionlen, double width){
+     public void extend(double extentionlen){
         this.setWidth(extentionlen);
         //this.setOriginalWidth();
     }
     
-    public void releaseExtend(double extentionlen, double startWidth){
+    public void releaseExtend(double extentionlen){
         this.setWidth(extentionlen);
         this.setOriginalWidth();
     }

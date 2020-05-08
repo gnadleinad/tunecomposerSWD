@@ -76,7 +76,6 @@ public class MainController {
     public static Moveable dragged;
     public static double starting_point_x;
     public static double starting_point_y;
-    public static double startExtendWidth;
     
     //START OF BAD STUFF
     
@@ -155,7 +154,7 @@ public class MainController {
             if(((Moveable)node).getClassName() == "note"){           
             player.addNote((int)Math.round(((Note) node).midi_y), 
                            VOLUME,
-                           (int)Math.round(((Note) node).x), 
+                           (int)Math.round(((Note) node).getX()), 
                            (int)Math.round(((Note) node).duration), 
                            ((Note) node).channel_index,
                            0);
@@ -208,7 +207,7 @@ public class MainController {
             if(extentionlen < 5.0){
                 extentionlen = 5.0;
             }
-            mov.extend(extentionlen, startExtendWidth);
+            mov.extend(extentionlen);
         } 
     }
     
@@ -218,7 +217,7 @@ public class MainController {
             if(ext_len < 5.0){
                 ext_len = 5.0;
             }
-            mov.releaseExtend(ext_len, startExtendWidth);
+            mov.releaseExtend(ext_len);
         }
     }
     
@@ -275,7 +274,6 @@ public class MainController {
             else if (rnote.contains(x,y)
                 && (rnote.getX())+(rnote.getWidth()-10) <= x && (rnote.getX())+rnote.getWidth()  >  x ){ 
                 extend = true;
-                startExtendWidth = rnote.getWidth();
                 break;
             }   
         }
