@@ -91,6 +91,20 @@ public class ComposerMenuController{
      */
     @FXML
     protected void handleUngroupButtonAction(ActionEvent event) {
+        ArrayList<Moveable> selected = main.getSelected();
+        ArrayList<Group> selectedGroups = new ArrayList();
+        for (Moveable mov: selected) {
+            if(mov.getClassName() == "group"){
+                main.removePaneChild("notes_pane",mov);
+                selectedGroups.add((Group)mov);
+            }
+        }
+        for(Group g: selectedGroups){
+            for(Moveable item : g.group){
+                selected.add((Moveable)item);
+            } 
+            selected.remove(g);
+        }
         
     }
 
