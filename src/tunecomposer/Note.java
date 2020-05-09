@@ -6,41 +6,51 @@
 package tunecomposer;
 
 import javafx.scene.shape.Rectangle;
-import javax.sound.midi.ShortMessage;
 
 /**
  *
  * @author schneicw
  */
-public class Note {
+public class Note extends Rectangle implements Moveable{
 
-    boolean isSelected = false;
     private String instrument;
-    public Double x;
-    public Double y; //midi value of y
+    public Double original_x;
     public Double midi_y; 
     public Rectangle display_note;
     public Double duration;
-
+    public int channel_index;
+    public Double originalWidth;
     
     /**
      * Constructs a note. 
      * @param temp_instrument 
-     * @param start_position
      */
     public Note(Double temp_x,Double temp_y, String temp_instrument){
+
+        originalWidth = 100.0;
+        this.setX(temp_x);
+        this.setY(temp_y);
+        this.setWidth(100);
+        this.setHeight(10);
+        this.getStyleClass().add("note");
+        this.getStyleClass().add(temp_instrument);
+        
         instrument = temp_instrument;
-        x = temp_x;
-        y = temp_y;
-        midi_y = Math.floor(127-((temp_y - 30) / 10));
+        Convert_Instrument();
+        initChannelIndex();
+        midi_y = Math.floor(124-((temp_y - 30) / 10));
         duration = 100.0;
-        draw_note(x,y);
         
-        x = temp_x;
-        y = temp_y;
-        midi_y = Math.floor(127-((temp_y - 30) / 10));
-        draw_note(x,y);
-        
+    }
+    
+    public void drag(double difx, double dify){
+        this.setX(this.getX() + difx);
+        this.setY(this.getY() + dify);
+    }
+    
+    public void releaseDrag(double difx, double dify){
+        this.setX(getX() + difx);
+        this.setY(Math.floor((getY() + dify)/ 10) * 10);
     }
     
     @Override
@@ -57,39 +67,39 @@ public class Note {
         Note other = (Note) o; 
           
         // Compare the data members and return accordingly  
-        return Boolean.compare(isSelected, other.isSelected) == 0 
-                && Double.compare(x, other.x) == 0 
-                && Double.compare(duration, other.duration) == 0; 
+        return Double.compare(getX(), other.getX()) == 0 
+                && Double.compare(duration, other.duration) == 0
+                && display_note.equals(other.display_note); 
                 
     }
     
-    /**
-     * makes the rectangle on screen symbolizing a note
-     * @param x the x coordinate of the note
-     * @param y the y coordinate of the note
-     * @return display_note
-     */
-    public void draw_note(double x, double y) {
-        y = Math.floor(y / 10) * 10;
-        display_note = new Rectangle(x, y, 100, 10);
-        display_note.getStyleClass().add("note");
-        Convert_Instrument();
-        display_note.getStyleClass().add(instrument);
+    public double getMoveableX(){
+        return getX();
     }
     
-    public void display_delete(){
-        display_note.setVisible(false);
+    public double getMoveableY(){
+        return getY();
     }
+    
+    public double getMoveableWidth() {return this.getWidth();}
+    
+    public double getOriginalWidth() {return this.originalWidth;}
+    
+    public void setOriginalWidth() {this.originalWidth = this.getWidth();}
+    
+    public void setOriginalX(){this.original_x = this.getX();}
+    
+    public void setMoveableX(double x1) {this.setX(x1);}
+    
+    public void setMoveableWidth(double width) {this.setWidth(width);}
     
     public void display_select(){
-        display_note.getStyleClass().add("selected");
-        isSelected = true;
+        this.getStyleClass().add("selected");
     }
     
 
     public void display_deselect(){
-        display_note.getStyleClass().remove("selected");
-        isSelected = false;
+        this.getStyleClass().remove("selected");
     }
     
     
@@ -104,58 +114,57 @@ public class Note {
      * @param start_tick the start tick of the current note
      * @return the list of the parameters of the MIDI event corresponding to 
      *         the instrument of the note.
-     */
-    public int[] get_MIDI(double start_tick) {
-        int[] MIDI_array;
-        MIDI_array = new int[5];
-        MIDI_array[2] = 0;
-        MIDI_array[3] = (int)start_tick;
-        MIDI_array[4] = 0;
-        if (instrument != null) switch (instrument) {
-            case "Piano": //works
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE;
-                MIDI_array[1] = 0;
-                break;
-            case "Harpsichord":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 1;
-                MIDI_array[1] = 6;
-                break;
-            case "Marimba":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 2;
-                MIDI_array[1] = 12;
-                break;
-            case "Church-Organ":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 3;
-                MIDI_array[1] = 19;
-                break;
-            case "Accordion":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 4;
-                MIDI_array[1] = 21;
-                break;
-            case "Guitar":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 5;
-                MIDI_array[1] = 24;
-                break;
-            case "Violin":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 6;
-                MIDI_array[1] = 40;
-                break;
-            case "French-Horn":
-                MIDI_array[0] = ShortMessage.PROGRAM_CHANGE + 7;
-                MIDI_array[1] = 60;
-                break;
-            default:
-                break;
+     */ 
+    private void initChannelIndex() {
+        if ("Piano".equals(instrument)) {
+            channel_index = 0;
         }
-        return MIDI_array;
+        else if ("Harpsichord".equals(instrument)) {
+            channel_index = 1;
+        }
+        else if ("Marimba".equals(instrument)) {
+            channel_index = 2;
+        }
+        else if ("Church-Organ".equals(instrument)) {
+            channel_index = 3;
+        }
+        else if ("Accordion".equals(instrument)) {
+            channel_index = 4;
+        }
+        else if ("Guitar".equals(instrument)) {
+            channel_index = 5;
+        }
+        else if ("Violin".equals(instrument)) {
+            channel_index = 6;
+        }
+        else if ("French-Horn".equals(instrument)) {
+            channel_index = 7;
+        }    
     }
-    
-    
     
     private void Convert_Instrument(){
         if(instrument.contains(" ")){
             instrument = instrument.replace(' ', '-');
         }
+    }
+    
+        
+    @Override
+    public String getClassName(){
+        return "note";
+    }
+    
+    public double getMoveableHeight(){return this.getHeight();}
+
+    
+     public void extend(double extentionlen){
+        this.setWidth(extentionlen);
+        //this.setOriginalWidth();
+    }
+    
+    public void releaseExtend(double extentionlen){
+        this.setWidth(extentionlen);
+        this.setOriginalWidth();
     }
     
     
