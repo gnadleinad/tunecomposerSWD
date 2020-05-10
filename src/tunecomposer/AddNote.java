@@ -41,11 +41,8 @@ public class AddNote implements Action{
     
     @Override
     public void redoAction() {
-        Action undoneAction = main.undone.pop();
-        main.done.push(undoneAction);
         ArrayList<Moveable> selected = main.getSelected();
         selected.add(note);
-        
         main.addPaneChild("notes_pane", note);        
         note.display_select();
         
@@ -53,13 +50,11 @@ public class AddNote implements Action{
 
     @Override
     public void undoAction() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
         main.removePaneChild("notes_pane", note);
         selected.clear();
         main.updateSelected(selected);
-        Action undoneAction = main.done.pop();
-        main.undone.push(undoneAction);
+        
     }
     
     

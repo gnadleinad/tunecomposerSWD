@@ -11,7 +11,7 @@ package tunecomposer;
  */
 public interface Action {
     
-    public void doAction();
+    public void redoAction();
     
     public void undoAction();
     

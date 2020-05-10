@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import tunecomposer.Action;
 import tunecomposer.Group;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
@@ -48,14 +49,17 @@ public class ComposerMenuController{
     
     @FXML 
     protected void handleUndoButtonAction(ActionEvent event) {
-        main.player.stop();
-        main.moveRedBack();
+        Action undoneAction = main.done.pop();
+        undoneAction.undoAction();
+        main.undone.push(undoneAction);
+        
     }  
     
     @FXML 
     protected void handleRedoButtonAction(ActionEvent event) {
-        main.player.stop();
-        main.moveRedBack();
+        Action redoneAction = main.undone.pop();
+        redoneAction.redoAction();
+        main.done.push(redoneAction);
     }  
     
         
