@@ -21,6 +21,7 @@ import tunecomposer.MidiPlayer;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
 import tunecomposer.Action;
+import tunecomposer.AddNote;
 
 /**
  *
@@ -69,9 +70,9 @@ public class MainController {
     
     private static ArrayList<Moveable> selected = new ArrayList<>();
     
-    private static Stack<Action> done = new Stack();
+    public Stack<Action> done = new Stack();
     
-    private static Stack<Action> undone = new Stack();
+    public Stack<Action> undone = new Stack();
     
     
     public static boolean drag = false;
@@ -183,16 +184,17 @@ public class MainController {
     public void makeNote(MouseEvent event, double x,double y){
         deselectNotes(event);
         
-        Pair coordinates = new Pair(x,y);
-        
         instrumentSelectController.change_instrument();
         String current_instrument = getInstrument();
         Note n = new Note(x,y,current_instrument);
-
-        selected.add(n);
         
-        addPaneChild("notes_pane", n);        
-        n.display_select();
+        AddNote addAction= new AddNote(n, this);
+
+        
+        
+        
+        
+        
     }
        
     
