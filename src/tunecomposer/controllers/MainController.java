@@ -6,6 +6,7 @@
 package tunecomposer.controllers;
 
 import java.util.ArrayList;
+import java.util.Stack;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Transition;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import tunecomposer.Group;
 import tunecomposer.MidiPlayer;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
+import tunecomposer.fxml.Action;
 
 /**
  *
@@ -66,6 +68,10 @@ public class MainController {
     public Transition redlineAnimation;
     
     private static ArrayList<Moveable> selected = new ArrayList<>();
+    
+    private static Stack<Action> done = new Stack();
+    
+    private static Stack<Action> undone = new Stack();
     
     
     public static boolean drag = false;
@@ -133,6 +139,14 @@ public class MainController {
         return selected;
     }
     
+    public Stack getDoneStack(){
+        return done;
+    }
+    
+    public Stack getUndoneStack(){
+        return undone;
+    }
+    
     public String getInstrument() {
         return instrumentSelectController.getInstrument();
     }
@@ -168,7 +182,7 @@ public class MainController {
     
     public void makeNote(MouseEvent event, double x,double y){
         deselectNotes(event);
-
+        
         Pair coordinates = new Pair(x,y);
         
         instrumentSelectController.change_instrument();
