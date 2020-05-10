@@ -20,7 +20,7 @@ import tunecomposer.Group;
 import tunecomposer.MidiPlayer;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
-import tunecomposer.fxml.Action;
+import tunecomposer.Action;
 
 /**
  *
