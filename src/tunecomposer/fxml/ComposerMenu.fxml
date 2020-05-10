@@ -19,19 +19,19 @@
       </Menu>
       <Menu mnemonicParsing="false" text="Edit">
          <items>
-            <MenuItem mnemonicParsing="false" text="Undo">
+            <MenuItem mnemonicParsing="false" onAction="#handleUndoButtonAction" text="Undo">
                <accelerator>
-                  <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                </accelerator>
             </MenuItem>
-            <MenuItem mnemonicParsing="false" text="Redo">
+            <MenuItem mnemonicParsing="false" onAction="#handleRedoButtonAction" text="Redo">
                <accelerator>
-                  <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                  <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
                </accelerator></MenuItem>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#handleSelectAllButtonAction" text="Select All">
                <accelerator>
-                  <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                </accelerator>
             </MenuItem>
             <MenuItem mnemonicParsing="false" onAction="#handleDeleteButtonAction" text="Delete" />

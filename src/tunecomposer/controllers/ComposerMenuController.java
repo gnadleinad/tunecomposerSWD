@@ -46,7 +46,18 @@ public class ComposerMenuController{
         main.moveRedBack();
     }  
     
-        
+    @FXML 
+    protected void handleUndoButtonAction(ActionEvent event) {
+        main.player.stop();
+        main.moveRedBack();
+    }  
+    
+    @FXML 
+    protected void handleRedoButtonAction(ActionEvent event) {
+        main.player.stop();
+        main.moveRedBack();
+    }  
+    
         
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
