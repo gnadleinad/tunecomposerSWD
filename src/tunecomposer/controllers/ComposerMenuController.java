@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import tunecomposer.Action;
 import tunecomposer.DeleteSelected;
 import tunecomposer.Group;
+import tunecomposer.Grouping;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
 
@@ -89,9 +90,7 @@ public class ComposerMenuController{
     protected void handleGroupButtonAction(ActionEvent event) {
         ArrayList<Moveable> selected = main.getSelected();
         Group group = new Group(selected);
-        main.getPaneChildren("notes_pane").add(group);
-        selected.clear();
-        selected.add(group);
+        Grouping groupAction = new Grouping(group, main);
     }
     /**
      * 
