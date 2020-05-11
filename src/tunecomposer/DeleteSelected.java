@@ -21,7 +21,7 @@ public class DeleteSelected implements Action{
     private double note_x;
     private double note_y;
     */
-    private ArrayList<Moveable> origional_selected;
+    private ArrayList<Moveable> original_selected;
     
     
     public DeleteSelected(ArrayList s, MainController m){
@@ -29,7 +29,7 @@ public class DeleteSelected implements Action{
         main = m;
         
         ArrayList<Moveable> selected = main.getSelected();
-        origional_selected = (ArrayList<Moveable>) s.clone();
+        original_selected = (ArrayList<Moveable>) s.clone();
         
         redoAction();
 
@@ -39,7 +39,7 @@ public class DeleteSelected implements Action{
     @Override
     public void redoAction() {
         ArrayList<Moveable> selected = main.getSelected();
-        for (Moveable mov: origional_selected) {
+        for (Moveable mov: original_selected) {
             main.removePaneChild("notes_pane",mov);
         }
         
@@ -50,7 +50,7 @@ public class DeleteSelected implements Action{
     @Override
     public void undoAction() {
         ArrayList<Moveable> selected = main.getSelected();
-        for (Moveable mov: origional_selected) {
+        for (Moveable mov: original_selected) {
             main.addPaneChild("notes_pane",mov);
         }
         
