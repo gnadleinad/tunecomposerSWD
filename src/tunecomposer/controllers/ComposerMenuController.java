@@ -101,11 +101,7 @@ public class ComposerMenuController{
         ArrayList<Moveable> selected = main.getSelected();
         Moveable mov = selected.get(0);
         if(selected.size() == 1 && mov.getClassName() == "group"){
-            main.removePaneChild("notes_pane",mov);
-            for(Moveable item : ((Group)mov).group){
-                selected.add((Moveable)item);
-            } 
-            selected.remove(mov);
+            Ungrouping ungroupAction = new Ungrouping((Group)mov, main);
         }
 
         
