@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import tunecomposer.Action;
+import tunecomposer.DeleteSelected;
 import tunecomposer.Group;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
@@ -67,6 +68,7 @@ public class ComposerMenuController{
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
         //System.out.println(notes_pane.getChildren().size());
         ArrayList<Moveable> selected = main.getSelected();
+        /*
         for (Moveable mov: selected) {
             //Movable note = it.next();
             
@@ -75,6 +77,8 @@ public class ComposerMenuController{
         }
         selected.clear();
         main.updateSelected(selected);
+        */
+        DeleteSelected deleteAction = new DeleteSelected(selected,main);
         
   }
 
