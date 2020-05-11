@@ -66,18 +66,7 @@ public class ComposerMenuController{
         
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
-        //System.out.println(notes_pane.getChildren().size());
         ArrayList<Moveable> selected = main.getSelected();
-        /*
-        for (Moveable mov: selected) {
-            //Movable note = it.next();
-            
-            //notes_pane.getChildren().remove(mov);
-            main.removePaneChild("notes_pane",mov);
-        }
-        selected.clear();
-        main.updateSelected(selected);
-        */
         DeleteSelected deleteAction = new DeleteSelected(selected,main);
         
   }
