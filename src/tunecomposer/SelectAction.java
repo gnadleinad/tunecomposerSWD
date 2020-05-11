@@ -21,11 +21,14 @@ public class SelectAction implements Action{
     private double note_x;
     private double note_y;
     */
-    private Moveable moveable;
+    
+    //private Moveable moveable;
+    private ArrayList<Moveable> toBeSelected = new ArrayList();
     
     
     public SelectAction(Moveable mov, MainController m){
-        moveable = mov;
+        toBeSelected.add(mov);
+        Moveable moveable = toBeSelected.get(0);
         main = m;
         
         ArrayList<Moveable> selected = main.getSelected();
@@ -36,19 +39,28 @@ public class SelectAction implements Action{
         main.done.push(this);
     }
     
+    public SelectAction(ArrayList<Moveable> a, MainController m){
+        toBeSelected = a;
+        main = m;
+        redoAction();
+        main.done.push(this);
+    }
+    
     @Override
     public void redoAction() {
         ArrayList<Moveable> selected = main.getSelected();
-        if(!selected.contains(moveable)){
-            moveable.display_select();
-            selected.add(moveable); 
+        for (Moveable mov : toBeSelected){
+        //moveable = mov;
+            if(!selected.contains(mov)){
+                mov.display_select();
+                selected.add(mov); 
+            }
         }
     }
 
     @Override
     public void undoAction() {
         ArrayList<Moveable> selected = main.getSelected();
-        selected.add(moveable);       
         for (Moveable mov : selected){
             mov.display_deselect();
         }
