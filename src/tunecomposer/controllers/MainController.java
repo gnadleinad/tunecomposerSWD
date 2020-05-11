@@ -256,19 +256,22 @@ public class MainController {
     public void endDrawingRectangle(MouseEvent event, double x, double y){
         deselectNotes(event);
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_selected = new ArrayList();
         for(Node node : notesChildren){
             
             
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                selected.add((Moveable)node);
+                temp_selected.add((Moveable)node);
             }
        }
+        /*
         for (Moveable mov : selected){
             mov.display_select();
         }
-        //SelectAction selectMoveable = new SelectAction(mov, this);
+*/
+        SelectAction selectMoveable = new SelectAction(temp_selected, this);
         removePaneChild("notes_pane", select_rect);
         new_rectangle_is_being_drawn = false ;
         
