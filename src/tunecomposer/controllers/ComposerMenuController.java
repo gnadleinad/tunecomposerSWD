@@ -78,12 +78,6 @@ public class ComposerMenuController{
         for(Node node : notesChildren){
             main.selectNote((Note)node);
         }
-//        selected.clear();
-//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-//            entry.getValue().display_select();
-//            selected.add(entry.getValue());
-//
-//        } 
     }
     
         @FXML
@@ -102,9 +96,7 @@ public class ComposerMenuController{
         Moveable mov = selected.get(0);
         if(selected.size() == 1 && mov.getClassName() == "group"){
             Ungrouping ungroupAction = new Ungrouping((Group)mov, main);
-        }
-
-        
+        }    
     }
 
     /**
