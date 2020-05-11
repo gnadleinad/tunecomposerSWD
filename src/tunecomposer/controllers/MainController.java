@@ -22,6 +22,7 @@ import tunecomposer.Moveable;
 import tunecomposer.Note;
 import tunecomposer.Action;
 import tunecomposer.AddNote;
+import tunecomposer.SelectAction;
 
 /**
  *
@@ -188,13 +189,8 @@ public class MainController {
         String current_instrument = getInstrument();
         Note n = new Note(x,y,current_instrument);
         
-        AddNote addAction= new AddNote(n, this);
+        AddNote addAction = new AddNote(n, this);
 
-        
-        
-        
-        
-        
     }
        
     
@@ -239,10 +235,11 @@ public class MainController {
     
         
     public void selectNote(Moveable mov){
-        if(!selected.contains(mov)){
-            mov.display_select();
-            selected.add(mov); 
-        }
+//        if(!selected.contains(mov)){
+//            mov.display_select();
+//            selected.add(mov); 
+//        }
+        SelectAction selectMoveable = new SelectAction(mov, this);
 
     }
         
@@ -271,9 +268,9 @@ public class MainController {
         for (Moveable mov : selected){
             mov.display_select();
         }
-
-       removePaneChild("notes_pane", select_rect);
-       new_rectangle_is_being_drawn = false ;
+        //SelectAction selectMoveable = new SelectAction(mov, this);
+        removePaneChild("notes_pane", select_rect);
+        new_rectangle_is_being_drawn = false ;
         
     }
         
