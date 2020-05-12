@@ -27,6 +27,7 @@ public class SelectAction implements Action{
     
     
     public SelectAction(Moveable mov, MainController m){
+        System.out.println("item");
         toBeSelected.add(mov);
         Moveable moveable = toBeSelected.get(0);
         main = m;
@@ -40,6 +41,7 @@ public class SelectAction implements Action{
     }
     
     public SelectAction(ArrayList<Moveable> a, MainController m){
+        System.out.println("list");
         toBeSelected = a;
         main = m;
         redoAction();
