@@ -17,6 +17,7 @@ import tunecomposer.Group;
 import tunecomposer.Grouping;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
+import tunecomposer.SelectAction;
 
 /**
  *
@@ -75,9 +76,12 @@ public class ComposerMenuController{
     @FXML
     protected void handleSelectAllButtonAction(ActionEvent event){
         ObservableList<Node> notesChildren = main.getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_selected = new ArrayList();
         for(Node node : notesChildren){
-            main.selectNote((Note)node);
+            temp_selected.add((Moveable)node);
         }
+        
+        SelectAction selectMoveable = new SelectAction(temp_selected, main);
     }
     
         @FXML
