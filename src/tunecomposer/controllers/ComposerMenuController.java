@@ -12,7 +12,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import tunecomposer.Action;
+import tunecomposer.DeleteSelected;
 import tunecomposer.Group;
+import tunecomposer.Grouping;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
 
@@ -65,16 +67,8 @@ public class ComposerMenuController{
         
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
-        //System.out.println(notes_pane.getChildren().size());
         ArrayList<Moveable> selected = main.getSelected();
-        for (Moveable mov: selected) {
-            //Movable note = it.next();
-            
-            //notes_pane.getChildren().remove(mov);
-            main.removePaneChild("notes_pane",mov);
-        }
-        selected.clear();
-        main.updateSelected(selected);
+        DeleteSelected deleteAction = new DeleteSelected(selected,main);
         
   }
 
@@ -84,21 +78,13 @@ public class ComposerMenuController{
         for(Node node : notesChildren){
             main.selectNote((Note)node);
         }
-//        selected.clear();
-//        for(Map.Entry<Pair, Note> entry : notePosition.entrySet()){ 
-//            entry.getValue().display_select();
-//            selected.add(entry.getValue());
-//
-//        } 
     }
     
         @FXML
     protected void handleGroupButtonAction(ActionEvent event) {
         ArrayList<Moveable> selected = main.getSelected();
         Group group = new Group(selected);
-        main.getPaneChildren("notes_pane").add(group);
-        selected.clear();
-        selected.add(group);
+        Grouping groupAction = new Grouping(group, main);
     }
     /**
      * 
@@ -109,14 +95,8 @@ public class ComposerMenuController{
         ArrayList<Moveable> selected = main.getSelected();
         Moveable mov = selected.get(0);
         if(selected.size() == 1 && mov.getClassName() == "group"){
-            main.removePaneChild("notes_pane",mov);
-            for(Moveable item : ((Group)mov).group){
-                selected.add((Moveable)item);
-            } 
-            selected.remove(mov);
-        }
-
-        
+            Ungrouping ungroupAction = new Ungrouping((Group)mov, main);
+        }    
     }
 
     /**
