@@ -95,6 +95,14 @@ public class Group extends Rectangle implements Moveable{
         }
     }
     
+    public void undoDrag(double difx, double dify){
+        this.setX(this.getX() - difx);
+        this.setY(this.getY() - dify);
+        for(Moveable mov : group) {
+            mov.undoDrag(difx,dify);
+        }
+    }
+    
     public void releaseDrag(double difx, double dify){
         this.setX(this.getX() + difx);
         this.setY(Math.floor((this.getY() + dify)/ 10) * 10);
@@ -114,6 +122,20 @@ public class Group extends Rectangle implements Moveable{
             }
         this.setWidth(extentionlen);
         }
+      
+      public void undoExtend(double w, double x){
+        double startX;
+        double widthFraction;
+        double scaleFactor = w / getMoveableWidth();
+        for(Moveable mov : group) {
+            startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX())*scaleFactor));
+            widthFraction = mov.getMoveableWidth() / this.getMoveableWidth();
+            mov.setMoveableX(startX);
+            mov.undoExtend(w * widthFraction, startX);
+            }
+        this.setWidth(w);
+        this.setX(x);
+      }
     
     public void releaseExtend(double extentionlen){
         //nothing is needed here!

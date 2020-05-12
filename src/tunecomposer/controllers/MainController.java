@@ -22,6 +22,8 @@ import tunecomposer.Moveable;
 import tunecomposer.Note;
 import tunecomposer.Action;
 import tunecomposer.AddNote;
+import tunecomposer.ExtendAction;
+import tunecomposer.MoveAction;
 import tunecomposer.SelectAction;
 
 /**
@@ -196,19 +198,22 @@ public class MainController {
     
         
     public void dragNotes(double x, double y){
+       //MoveAction mvact = new MoveAction(x,y,dragged,this);  
         double dify = (y - dragged.getMoveableY());
         double difx = (x - dragged.getMoveableX());
+
         for (Moveable mov : selected) {
+
             mov.drag(difx, dify);
-        } 
+        }
     }
     
     public void endDrag(double x, double y) {
         double dify = (y - dragged.getMoveableY());
         double difx = (x - dragged.getMoveableX());
-
+        System.out.println(dragged.getMoveableX());
+        System.out.println(dragged.getMoveableY());
         for (Moveable mov : selected) {
-
             mov.releaseDrag(difx, dify);
         }
     }
@@ -255,6 +260,7 @@ public class MainController {
     
     public void endDrawingRectangle(MouseEvent event, double x, double y){
         deselectNotes(event);
+        ArrayList<Moveable> tbs = new ArrayList();
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
         for(Node node : notesChildren){
             
@@ -262,12 +268,13 @@ public class MainController {
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                selected.add((Moveable)node);
+                tbs.add((Moveable)node);
             }
        }
-        for (Moveable mov : selected){
-            mov.display_select();
-        }
+       SelectAction selectMoveable = new SelectAction(tbs, this);
+//        for (Moveable mov : selected){
+//            mov.display_select();
+//        }
         //SelectAction selectMoveable = new SelectAction(mov, this);
         removePaneChild("notes_pane", select_rect);
         new_rectangle_is_being_drawn = false ;
@@ -287,6 +294,7 @@ public class MainController {
             else if (rnote.contains(x,y)
                 && (rnote.getX())+(rnote.getWidth()-10) <= x && (rnote.getX())+rnote.getWidth()  >  x ){ 
                 extend = true;
+                //ExtendAction extact = new ExtendAction(rnote.getX(),dragged,this);
                 break;
             }   
         }
@@ -296,8 +304,7 @@ public class MainController {
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
         for(Node node : notesChildren){
             if(((Moveable)node).contains(starting_point_x, starting_point_y)){
-                dragged = (Moveable)node;
-                inside_rect = true;
+                SelectAction selectMoveable = new SelectAction((Moveable)node, this);
                 
                 if(event.isControlDown() == true){
                     controlClick((Moveable)node);
@@ -305,6 +312,15 @@ public class MainController {
                     selectNote((Moveable)node);
                     
                 }
+                dragged = (Moveable)node;
+                if (extend == true){
+                    ExtendAction extact = new ExtendAction(((Moveable)node).getMoveableWidth(),((Moveable)node).getMoveableX(),dragged,this);
+                }
+                else{
+                   MoveAction mvact = new MoveAction(((Rectangle)node).getX(),((Rectangle)node).getY(),dragged,this); 
+                }
+                inside_rect = true;
+               
             }
             if(((Moveable)node).getClassName() == "group"){
                 selected.removeAll((((Group)node).group));

@@ -48,6 +48,11 @@ public class Note extends Rectangle implements Moveable{
         this.setY(this.getY() + dify);
     }
     
+    public void undoDrag(double difx, double dify){
+        this.setX(this.getX() - difx);
+        this.setY(this.getY() - dify);
+    }
+    
     public void releaseDrag(double difx, double dify){
         this.setX(getX() + difx);
         this.setY(Math.floor((getY() + dify)/ 10) * 10);
@@ -161,6 +166,10 @@ public class Note extends Rectangle implements Moveable{
         this.setWidth(extentionlen);
         //this.setOriginalWidth();
     }
+     
+    public void undoExtend(double w, double x){
+        this.setWidth(w);
+    };
     
     public void releaseExtend(double extentionlen){
         this.setWidth(extentionlen);
