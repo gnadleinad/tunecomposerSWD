@@ -47,5 +47,9 @@ public interface Moveable {
     public boolean contains(double starting_point_x, double starting_point_y);
     
     public String getClassName();
+
+    public void undoDrag(double difX, double difY);
+
+    public void undoExtend(double w, double x);
     
 }
