@@ -5,6 +5,7 @@
  */
 package tunecomposer.controllers;
 
+import tunecomposer.Ungrouping;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
@@ -17,6 +18,7 @@ import tunecomposer.Group;
 import tunecomposer.Grouping;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
+import tunecomposer.SelectAction;
 
 /**
  *
@@ -54,6 +56,9 @@ public class ComposerMenuController{
         Action undoneAction = main.done.pop();
         undoneAction.undoAction();
         main.undone.push(undoneAction);
+        if(main.done.peek() instanceof SelectAction){
+            System.out.println("sup dawg");
+        }
         
     }  
     

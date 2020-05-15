@@ -276,7 +276,7 @@ public class MainController {
             mov.display_select();
         }
         */
-        SelectAction selectMoveable = new SelectAction(temp_selected, this);
+//        SelectAction selectMoveable = new SelectAction(temp_selected, this);
 
         removePaneChild("notes_pane", select_rect);
         new_rectangle_is_being_drawn = false ;
@@ -306,11 +306,12 @@ public class MainController {
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
         for(Node node : notesChildren){
             if(((Moveable)node).contains(starting_point_x, starting_point_y)){
-                SelectAction selectMoveable = new SelectAction((Moveable)node, this);
+//                SelectAction selectMoveable = new SelectAction((Moveable)node, this);
                 
                 if(event.isControlDown() == true){
                     controlClick((Moveable)node);
                 } else{
+                    System.out.println("selectNoteselse");
                     selectNote((Moveable)node);
                     
                 }

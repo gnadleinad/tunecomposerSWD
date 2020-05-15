@@ -70,7 +70,7 @@ public class ComposerTrackController{
                 if(((Moveable)node).contains(main.starting_point_x, main.starting_point_y)){
                     if(event.isControlDown() == false){
                         main.deselectNotes(event);
-                        main.selectNote((Moveable)node);
+//                        main.selectNote((Moveable)node);
                     }
                 }
                 if(((Moveable)node).getClassName() == "group"){

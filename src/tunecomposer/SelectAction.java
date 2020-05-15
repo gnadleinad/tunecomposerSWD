@@ -27,7 +27,7 @@ public class SelectAction implements Action{
     
     
     public SelectAction(Moveable mov, MainController m){
-        System.out.println("item");
+        System.out.println("item selected");
         toBeSelected.add(mov);
         Moveable moveable = toBeSelected.get(0);
         main = m;
@@ -38,6 +38,7 @@ public class SelectAction implements Action{
             selected.add(moveable); 
         }
         main.done.push(this);
+        System.out.println("size after select: " + main.done.size());
     }
     
     public SelectAction(ArrayList<Moveable> a, MainController m){

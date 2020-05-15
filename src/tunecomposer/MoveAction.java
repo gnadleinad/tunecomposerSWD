@@ -49,7 +49,9 @@ public class MoveAction implements Action {
         startY = y;
         startX = x;
         draggedm = mov;
-        main.done.push(this);
+        if(!(startX - draggedm.getMoveableX() == 0)) {
+            main.done.push(this);
+        }
     }
     
     @Override
