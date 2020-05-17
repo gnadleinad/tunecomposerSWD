@@ -37,6 +37,7 @@ public class AddNote implements Action{
         note.display_select();
         
         main.done.push(this);
+        main.undone.clear();
     }
     
     @Override

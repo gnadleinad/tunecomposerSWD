@@ -21,6 +21,7 @@ import javafx.util.Duration;
 import tunecomposer.Group;
 //import tunecomposer.Group;
 import tunecomposer.Moveable;
+import tunecomposer.SelectAction;
 //import tunecomposer.Note;
 
 
@@ -66,17 +67,28 @@ public class ComposerTrackController{
         }
         else{
             ObservableList<Node> notesChildren = main.getPaneChildren("notes_pane");
+            ArrayList<Moveable> temp_selected = new ArrayList();
+            ArrayList<Moveable> current_selected = new ArrayList();
             for(Node node : notesChildren){ 
                 if(((Moveable)node).contains(main.starting_point_x, main.starting_point_y)){
                     if(event.isControlDown() == false){
+                        current_selected = (ArrayList<Moveable>) selected.clone();
                         main.deselectNotes(event);
                         main.selectNote((Moveable)node);
+                        temp_selected.add((Moveable)node);
+                        
                     }
                 }
                 if(((Moveable)node).getClassName() == "group"){
                     selected.removeAll((((Group)node).group));
+                    temp_selected.removeAll(((Group)node).group);
                 }
             }
+            //SelectAction selectA = new SelectAction(temp_selected,current_selected, main);
+            //main.done.push(selectA);
+            System.out.println("released done stack: " + main.done);
+            System.out.println("released undone stack: "+  main.undone);
+            
         }
     }
 
@@ -125,7 +137,10 @@ public class ComposerTrackController{
                     return;
                 }  
             }
+            System.out.println("makeNote");
             main.makeNote(event,x,y);
+            System.out.println("onClick done stack: "+main.done);
+            System.out.println("onClick undone stack: " + main.undone);
         } 
     }
 

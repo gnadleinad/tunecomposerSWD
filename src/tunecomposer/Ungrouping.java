@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tunecomposer.controllers;
+package tunecomposer;
 
 import java.util.ArrayList;
 import tunecomposer.Action;
 import tunecomposer.Group;
 import tunecomposer.Moveable;
+import tunecomposer.controllers.MainController;
 
 /**
  *
@@ -27,6 +28,7 @@ public class Ungrouping implements Action {
         redoAction();
 
         main.done.push(this);
+        main.undone.clear();
     }
     
     @Override

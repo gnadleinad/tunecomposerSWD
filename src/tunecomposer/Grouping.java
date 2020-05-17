@@ -33,6 +33,7 @@ public class Grouping implements Action{
         redoAction();
 
         main.done.push(this);
+        main.undone.clear();
     }
     
     @Override

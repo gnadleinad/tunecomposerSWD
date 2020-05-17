@@ -34,6 +34,7 @@ public class DeleteSelected implements Action{
         redoAction();
 
         main.done.push(this);
+        main.undone.clear();
     }
     
     @Override

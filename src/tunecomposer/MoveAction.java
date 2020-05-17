@@ -50,6 +50,7 @@ public class MoveAction implements Action {
         startX = x;
         draggedm = mov;
         main.done.push(this);
+        main.undone.clear();
     }
     
     @Override

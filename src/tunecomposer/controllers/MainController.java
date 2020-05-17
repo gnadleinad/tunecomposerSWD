@@ -240,11 +240,16 @@ public class MainController {
     
         
     public void selectNote(Moveable mov){
-//        if(!selected.contains(mov)){
-//            mov.display_select();
-//            selected.add(mov); 
-//        }
-        SelectAction selectMoveable = new SelectAction(mov, this);
+       System.out.println("Select note");
+       //System.out.
+       if(!selected.contains(mov)){
+           mov.display_select();
+            selected.add(mov); 
+            System.out.println(selected.size());
+            //SelectAction selectMoveable = new SelectAction(mov,selected, this);
+        }
+       
+        //SelectAction selectMoveable = new SelectAction(mov,selected, this);
 
     }
         
@@ -259,6 +264,7 @@ public class MainController {
     }
     
     public void endDrawingRectangle(MouseEvent event, double x, double y){
+        ArrayList<Moveable> prev = (ArrayList<Moveable>) selected.clone();
         deselectNotes(event);
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
         ArrayList<Moveable> temp_selected = new ArrayList();
@@ -268,16 +274,18 @@ public class MainController {
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                temp_selected.add((Moveable)node);
+                //temp_selected.add((Moveable)node);
+                selected.add((Moveable)node);
             }
        }
-        /*
+        
         for (Moveable mov : selected){
             mov.display_select();
         }
-        */
-        SelectAction selectMoveable = new SelectAction(temp_selected, this);
-
+        
+        System.out.println("endDrawingRectangle");
+        //SelectAction selectMoveable = new SelectAction(temp_selected,prev, this);
+        //done.push(selectMoveable);
         removePaneChild("notes_pane", select_rect);
         new_rectangle_is_being_drawn = false ;
         
@@ -304,14 +312,16 @@ public class MainController {
     
     public void selectNotes(MouseEvent event){
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_select = new ArrayList();
         for(Node node : notesChildren){
             if(((Moveable)node).contains(starting_point_x, starting_point_y)){
-                SelectAction selectMoveable = new SelectAction((Moveable)node, this);
+                //SelectAction selectMoveable = new SelectAction((Moveable)node, this);
                 
                 if(event.isControlDown() == true){
                     controlClick((Moveable)node);
                 } else{
                     selectNote((Moveable)node);
+                    //temp_select.add((Moveable)node);
                     
                 }
                 dragged = (Moveable)node;
@@ -326,8 +336,11 @@ public class MainController {
             }
             if(((Moveable)node).getClassName() == "group"){
                 selected.removeAll((((Group)node).group));
+                //temp_select.removeAll(((Group)node).group);
             }
         }
+        System.out.println("select notes");
+        //SelectAction selectAct = new SelectAction(temp_select,selected, this);
     }
     
     public void deselectNote(Moveable mov){

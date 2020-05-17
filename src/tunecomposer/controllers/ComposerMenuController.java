@@ -5,6 +5,7 @@
  */
 package tunecomposer.controllers;
 
+import tunecomposer.Ungrouping;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
@@ -81,7 +82,7 @@ public class ComposerMenuController{
             temp_selected.add((Moveable)node);
         }
         
-        SelectAction selectMoveable = new SelectAction(temp_selected, main);
+        SelectAction selectMoveable = new SelectAction(temp_selected, main.getSelected(), main);
     }
     
         @FXML
