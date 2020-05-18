@@ -5,6 +5,7 @@
  */
 package tunecomposer.controllers;
 
+import java.io.IOException;
 import tunecomposer.Ungrouping;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -52,15 +53,21 @@ public class ComposerMenuController{
     }  
     
     @FXML 
-    protected void handleUndoButtonAction(ActionEvent event) {
+    protected void handleUndoButtonAction(ActionEvent event) throws IOException{
         Action undoneAction = main.done.pop();
         undoneAction.undoAction();
         main.undone.push(undoneAction);
+        if(!main.done.empty()){
+            Action topDoneAction = main.done.peek();
+            topDoneAction.selectMoveables();
+        }
+        
         
     }  
     
     @FXML 
     protected void handleRedoButtonAction(ActionEvent event) {
+        //ArrayList selected = main.getSelected();
         Action redoneAction = main.undone.pop();
         redoneAction.redoAction();
         main.done.push(redoneAction);

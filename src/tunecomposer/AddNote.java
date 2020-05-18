@@ -43,9 +43,15 @@ public class AddNote implements Action{
     @Override
     public void redoAction() {
         ArrayList<Moveable> selected = main.getSelected();
+        for (Moveable mov : selected){
+            mov.display_deselect();
+        }
+        selected.clear();
         selected.add(note);
-        main.addPaneChild("notes_pane", note);        
-        note.display_select();
+        main.addPaneChild("notes_pane", note); 
+        if(!note.getStyleClass().contains("selected")){
+            note.display_select();
+        }
         
     }
 
@@ -55,7 +61,25 @@ public class AddNote implements Action{
         main.removePaneChild("notes_pane", note);
         selected.clear();
         main.updateSelected(selected);
+        //System.out.println(note.getStyleClass());
+        System.out.println("selected.size() selectMov: "+ selected.size());
         
+    }
+
+    @Override
+    public void selectMoveables() {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ArrayList<Moveable> selected = main.getSelected();
+        //if(!selected.contains(note)){
+            //note.display_select();
+        //}
+        System.out.println("selected.size() selectMov: "+ selected.size());
+        selected.add(note);
+        for (Moveable mov : selected){
+            //System.out.println("selected.size() selectMov: "+ selected.size());
+            mov.display_select();
+        }
+        System.out.println("selected.size() selectMov: "+ selected.size());
     }
     
     

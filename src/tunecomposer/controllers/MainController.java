@@ -243,7 +243,7 @@ public class MainController {
        System.out.println("Select note");
        //System.out.
        if(!selected.contains(mov)){
-           mov.display_select();
+            mov.display_select();
             selected.add(mov); 
             System.out.println(selected.size());
             //SelectAction selectMoveable = new SelectAction(mov,selected, this);

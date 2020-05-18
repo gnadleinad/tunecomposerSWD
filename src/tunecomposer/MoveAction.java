@@ -82,4 +82,9 @@ public class MoveAction implements Action {
             mv.undoDrag(difx ,dify);
         } 
     }
+
+    @Override
+    public void selectMoveables() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

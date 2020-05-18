@@ -58,5 +58,10 @@ public class DeleteSelected implements Action{
         selected.clear();
         main.updateSelected(selected);
     }
+
+    @Override
+    public void selectMoveables() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

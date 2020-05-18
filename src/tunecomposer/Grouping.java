@@ -55,5 +55,10 @@ public class Grouping implements Action{
         } 
         selected.remove(original_group);
     }
+
+    @Override
+    public void selectMoveables() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

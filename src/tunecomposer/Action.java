@@ -15,4 +15,6 @@ public interface Action {
     
     public void undoAction();
     
+    public void selectMoveables();
+    
 }
