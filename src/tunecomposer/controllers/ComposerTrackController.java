@@ -52,12 +52,17 @@ public class ComposerTrackController{
         
     @FXML
     private void onReleased(MouseEvent event) {
+        System.out.println("START on Released");
         ArrayList<Moveable> selected = main.getSelected();
         double ending_point_x = event.getX();
         double ending_point_y = event.getY();
-        
+        Boolean t = false;
         if ( main.new_rectangle_is_being_drawn == true ){
+            System.out.println(" if new_rectangle_is_being_drawn");
+            t = true;
             main.endDrawingRectangle(event, ending_point_x,ending_point_y);
+            System.out.println("released done stack: " + main.done);
+            System.out.println("released undone stack: "+  main.undone);
         }
         if (main.drag == true){
             main.endDrag(ending_point_x,ending_point_y);
@@ -66,6 +71,8 @@ public class ComposerTrackController{
             main.endExtend(ending_point_x);
         }
         else{
+            //if( t == false){
+            System.out.println("else");
             ObservableList<Node> notesChildren = main.getPaneChildren("notes_pane");
             ArrayList<Moveable> temp_selected = new ArrayList();
             ArrayList<Moveable> current_selected = new ArrayList();
@@ -76,6 +83,8 @@ public class ComposerTrackController{
                         main.deselectNotes(event);
                         main.selectNote((Moveable)node);
                         temp_selected.add((Moveable)node);
+                        System.out.println("released done stack: " + main.done);
+                        System.out.println("released undone stack: "+  main.undone);
                         
                     }
                 }
@@ -86,10 +95,12 @@ public class ComposerTrackController{
             }
             //SelectAction selectA = new SelectAction(temp_selected,current_selected, main);
             //main.done.push(selectA);
+            //}
             System.out.println("released done stack: " + main.done);
             System.out.println("released undone stack: "+  main.undone);
-            
+            //}
         }
+        System.out.println("END on Released");
     }
 
     @FXML
@@ -152,7 +163,7 @@ public class ComposerTrackController{
         main.starting_point_x = event.getX() ;
         main.starting_point_y = event.getY() ;
         main.changeDragOrExtendBooleans(main.starting_point_x,main.starting_point_y);
-        main.selectNotes(event);
+        //main.selectNotes(event);
 
         if (main.inside_rect == false){
             main.select_rect = new Rectangle() ;

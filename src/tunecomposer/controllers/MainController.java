@@ -242,14 +242,16 @@ public class MainController {
     public void selectNote(Moveable mov){
        System.out.println("Select note");
        //System.out.
+       /*
        if(!selected.contains(mov)){
             mov.display_select();
             selected.add(mov); 
             System.out.println(selected.size());
             //SelectAction selectMoveable = new SelectAction(mov,selected, this);
         }
+       */
        
-        //SelectAction selectMoveable = new SelectAction(mov,selected, this);
+        SelectAction selectMoveable = new SelectAction(mov,selected, this);
 
     }
         
@@ -263,7 +265,7 @@ public class MainController {
         
     }
     
-    public void endDrawingRectangle(MouseEvent event, double x, double y){
+    public ArrayList endDrawingRectangle(MouseEvent event, double x, double y){
         ArrayList<Moveable> prev = (ArrayList<Moveable>) selected.clone();
         deselectNotes(event);
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
@@ -274,20 +276,30 @@ public class MainController {
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                //temp_selected.add((Moveable)node);
-                selected.add((Moveable)node);
+                System.out.println();
+                System.out.println("temp Seleted inside if");
+                temp_selected.add((Moveable)node);
+                //selectNote((Moveable)node);
+                //selected.add((Moveable)node);
+                System.out.println();
             }
        }
-        
+        /*
         for (Moveable mov : selected){
             mov.display_select();
         }
+*/
         
         System.out.println("endDrawingRectangle");
-        //SelectAction selectMoveable = new SelectAction(temp_selected,prev, this);
+        System.out.println("temp_selected size: "+ temp_selected.size());
+        System.out.println();
+        if(temp_selected.size() > 0){
+            SelectAction selectMoveable = new SelectAction(temp_selected,prev, this);
+        }
         //done.push(selectMoveable);
         removePaneChild("notes_pane", select_rect);
         new_rectangle_is_being_drawn = false ;
+        return temp_selected;
         
     }
         

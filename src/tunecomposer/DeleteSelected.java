@@ -24,12 +24,14 @@ public class DeleteSelected implements Action{
     private ArrayList<Moveable> original_selected;
     
     
-    public DeleteSelected(ArrayList s, MainController m){
+    public DeleteSelected(ArrayList<Moveable> s, MainController m){
 
         main = m;
-        
+        System.out.println("delete selected s: " + s);
         ArrayList<Moveable> selected = main.getSelected();
-        original_selected = (ArrayList<Moveable>) s.clone();
+        original_selected = new ArrayList();
+        original_selected.addAll(s);
+        System.out.println("delete selected original: " + original_selected);
         
         redoAction();
 
@@ -56,12 +58,21 @@ public class DeleteSelected implements Action{
         }
         
         selected.clear();
-        main.updateSelected(selected);
+        //main.updateSelected(selected);
     }
 
     @Override
     public void selectMoveables() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*
+        ArrayList<Moveable> selected = main.getSelected();
+        selected.addAll(original_selected);
+        //System.out.println("PEEK toBeSelected.size(): " +  toBeSelected);
+        for (Moveable mov : selected){
+            //System.out.println("selected.size() selectMov: "+ selected.size());
+            mov.display_select();
+        }
+*/
     }
     
 }
