@@ -1,5 +1,10 @@
 # -project-5-team4
 # Design Overview
+
+Give a concise overview of your design. What strategy did you use to implement undo/redo? How did you divide the code into classes and methods? How does your design for Project 6 differ from your design to Project 5? How did you respond to feedback? (If I get it to you in time.)
+
+To implement undo and redo we added a new interface to represent any action that is taken. This interface had three methods. It includes undo/redo and selectMovables. Undo and redo exist so that each implementation of the 
+
 Project 5 brought about two new design features, group and ungroup. In order to implement these new design features we created a Group class and a Moveable interface. Note and Group classes implemented the Moveable interface implementing crucial methods such as drag() and extend(). We were then able to alter our selected ArrayList data structure to hold Moveables not only Notes. By doing this, we followed the guideline that says to code to interfaces, not classes and gave our project the ability for dynamic method invocation. In addition, we had Groups and Note objects extend the rectangle class instead of having them include a rectangle object as a field, which note did in the previous iteration. After examining our code, we recognized that our EventHandler and TuneComposer classes were overfull and decided to split our EventHandler class into four classes. We left only the initialization of scene and loader in TuneComposer and split EventHandler into MainController, InstrumentSelectController, ComposerTrackController, and ComposerMenueController. Also, we separated our scene elements into separate panes using the notes pane as our data structure which holds all of our Note and Group objects. In addition, instrument assignment was refactored to be cleaner than the implementation in project 4.
 
 # Strengths
