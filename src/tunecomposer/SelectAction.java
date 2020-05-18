@@ -27,7 +27,7 @@ public class SelectAction implements Action{
     private ArrayList<Moveable> previously_selected = new ArrayList();
     private ArrayList<Moveable> toBeSelected = new ArrayList();
     
-    /*
+    
     public SelectAction(Moveable mov, ArrayList<Moveable> prev, MainController m){
         System.out.println("item");
         toBeSelected.add(mov);
@@ -44,8 +44,9 @@ public class SelectAction implements Action{
             selected.add(moveable); 
         }
         main.done.push(this);
+        main.undone.clear();
     }
-    */
+    
     public SelectAction(ArrayList<Moveable> a,ArrayList<Moveable> prev, MainController m){
         System.out.println("list");
         previously_selected = prev;
@@ -56,7 +57,8 @@ public class SelectAction implements Action{
         System.out.println("UPDATED previously selected size: "+ previously_selected.size());
         main = m;
         redoAction();
-        //main.done.push(this);
+        main.done.push(this);
+        main.undone.clear();
     }
     
     @Override
@@ -79,18 +81,27 @@ public class SelectAction implements Action{
             mov.display_deselect();
         }
         selected.clear();
+        /*
         System.out.println(previously_selected.size());
         selected.addAll(previously_selected);
         for(Moveable mov : previously_selected){
             mov.display_select();
         }
+        */
 
         
     }
 
     @Override
     public void selectMoveables() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ArrayList<Moveable> selected = main.getSelected();
+        selected.addAll(toBeSelected);
+        System.out.println("PEEK toBeSelected.size(): " +  toBeSelected);
+        for (Moveable mov : selected){
+            //System.out.println("selected.size() selectMov: "+ selected.size());
+            mov.display_select();
+        }
     }
     
     
