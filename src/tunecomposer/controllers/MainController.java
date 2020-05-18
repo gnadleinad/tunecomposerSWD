@@ -25,6 +25,7 @@ import tunecomposer.AddNote;
 import tunecomposer.ExtendAction;
 import tunecomposer.MoveAction;
 import tunecomposer.SelectAction;
+import tunecomposer.UnselectAction;
 
 /**
  *
@@ -256,12 +257,18 @@ public class MainController {
     }
         
     public void deselectNotes(MouseEvent event){
+        
+        
         if(event.isControlDown() == false){
+            //UnselectAction UnselectA = new UnselectAction(selected, selected,this);
+            
             for (Moveable mov : selected){
                 mov.display_deselect();
             }
             selected.clear();
+            
         }
+        
         
     }
     
@@ -383,6 +390,7 @@ public class MainController {
     }
     
     public void deselectNote(Moveable mov){
+        //UnselectAction UnselectA = new UnselectAction(mov, selected,this);
         mov.display_deselect();
         selected.remove(mov);
         
@@ -403,7 +411,8 @@ public class MainController {
             selectNote(mov);
         }
         else{
-            deselectNote(mov);
+            deselectNote(mov); 
+            //UnselectAction UnselectA = new UnselectAction(mov, selected,this);
         }
     }
     
