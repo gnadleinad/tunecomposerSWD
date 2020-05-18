@@ -81,6 +81,7 @@ public class SelectAction implements Action{
             mov.display_deselect();
         }
         selected.clear();
+        //selectMoveables();
         /*
         System.out.println(previously_selected.size());
         selected.addAll(previously_selected);
@@ -97,7 +98,7 @@ public class SelectAction implements Action{
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
         selected.addAll(toBeSelected);
-        System.out.println("PEEK toBeSelected.size(): " +  toBeSelected);
+        //System.out.println("PEEK toBeSelected.size(): " +  toBeSelected);
         for (Moveable mov : selected){
             //System.out.println("selected.size() selectMov: "+ selected.size());
             mov.display_select();

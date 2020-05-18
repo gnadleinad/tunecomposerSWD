@@ -63,6 +63,7 @@ public class AddNote implements Action{
         main.updateSelected(selected);
         //System.out.println(note.getStyleClass());
         System.out.println("selected.size() selectMov: "+ selected.size());
+        //selectMoveables();
         
     }
 
@@ -73,7 +74,7 @@ public class AddNote implements Action{
         //if(!selected.contains(note)){
             //note.display_select();
         //}
-        System.out.println("selected.size() selectMov: "+ selected.size());
+        //System.out.println("selected.size() selectMov: "+ selected.size());
         selected.add(note);
         for (Moveable mov : selected){
             //System.out.println("selected.size() selectMov: "+ selected.size());

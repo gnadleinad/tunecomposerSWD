@@ -153,10 +153,19 @@ public class ComposerTrackController{
             System.out.println("onClick done stack: "+main.done);
             System.out.println("onClick undone stack: " + main.undone);
         } 
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("END");
     }
 
     @FXML
     private void onPressed(MouseEvent event) {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("START");
+        
         main.player.stop();
         main.moveRedBack();
         main.inside_rect = false;
@@ -164,6 +173,7 @@ public class ComposerTrackController{
         main.starting_point_y = event.getY() ;
         main.changeDragOrExtendBooleans(main.starting_point_x,main.starting_point_y);
         //main.selectNotes(event);
+        main.dragOrExtendActionCall();
 
         if (main.inside_rect == false){
             main.select_rect = new Rectangle() ;

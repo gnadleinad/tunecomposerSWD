@@ -310,7 +310,7 @@ public class MainController {
             
             if (rnote.getY() == Math.floor(y/10)*10 
                 && (rnote.getX() <= x && (rnote.getX())+rnote.getWidth() - 10  >  x )){
-                drag = false;
+                drag = true;
                 break;
             }
             else if (rnote.contains(x,y)
@@ -319,6 +319,31 @@ public class MainController {
                 //ExtendAction extact = new ExtendAction(rnote.getX(),dragged,this);
                 break;
             }   
+        }
+    }
+    
+    public void dragOrExtendActionCall(){
+        ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_select = new ArrayList();
+        for(Node node : notesChildren){
+            if(((Moveable)node).contains(starting_point_x, starting_point_y)){
+                //SelectAction selectMoveable = new SelectAction((Moveable)node, this);
+                
+                dragged = (Moveable)node;
+                if (extend == true){
+                    ExtendAction extact = new ExtendAction(((Moveable)node).getMoveableWidth(),((Moveable)node).getMoveableX(),dragged,this);
+                }
+                
+                if(drag == true){
+                    MoveAction mvact = new MoveAction(((Rectangle)node).getX(),((Rectangle)node).getY(),dragged,this); 
+                }
+                inside_rect = true;
+               
+            }
+            if(((Moveable)node).getClassName() == "group"){
+                selected.removeAll((((Group)node).group));
+                //temp_select.removeAll(((Group)node).group);
+            }
         }
     }
     
@@ -336,6 +361,7 @@ public class MainController {
                     //temp_select.add((Moveable)node);
                     
                 }
+                /*
                 dragged = (Moveable)node;
                 if (extend == true){
                     ExtendAction extact = new ExtendAction(((Moveable)node).getMoveableWidth(),((Moveable)node).getMoveableX(),dragged,this);
@@ -344,6 +370,7 @@ public class MainController {
                    MoveAction mvact = new MoveAction(((Rectangle)node).getX(),((Rectangle)node).getY(),dragged,this); 
                 }
                 inside_rect = true;
+                */
                
             }
             if(((Moveable)node).getClassName() == "group"){
