@@ -1,4 +1,4 @@
-# -project-5-team4
+# -project-6-team4
 
 # Design Overview
 To implement undo and redo we added a new interface to represent any action that is taken. This interface had three methods. It includes undo, redo and selectMovables. Undo and redo exist so that each implementation of the interface can handle the undo and redo functionality differently as they need to. The selectMovables method exists to select the notes that were previously selected before the latest undo. We added a new class for each type of action that implemented this interface. This included adding/removing notes, grouping/ungrouping, dragging, extending, and selecting. To use these classes we added a done and undone stack to our mainController. With this, we were able to push/pop back and forth between the stacks to retrive the action that was either most recently done or undone. After popping an action for example, we were able to then call the undo or redo for that action as it is implemented in that specific class. The only other difference to our project 5 solution is that when these actions are done, an instance of the action class is made. 
