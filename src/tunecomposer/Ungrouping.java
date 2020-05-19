@@ -51,7 +51,13 @@ public class Ungrouping implements Action {
 
     @Override
     public void selectMoveables() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ArrayList<Moveable> selected = main.getSelected();
+        selected.addAll(original_group.group);
+//        original_group.display_select();
+        for (Moveable mov : original_group.group){
+            mov.display_select();
+        }
     }
     
 }
