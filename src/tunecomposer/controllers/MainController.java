@@ -250,7 +250,7 @@ public class MainController {
             //SelectAction selectMoveable = new SelectAction(mov,selected, this);
         }
        */
-       
+        done.pop(); //used to pop move action automatically created before off the stack
         SelectAction selectMoveable = new SelectAction(mov,selected, this);
 
     }
@@ -310,7 +310,7 @@ public class MainController {
             
             if (rnote.getY() == Math.floor(y/10)*10 
                 && (rnote.getX() <= x && (rnote.getX())+rnote.getWidth() - 10  >  x )){
-                drag = true;
+                drag = false;
                 break;
             }
             else if (rnote.contains(x,y)
@@ -319,6 +319,8 @@ public class MainController {
                 //ExtendAction extact = new ExtendAction(rnote.getX(),dragged,this);
                 break;
             }   
+            
+            
         }
     }
     
@@ -334,7 +336,7 @@ public class MainController {
                     ExtendAction extact = new ExtendAction(((Moveable)node).getMoveableWidth(),((Moveable)node).getMoveableX(),dragged,this);
                 }
                 
-                if(drag == true){
+                else{
                     MoveAction mvact = new MoveAction(((Rectangle)node).getX(),((Rectangle)node).getY(),dragged,this); 
                 }
                 inside_rect = true;

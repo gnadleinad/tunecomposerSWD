@@ -172,6 +172,8 @@ public class ComposerTrackController{
         main.starting_point_x = event.getX() ;
         main.starting_point_y = event.getY() ;
         main.changeDragOrExtendBooleans(main.starting_point_x,main.starting_point_y);
+        
+        
         //main.selectNotes(event);
         main.dragOrExtendActionCall();
 

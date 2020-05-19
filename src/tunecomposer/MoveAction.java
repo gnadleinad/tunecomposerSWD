@@ -75,8 +75,8 @@ public class MoveAction implements Action {
     @Override
     public void undoAction() {
         System.out.println("Move undoAction");
-        System.out.println("DraggedM X(undoMove): " + draggedm.getMoveableX());
-        System.out.println("DraggedM Y(undoMove): " + draggedm.getMoveableY());
+        //System.out.println("DraggedM X(undoMove): " + draggedm.getMoveableX());
+        //System.out.println(draggedm.getMoveableY());
         dX = draggedm.getMoveableX();
         dY = draggedm.getMoveableY();
         ArrayList<Moveable> selected = main.getSelected();
