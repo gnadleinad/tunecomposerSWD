@@ -15,12 +15,6 @@ import tunecomposer.controllers.MainController;
 public class Grouping implements Action{
     private MainController main;
     
-    //private AddNote current;
-    /*
-    private MouseEvent event;
-    private double note_x;
-    private double note_y;
-    */
     private ArrayList<Moveable> original_selected;
     
     private Group original_group;
@@ -38,7 +32,6 @@ public class Grouping implements Action{
     
     @Override
     public void redoAction() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
         main.getPaneChildren("notes_pane").add(original_group);
         selected.clear();
@@ -47,7 +40,6 @@ public class Grouping implements Action{
 
     @Override
     public void undoAction() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
         main.removePaneChild("notes_pane",original_group);
         for(Moveable item : original_group.group){
@@ -58,7 +50,6 @@ public class Grouping implements Action{
 
     @Override
     public void selectMoveables() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
         selected.add(original_group);
         original_group.display_select();

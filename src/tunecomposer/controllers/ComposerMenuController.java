@@ -54,13 +54,15 @@ public class ComposerMenuController{
     
     @FXML 
     protected void handleUndoButtonAction(ActionEvent event) throws IOException{
-        System.out.print(main.done);
-        Action undoneAction = main.done.pop();
-        undoneAction.undoAction();
-        main.undone.push(undoneAction);
         if(!main.done.empty()){
-            Action topDoneAction = main.done.peek();
-            topDoneAction.selectMoveables();
+            Action undoneAction = main.done.pop();
+            undoneAction.undoAction();
+            main.undone.push(undoneAction);
+            if(!main.done.empty()){
+                Action topDoneAction = main.done.peek();
+                topDoneAction.selectMoveables();
+            }
+            
         }
         
         
@@ -68,17 +70,17 @@ public class ComposerMenuController{
     
     @FXML 
     protected void handleRedoButtonAction(ActionEvent event) {
-        //ArrayList selected = main.getSelected();
-        Action redoneAction = main.undone.pop();
-        redoneAction.redoAction();
-        main.done.push(redoneAction);
+        if(!main.undone.empty()){
+            Action redoneAction = main.undone.pop();
+            redoneAction.redoAction();
+            main.done.push(redoneAction);
+        }
     }  
     
         
     @FXML
     protected void handleDeleteButtonAction(ActionEvent event) throws InvocationTargetException{
         ArrayList<Moveable> selected = main.getSelected();
-        
         DeleteSelected deleteAction = new DeleteSelected(selected,main);
         
   }

@@ -164,7 +164,6 @@ public class Note extends Rectangle implements Moveable{
     
      public void extend(double extentionlen){
         this.setWidth(extentionlen);
-        //this.setOriginalWidth();
     }
      
     public void undoExtend(double w, double x){
