@@ -1,0 +1,86 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tunecomposer;
+
+import java.util.ArrayList;
+import tunecomposer.controllers.MainController;
+import static tunecomposer.controllers.MainController.dragged;
+
+/**
+ *
+ * @author charlieschneider
+ */
+public class MoveAction implements Action {
+    
+    private MainController main;
+    
+    //private AddNote current;
+    /*
+    private MouseEvent event;
+    private double note_x;
+    private double note_y;
+    */
+    
+    //private Moveable moveable;
+        //private MainController main;
+    
+    //private AddNote current;
+    /*
+    private MouseEvent event;
+    private double note_x;
+    private double note_y;
+    */
+    private Double startY; 
+    private Double startX;
+    private Moveable draggedm;
+    
+    private Double dY; 
+    private Double dX;
+    private ArrayList<Moveable> temp_selected = new ArrayList();
+    
+    
+    public MoveAction(double x, double y, Moveable mov, MainController m){
+        
+        main = m;
+        startY = y;
+        startX = x;
+        draggedm = mov;
+        main.done.push(this);
+        main.undone.clear();
+    }
+    
+    @Override
+    public void redoAction() {
+        double dify = (dY - dragged.getMoveableY());
+        double difx = (dX - dragged.getMoveableX());
+        ArrayList<Moveable> selected = main.getSelected();
+        for (Moveable mv : selected){
+            mv.drag(difx, dify);
+        }
+    }
+
+    @Override
+    public void undoAction() {
+        dX = draggedm.getMoveableX();
+        dY = draggedm.getMoveableY();
+        
+        ArrayList<Moveable> selected = main.getSelected();
+        double dify = (dragged.getMoveableY() - startY);
+        double difx = (dragged.getMoveableX() - startX);
+        for (Moveable mv : selected) {
+            mv.undoDrag(difx ,dify);
+        } 
+    }
+
+    @Override
+    public void selectMoveables() {
+        ArrayList<Moveable> selected = main.getSelected();
+        selected.addAll(temp_selected);
+        for(Moveable mov : temp_selected){
+            mov.display_select();
+        }
+    }
+}

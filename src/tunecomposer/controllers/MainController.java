@@ -6,6 +6,7 @@
 package tunecomposer.controllers;
 
 import java.util.ArrayList;
+import java.util.Stack;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Transition;
 import javafx.collections.ObservableList;
@@ -19,6 +20,11 @@ import tunecomposer.Group;
 import tunecomposer.MidiPlayer;
 import tunecomposer.Moveable;
 import tunecomposer.Note;
+import tunecomposer.Action;
+import tunecomposer.AddNote;
+import tunecomposer.ExtendAction;
+import tunecomposer.MoveAction;
+import tunecomposer.SelectAction;
 
 /**
  *
@@ -66,6 +72,10 @@ public class MainController {
     public Transition redlineAnimation;
     
     private static ArrayList<Moveable> selected = new ArrayList<>();
+    
+    public Stack<Action> done = new Stack();
+    
+    public Stack<Action> undone = new Stack();
     
     
     public static boolean drag = false;
@@ -133,6 +143,14 @@ public class MainController {
         return selected;
     }
     
+    public Stack getDoneStack(){
+        return done;
+    }
+    
+    public Stack getUndoneStack(){
+        return undone;
+    }
+    
     public String getInstrument() {
         return instrumentSelectController.getInstrument();
     }
@@ -162,23 +180,16 @@ public class MainController {
             }
         player.play();
         }      
-
-
-    // GOOD STUFF STARTS HERE
     
     public void makeNote(MouseEvent event, double x,double y){
         deselectNotes(event);
-
-        Pair coordinates = new Pair(x,y);
         
         instrumentSelectController.change_instrument();
         String current_instrument = getInstrument();
         Note n = new Note(x,y,current_instrument);
-
-        selected.add(n);
         
-        addPaneChild("notes_pane", n);        
-        n.display_select();
+        AddNote addAction = new AddNote(n, this);
+
     }
        
     
@@ -186,17 +197,17 @@ public class MainController {
     public void dragNotes(double x, double y){
         double dify = (y - dragged.getMoveableY());
         double difx = (x - dragged.getMoveableX());
+
         for (Moveable mov : selected) {
+
             mov.drag(difx, dify);
-        } 
+        }
     }
     
     public void endDrag(double x, double y) {
         double dify = (y - dragged.getMoveableY());
         double difx = (x - dragged.getMoveableX());
-
         for (Moveable mov : selected) {
-
             mov.releaseDrag(difx, dify);
         }
     }
@@ -223,41 +234,37 @@ public class MainController {
     
         
     public void selectNote(Moveable mov){
-        if(!selected.contains(mov)){
-            mov.display_select();
-            selected.add(mov); 
-        }
+        done.pop(); //used to pop move action automatically created before off the stack
+        SelectAction selectMoveable = new SelectAction(mov,selected, this);
 
     }
         
     public void deselectNotes(MouseEvent event){
-        if(event.isControlDown() == false){
-            for (Moveable mov : selected){
-                mov.display_deselect();
-            }
-            selected.clear();
+        for (Moveable mov : selected){
+            mov.display_deselect();
         }
-        
+        selected.clear();
+
     }
     
-    public void endDrawingRectangle(MouseEvent event, double x, double y){
+    public ArrayList endDrawingRectangle(MouseEvent event, double x, double y){
+        ArrayList<Moveable> prev = (ArrayList<Moveable>) selected.clone();
         deselectNotes(event);
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_selected = new ArrayList();
         for(Node node : notesChildren){
-            
-            
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
-            {  
-                selected.add((Moveable)node);
+            {
+                temp_selected.add((Moveable)node);
             }
        }
-        for (Moveable mov : selected){
-            mov.display_select();
+        if(temp_selected.size() > 0){
+            SelectAction selectMoveable = new SelectAction(temp_selected,prev, this);
         }
-
-       removePaneChild("notes_pane", select_rect);
-       new_rectangle_is_being_drawn = false ;
+        removePaneChild("notes_pane", select_rect);
+        new_rectangle_is_being_drawn = false ;
+        return temp_selected;
         
     }
         
@@ -276,21 +283,42 @@ public class MainController {
                 extend = true;
                 break;
             }   
+            
+            
+        }
+    }
+    
+    public void dragOrExtendActionCall(){
+        ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_select = new ArrayList();
+        for(Node node : notesChildren){
+            if(((Moveable)node).contains(starting_point_x, starting_point_y)){                
+                dragged = (Moveable)node;
+                if (extend == true){
+                    ExtendAction extact = new ExtendAction(((Moveable)node).getMoveableWidth(),((Moveable)node).getMoveableX(),dragged,this);
+                }
+                
+                else{
+                    MoveAction mvact = new MoveAction(((Rectangle)node).getX(),((Rectangle)node).getY(),dragged,this); 
+                }
+                inside_rect = true;
+               
+            }
+            if(((Moveable)node).getClassName() == "group"){
+                selected.removeAll((((Group)node).group));
+            }
         }
     }
     
     public void selectNotes(MouseEvent event){
         ObservableList<Node> notesChildren = getPaneChildren("notes_pane");
+        ArrayList<Moveable> temp_select = new ArrayList();
         for(Node node : notesChildren){
-            if(((Moveable)node).contains(starting_point_x, starting_point_y)){
-                dragged = (Moveable)node;
-                inside_rect = true;
-                
+            if(((Moveable)node).contains(starting_point_x, starting_point_y)){                
                 if(event.isControlDown() == true){
                     controlClick((Moveable)node);
                 } else{
-                    selectNote((Moveable)node);
-                    
+                    selectNote((Moveable)node);                    
                 }
             }
             if(((Moveable)node).getClassName() == "group"){
@@ -301,12 +329,9 @@ public class MainController {
     
     public void deselectNote(Moveable mov){
         mov.display_deselect();
-        selected.remove(mov);
-        
+        selected.remove(mov);   
     }
-    
-    
-    
+  
     public void resetBooleans(){
         drag = false;
         extend = false;
@@ -347,6 +372,5 @@ public class MainController {
          given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
       }
    }
-   //GOOD STUFF ENDS HERE
 }   
 

@@ -52,8 +52,6 @@ public class Group extends Rectangle implements Moveable{
             return true; 
         } 
   
-        /* Check if o is an instance of Complex or not 
-          "null instanceof [type]" also returns false */
         if (!(o instanceof Group)) { 
             return false; 
         } 
@@ -75,7 +73,7 @@ public class Group extends Rectangle implements Moveable{
     public void setMoveableX(double x1) {; 
         double dist;
         dist = this.getMoveableX() - x1;
-        this.setX(x1);// if only this, then groups are good, notes are not
+        this.setX(x1);
         for (Moveable mov : this.group){
             mov.setMoveableX(mov.getMoveableX() - dist);
         }
@@ -95,6 +93,14 @@ public class Group extends Rectangle implements Moveable{
         }
     }
     
+    public void undoDrag(double difx, double dify){
+        this.setX(this.getX() - difx);
+        this.setY(this.getY() - dify);
+        for(Moveable mov : group) {
+            mov.undoDrag(difx,dify);
+        }
+    }
+    
     public void releaseDrag(double difx, double dify){
         this.setX(this.getX() + difx);
         this.setY(Math.floor((this.getY() + dify)/ 10) * 10);
@@ -105,7 +111,7 @@ public class Group extends Rectangle implements Moveable{
       public void extend(double extentionlen){
         double startX;
         double widthFraction;
-        double scaleFactor = extentionlen / getMoveableWidth(); //
+        double scaleFactor = extentionlen / getMoveableWidth(); 
         for(Moveable mov : group) {
             startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX())*scaleFactor));
             widthFraction = mov.getMoveableWidth() / this.getMoveableWidth();
@@ -114,6 +120,20 @@ public class Group extends Rectangle implements Moveable{
             }
         this.setWidth(extentionlen);
         }
+      
+      public void undoExtend(double w, double x){
+        double startX;
+        double widthFraction;
+        double scaleFactor = w / getMoveableWidth();
+        for(Moveable mov : group) {
+            startX = this.getMoveableX() + (((mov.getMoveableX() - this.getMoveableX())*scaleFactor));
+            widthFraction = mov.getMoveableWidth() / this.getMoveableWidth();
+            mov.setMoveableX(startX);
+            mov.undoExtend(w * widthFraction, startX);
+            }
+        this.setWidth(w);
+        this.setX(x);
+      }
     
     public void releaseExtend(double extentionlen){
         //nothing is needed here!

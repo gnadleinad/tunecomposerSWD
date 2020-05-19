@@ -19,9 +19,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import tunecomposer.Group;
-//import tunecomposer.Group;
 import tunecomposer.Moveable;
-//import tunecomposer.Note;
+import tunecomposer.SelectAction;
 
 
 /**
@@ -54,7 +53,6 @@ public class ComposerTrackController{
         ArrayList<Moveable> selected = main.getSelected();
         double ending_point_x = event.getX();
         double ending_point_y = event.getY();
-        
         if ( main.new_rectangle_is_being_drawn == true ){
             main.endDrawingRectangle(event, ending_point_x,ending_point_y);
         }
@@ -66,15 +64,21 @@ public class ComposerTrackController{
         }
         else{
             ObservableList<Node> notesChildren = main.getPaneChildren("notes_pane");
+            ArrayList<Moveable> temp_selected = new ArrayList();
+            ArrayList<Moveable> current_selected = new ArrayList();
             for(Node node : notesChildren){ 
                 if(((Moveable)node).contains(main.starting_point_x, main.starting_point_y)){
                     if(event.isControlDown() == false){
+                        current_selected = (ArrayList<Moveable>) selected.clone();
                         main.deselectNotes(event);
                         main.selectNote((Moveable)node);
+                        temp_selected.add((Moveable)node);
+                        
                     }
                 }
                 if(((Moveable)node).getClassName() == "group"){
                     selected.removeAll((((Group)node).group));
+                    temp_selected.removeAll(((Group)node).group);
                 }
             }
         }
@@ -120,29 +124,29 @@ public class ComposerTrackController{
             y = Math.floor(y / 10) * 10;
 
             for(Node node : notes_pane.getChildren()){
-                //System.out.println("for loop");
                 if(((Moveable)node).contains(x, y)){
                     return;
                 }  
             }
             main.makeNote(event,x,y);
         } 
+      
     }
 
     @FXML
     private void onPressed(MouseEvent event) {
+        
         main.player.stop();
         main.moveRedBack();
         main.inside_rect = false;
         main.starting_point_x = event.getX() ;
         main.starting_point_y = event.getY() ;
         main.changeDragOrExtendBooleans(main.starting_point_x,main.starting_point_y);
-        main.selectNotes(event);
+        main.dragOrExtendActionCall();
 
         if (main.inside_rect == false){
             main.select_rect = new Rectangle() ;
             main.select_rect.getStyleClass().add("selectionRect");
-            // A non-finished rectangle has always the same color.
             notes_pane.getChildren().add(main.select_rect);
             main.new_rectangle_is_being_drawn = true ;
         }
@@ -151,7 +155,6 @@ public class ComposerTrackController{
     private double getLastX() {
         double lastNoteX = 0.0;
         if (main.redlineAnimation.getStatus() == Status.RUNNING) {
-           System.out.println(red_line.getLayoutX());
            lastNoteX = red_line.getLayoutX();
         }
         else {

@@ -17,14 +17,9 @@ public class InstrumentSelectController{
         
     @FXML
     private ToggleGroup instrument;
-    
     public static String current_instrument;
-    
     private MainController main;
-    
-    
-    
-    
+
     public final void change_instrument(){
         RadioButton selectedRadioButton = (RadioButton) instrument.getSelectedToggle();
         String toggleGroupValue = selectedRadioButton.getText();
