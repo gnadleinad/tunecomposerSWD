@@ -54,8 +54,8 @@ public class Note extends Rectangle implements Moveable{
     }
     
     public void releaseDrag(double difx, double dify){
-        this.setX(getX() + difx);
-        this.setY(Math.floor((getY() + dify)/ 10) * 10);
+        this.setX(this.getX() + difx);
+        this.setY(Math.floor((this.getY() + dify)/ 10) * 10);
     }
     
     @Override

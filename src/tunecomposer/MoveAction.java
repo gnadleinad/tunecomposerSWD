@@ -50,14 +50,17 @@ public class MoveAction implements Action {
         draggedm = mov;
         main.done.push(this);
         main.undone.clear();
-        temp_selected.addAll(main.getSelected());
+        //temp_selected.addAll(main.getSelected());
+        System.out.print(main.getSelected().size());
         System.out.println("moveAction x: "+ draggedm.getMoveableX());
         System.out.println("moveAction y: "+ draggedm.getMoveableY());
     }
     
     @Override
     public void redoAction() {
-        System.out.println("Move redoAction");
+        System.out.println(dragged.getMoveableX());
+        System.out.println(dX);
+        System.out.println("2");
         /*
         System.out.println(draggedm.getMoveableX());
         System.out.println(draggedm.getMoveableY());
@@ -79,7 +82,11 @@ public class MoveAction implements Action {
         //System.out.println(draggedm.getMoveableY());
         dX = draggedm.getMoveableX();
         dY = draggedm.getMoveableY();
+        System.out.println(dX);
+        System.out.println("initial dx");
+        
         ArrayList<Moveable> selected = main.getSelected();
+        System.out.println(selected.size());
         double dify = (dragged.getMoveableY() - startY);
         double difx = (dragged.getMoveableX() - startX);
         for (Moveable mv : selected) {

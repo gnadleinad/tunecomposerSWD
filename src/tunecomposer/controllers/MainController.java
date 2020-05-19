@@ -211,8 +211,8 @@ public class MainController {
     public void endDrag(double x, double y) {
         double dify = (y - dragged.getMoveableY());
         double difx = (x - dragged.getMoveableX());
-        System.out.println(dragged.getMoveableX());
-        System.out.println(dragged.getMoveableY());
+        //System.out.println(dragged.getMoveableX());
+        //System.out.println(dragged.getMoveableY());
         for (Moveable mov : selected) {
             mov.releaseDrag(difx, dify);
         }
@@ -240,7 +240,7 @@ public class MainController {
     
         
     public void selectNote(Moveable mov){
-       System.out.println("Select note");
+       //System.out.println("Select note");
        //System.out.
        /*
        if(!selected.contains(mov)){
@@ -256,12 +256,12 @@ public class MainController {
     }
         
     public void deselectNotes(MouseEvent event){
-        if(event.isControlDown() == false){
+        //if(event.isControlDown() == false){
             for (Moveable mov : selected){
                 mov.display_deselect();
             }
             selected.clear();
-        }
+        //}
         
     }
     
@@ -276,12 +276,12 @@ public class MainController {
             if((((Rectangle)node).getY() > Math.min(starting_point_y,y)  && ((Rectangle)node).getY() < Math.max(y,starting_point_y))
                    && (((Rectangle)node).getX() > Math.min(starting_point_x, x) && ((Rectangle)node).getX() < Math.max(x, starting_point_x)))
             {  
-                System.out.println();
-                System.out.println("temp Seleted inside if");
+                //System.out.println();
+                //System.out.println("temp Seleted inside if");
                 temp_selected.add((Moveable)node);
                 //selectNote((Moveable)node);
                 //selected.add((Moveable)node);
-                System.out.println();
+                //System.out.println();
             }
        }
         /*
@@ -290,9 +290,9 @@ public class MainController {
         }
 */
         
-        System.out.println("endDrawingRectangle");
-        System.out.println("temp_selected size: "+ temp_selected.size());
-        System.out.println();
+       // System.out.println("endDrawingRectangle");
+        //System.out.println("temp_selected size: "+ temp_selected.size());
+        //System.out.println();
         if(temp_selected.size() > 0){
             SelectAction selectMoveable = new SelectAction(temp_selected,prev, this);
         }
@@ -380,7 +380,7 @@ public class MainController {
                 //temp_select.removeAll(((Group)node).group);
             }
         }
-        System.out.println("select notes");
+       // System.out.println("select notes");
         //SelectAction selectAct = new SelectAction(temp_select,selected, this);
     }
     

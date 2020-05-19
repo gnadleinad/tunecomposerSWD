@@ -54,6 +54,7 @@ public class ComposerMenuController{
     
     @FXML 
     protected void handleUndoButtonAction(ActionEvent event) throws IOException{
+        System.out.print(main.done);
         Action undoneAction = main.done.pop();
         undoneAction.undoAction();
         main.undone.push(undoneAction);

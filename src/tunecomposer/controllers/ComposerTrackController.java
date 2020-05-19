@@ -52,17 +52,21 @@ public class ComposerTrackController{
         
     @FXML
     private void onReleased(MouseEvent event) {
-        System.out.println("START on Released");
+        //System.out.println("START on Released");
         ArrayList<Moveable> selected = main.getSelected();
+        for (Moveable s: selected){
+            System.out.println(s.getMoveableX());
+            System.out.println(s.getMoveableY());
+        }
         double ending_point_x = event.getX();
         double ending_point_y = event.getY();
         Boolean t = false;
         if ( main.new_rectangle_is_being_drawn == true ){
-            System.out.println(" if new_rectangle_is_being_drawn");
+            //System.out.println(" if new_rectangle_is_being_drawn");
             t = true;
             main.endDrawingRectangle(event, ending_point_x,ending_point_y);
-            System.out.println("released done stack: " + main.done);
-            System.out.println("released undone stack: "+  main.undone);
+            //System.out.println("released done stack: " + main.done);
+           // System.out.println("released undone stack: "+  main.undone);
         }
         if (main.drag == true){
             main.endDrag(ending_point_x,ending_point_y);
@@ -72,7 +76,7 @@ public class ComposerTrackController{
         }
         else{
             //if( t == false){
-            System.out.println("else");
+            //System.out.println("else");
             ObservableList<Node> notesChildren = main.getPaneChildren("notes_pane");
             ArrayList<Moveable> temp_selected = new ArrayList();
             ArrayList<Moveable> current_selected = new ArrayList();
@@ -83,8 +87,8 @@ public class ComposerTrackController{
                         main.deselectNotes(event);
                         main.selectNote((Moveable)node);
                         temp_selected.add((Moveable)node);
-                        System.out.println("released done stack: " + main.done);
-                        System.out.println("released undone stack: "+  main.undone);
+                        //System.out.println("released done stack: " + main.done);
+                       // System.out.println("released undone stack: "+  main.undone);
                         
                     }
                 }
@@ -96,11 +100,11 @@ public class ComposerTrackController{
             //SelectAction selectA = new SelectAction(temp_selected,current_selected, main);
             //main.done.push(selectA);
             //}
-            System.out.println("released done stack: " + main.done);
-            System.out.println("released undone stack: "+  main.undone);
+            //System.out.println("released done stack: " + main.done);
+            //System.out.println("released undone stack: "+  main.undone);
             //}
         }
-        System.out.println("END on Released");
+        //System.out.println("END on Released");
     }
 
     @FXML
@@ -148,23 +152,23 @@ public class ComposerTrackController{
                     return;
                 }  
             }
-            System.out.println("makeNote");
+            //System.out.println("makeNote");
             main.makeNote(event,x,y);
-            System.out.println("onClick done stack: "+main.done);
-            System.out.println("onClick undone stack: " + main.undone);
+            //System.out.println("onClick done stack: "+main.done);
+           // System.out.println("onClick undone stack: " + main.undone);
         } 
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("END");
+       // System.out.println();
+       // System.out.println();
+       // System.out.println();
+       // System.out.println("END");
     }
 
     @FXML
     private void onPressed(MouseEvent event) {
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("START");
+      //  System.out.println();
+      //  System.out.println();
+      //  System.out.println();
+      //  System.out.println("START");
         
         main.player.stop();
         main.moveRedBack();
@@ -189,7 +193,7 @@ public class ComposerTrackController{
     private double getLastX() {
         double lastNoteX = 0.0;
         if (main.redlineAnimation.getStatus() == Status.RUNNING) {
-           System.out.println(red_line.getLayoutX());
+        //   System.out.println(red_line.getLayoutX());
            lastNoteX = red_line.getLayoutX();
         }
         else {
