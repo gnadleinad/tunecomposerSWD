@@ -49,7 +49,7 @@ public class Grouping implements Action{
     public void undoAction() {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         ArrayList<Moveable> selected = main.getSelected();
-        main.removePaneChild("notes_pane",original_group);
+        main.removePaneChild("notes_pane",original_group); //removes rectangle
         for(Moveable item : original_group.group){
             selected.add((Moveable)item);
         } 
@@ -58,7 +58,13 @@ public class Grouping implements Action{
 
     @Override
     public void selectMoveables() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ArrayList<Moveable> selected = main.getSelected();
+        selected.add(original_group);
+        original_group.display_select();
+        for (Moveable mov : original_group.group){
+            mov.display_select();
+        }
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
